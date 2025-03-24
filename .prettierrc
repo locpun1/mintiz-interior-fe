@@ -1,0 +1,22 @@
+{
+  "semi": true,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "jsxSingleQuote": true,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "^react",
+    "^react-(.*)$",
+    "^(?!@mui)(<THIRD_PARTY_MODULES>)",
+    "",
+    "^@mui/(.*)$",
+    "^(\\.|\\.\\.|@/components/)",
+    "",
+    "^./(.*)$"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "insertFinalNewLine": "false"
+}

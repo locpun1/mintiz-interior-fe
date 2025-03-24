@@ -1,0 +1,13 @@
+{
+  "price_list_is_in_use": "Bảng giá đang được sử dụng",
+  "name_price_list_already_exists": "Tên bảng giá đã tồn tại",
+  "code_or_name_already_exists": "Mã hoặc tên kho hàng đã tồn tại",
+  "must_be_positive_number": "{{fieldLabel}} phải là số dương",
+  "required": "{{name}} không được bỏ trống",
+  "type_number": "{{name}} phải là số",
+  "min": "{{name}} phải lớn hơn hoặc bằng {{min}}",
+  "max": "{{name}} phải nhỏ hơn hoặc bằng {{max}}",
+  "max_length": "Độ dài không được vượt quá {{maxLength}} ký tự",
+  "more_than": "{{name}} phải lớn hơn {{value}}",
+  "less_than": "{{name}} phải nhỏ hơn {{value}}"
+}
