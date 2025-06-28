@@ -1,7 +1,8 @@
 export const ROUTE_PATH = {
   HOME: '/',
-  PRODUCTS: '/products',
-  TO_PROFILE: '/profile',
+  TO_PROFILE:'/profile',
+  POSTS: '/posts',
+  USERS_MANAGEMENT: '/USERS_MANAGEMENT',
 
   PRODUCT_CATEGORY: '/products/categories',
   PRODUCT_CATEGORY_CREATE: '/products/categories/create',

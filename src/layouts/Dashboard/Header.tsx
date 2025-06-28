@@ -5,9 +5,8 @@ import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import { CSSObject, Theme, useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import SelectLanguage from './SelectLanguage';
+import MenuIcon from '@mui/icons-material/Menu';
 import Profile from './Sidebar/Profile';
-import { useAppSelector } from '@/store';
 
 interface Props {
   collapsed: boolean;
@@ -66,7 +65,7 @@ const Header = (props: Props) => {
             backgroundColor: '#f0f0f0',
           }}
         >
-          {props.collapsed ? <ChevronRight /> : <ChevronLeft />}
+          {props.collapsed ? <MenuIcon /> : <MenuIcon />}
         </IconButton>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {/* <SelectLanguage /> */}
