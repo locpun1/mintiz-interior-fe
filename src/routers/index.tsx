@@ -10,13 +10,14 @@ import PublicRoute from '@/components/PublicRoute';
 
 import AuthLayout from '@/layouts/Auth/AuthLayout';
 import DashboardLayout from '@/layouts/Dashboard';
-import ChangePassword from '@/views/Auth/ChangePassword';
-import ForgotPassword from '@/views/Auth/ForgotPassword';
 import Login from '@/views/Auth/Login';
-import Registration from '@/views/Auth/Registration';
+import LandingPageLayout from '@/layouts/LandingPage';
 
-// Home
-const Home = Loadable(lazy(() => import('@/views/Home')));
+// Home, AboutUs, News, Languages
+const Home = Loadable(lazy(() => import('@/views/LandingPage/Home/index')));
+const AboutUs = Loadable(lazy(() => import('@/views/LandingPage/AboutUs/index')));
+const News = Loadable(lazy(() => import('@/views/LandingPage/News/index')));
+const Languages = Loadable(lazy(() => import('@/views/LandingPage/Languages/index')));
 
 // Error
 const NotFound = Loadable(lazy(() => import('@/views/Errors/NotFound')));
@@ -42,11 +43,21 @@ const routes: RouteObject[] = [
       </PublicRoute>
     ),
     children: [
-      { index: true, element: <Navigate to={'login'} replace /> },
+      // { index: true, element: <Navigate to={'login'} replace /> },
       { path: 'login', element: <Login /> },
-      { path: 'registration', element: <Registration /> },
-      { path: 'forgot-password', element: <ForgotPassword /> },
-      { path: 'change-password', element: <ChangePassword /> },
+    ],
+  },
+  {
+    path: '/',
+    element: (
+        <LandingPageLayout />
+    ),
+    children: [
+      { index: true, element: <Navigate to={'home'} replace /> },
+      { path: 'home', element: <Home /> },
+      { path: 'about-us', element: <AboutUs /> },
+      { path: 'news', element: <News /> },
+      { path: 'languages', element: <Languages /> },
     ],
   },
   {
