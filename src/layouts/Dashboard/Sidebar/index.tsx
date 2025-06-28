@@ -1,6 +1,5 @@
 import type { FC, ReactNode } from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 
 import type { SvgIconComponent } from '@mui/icons-material';
@@ -33,6 +32,7 @@ import useDerivedState from '@/hooks/useDerivedState';
 import usePrevious from '@/hooks/usePrevious';
 import Sections from './Sections';
 import type { MouseEvent } from '@/types/react';
+import { useAppSelector } from '@/store';
 
 export const CollapseContext = createContext<boolean | null>(null);
 export const SidebarContext = createContext<boolean | null>(null);
@@ -46,7 +46,8 @@ interface Props {
 const Sidebar = (props: Props) => {
   const { openSidebar, collapsed, onCloseSidebar, onToggleCollapsed } = props;
   const { pathname } = useLocation();
-  const sections = Sections(); 
+  const { profile } = useAppSelector((state) => state.auth);
+  const sections = useMemo(() => Sections(profile), [profile]);
   const theme = useTheme();
   const prevPathName = usePrevious(pathname);
 
@@ -72,7 +73,6 @@ const Sidebar = (props: Props) => {
               <Box
                 sx={{
                   borderBottom: 'thin solid #E6E8F0',
-                  height: '64px',
                 }}
               >
                 <Logo />
@@ -146,7 +146,7 @@ const MenuSection: FC<MenuSectionProps> = (props) => {
       subheader={
         section &&
         !collapsed && (
-          <ListSubheader disableGutters disableSticky sx={{ ml: 3 }}>
+          <ListSubheader disableGutters disableSticky sx={{ ml: 3, }}>
             {section}
           </ListSubheader>
         )
@@ -282,9 +282,9 @@ const MenuItem: FC<MenuItemProps> = (props) => {
             size='medium'
             {...(!children &&
               path && {
-                component: RouterLink,
-                to: path,
-              })}
+              component: RouterLink,
+              to: path,
+            })}
             sx={{
               color: 'neutral.800',
               '&:hover': {
@@ -335,16 +335,20 @@ const MenuItem: FC<MenuItemProps> = (props) => {
           size='medium'
           fullWidth
           sx={{
-            color: 'neutral.800',
-            p: 1.25,
+            color: '#000000',
+            fontSize: '20px',
+            fontWeight: '700',
+            fontFamily: 'Sarabun',
+            padding: '12px 20px',
+            borderRadius: '16px',
             pl: `${paddingLeft}px`,
             textAlign: 'left',
             '&:hover': {
               bgcolor: alpha('#FFFFFF', 0.08),
             },
             ...(active && {
-              color: 'info.main',
-              bgcolor: alpha('#FFFFFF', 0.08),
+              color: '#FFFFFF',
+              bgcolor: ' #323031',
             }),
           }}
         >
@@ -386,15 +390,18 @@ const MenuItem: FC<MenuItemProps> = (props) => {
         size='medium'
         fullWidth
         sx={{
-          color: 'neutral.800',
-          p: 1.25,
-          pl: `${paddingLeft}px`,
+          color: '#000000',
+          fontSize: '20px',
+          fontWeight: '700',
+          fontFamily: 'Sarabun',
+          padding: '12px 20px',
+          borderRadius: '16px',
           '&:hover': {
-            bgcolor: alpha('#000', 0.08),
+            bgcolor: 'rgb(70, 69, 69)',
           },
           ...(active && {
-            color: 'info.main',
-            bgcolor: '#e6f4ff',
+            color: '#FFFFFF',
+            bgcolor: ' #323031',
           }),
           flexShrink: 0,
         }}
