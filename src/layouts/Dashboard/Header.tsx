@@ -1,15 +1,12 @@
-import { Box, MenuItem, Select, Typography, useMediaQuery } from '@mui/material';
+import { MINI_SIDEBAR_WIDTH, SIDEBAR_WIDTH } from '@/constants/layouts';
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { Box, useMediaQuery } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import { CSSObject, Theme, useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import mintz_logo from "@/assets/images/users/mintzdg-logo.png";
-import CommonImage from '@/components/Image/index';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { DensityMedium } from '@mui/icons-material';
-import CollapsedSideBar from '../LandingPage/CollapsedSideBar';
-
+import SelectLanguage from './SelectLanguage';
+import Profile from './Sidebar/Profile';
 
 interface Props {
   collapsed: boolean;
@@ -17,92 +14,30 @@ interface Props {
   onToggleCollapsed: () => void;
 }
 
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: `calc(100% - ${MINI_SIDEBAR_WIDTH}px)`,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+});
+
 const Header = (props: Props) => {
   const theme = useTheme();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [collapsed, setCollapsed] = useState<boolean>(false);
-  
-  const handleToggleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
-
-  const mdUp = useMediaQuery(theme.breakpoints.up('md'));
-
-  const isActive = (path: string) => location.pathname === path;
-
-  const [activeMenu, setActiveMenu] = useState<string>('home')
-
-  const handleMenuClick = (key: string, path: string) => {
-    setActiveMenu(key);
-    navigate(path)
-  }
-
-  const styleMenu = (path: string) => ({
-    fontWeight: 500,
-    whiteSpace: 'nowrap',
-    cursor: 'pointer',
-    pb: 1,
-    mt: 1,
-    borderBottom: isActive(path)? '2px solid black' : '2px solid transparent',
-    transition: 'border-bottom 0.3s',
-    '&:hover':{
-      borderBottom: '2px solid black',
-    },
-  });
-
-  if(mdUp){
-    return(
-      <AppBar
-            position='fixed'
-            sx={{
-              color: 'common.black',
-              backgroundColor: '#fff',
-              height: '64px',
-              borderBottom: 'thin solid #E6E8F0',
-              marginLeft: 'auto',
-              zIndex: 9,
-              width: '100%',
-            }}
-          >
-            <Toolbar 
-              disableGutters 
-              sx={{ 
-                display: 'flex', justifyContent: 'center', alignItems: 'center', height: 64, px: 6, // padding ngang để giới hạn chiều rộng
-              }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 15, }}>
-                <Typography sx={styleMenu('/home')} onClick={() =>  handleMenuClick('home','/home')}>Trang chủ</Typography>
-                <Typography sx={styleMenu('/about-us')} onClick={() =>  handleMenuClick('about-us','/about-us')}>About us</Typography>
-
-                <CommonImage
-                  src={mintz_logo}
-                  alt="mintz logo"
-                  sx={{ width: 100, height:100 }}
-                  />
-
-                <Typography sx={styleMenu('/news')} onClick={() =>  handleMenuClick('news','/news')}>Tin tức</Typography>
-                <Select
-                  defaultValue="vi"
-                  variant="standard"
-                  disableUnderline
-                  sx={{
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    '& .MuiSelect-select': { padding: 0 },
-                  }}
-                >
-                  <MenuItem value="vi">Ngôn ngữ</MenuItem>
-                  <MenuItem value="en">English</MenuItem>
-                </Select>
-              </Box>
-            </Toolbar>
-          </AppBar>
-    )
-  }
+  const lgUp = useMediaQuery(theme.breakpoints.up('lg'));
 
   return (
     <AppBar
       position='fixed'
+      elevation={10}
       sx={{
         color: 'common.black',
         backgroundColor: '#fff',
@@ -110,42 +45,33 @@ const Header = (props: Props) => {
         borderBottom: 'thin solid #E6E8F0',
         marginLeft: 'auto',
         zIndex: 9,
-        width: '100%',
-        display:'flex',
-        flexDirection:'row'
+        width: lgUp
+          ? props.collapsed
+            ? openedMixin(theme).width
+            : closedMixin(theme).width
+          : '100%',
       }}
     >
-      <IconButton
-        onClick={handleToggleCollapsed}
-        sx={{
-          color: '#000',
-          borderRadius: '4px',
-          width: '36px',
-          height: '36px',
-          fontSize: '1rem',
-          margin: 'auto 0px',
-          // backgroundColor: '#f0f0f0',
-        }}
-      >
-        <DensityMedium />
-      </IconButton>
-      <Toolbar 
-        disableGutters 
-        sx={{ 
-          display: 'flex', justifyContent: 'center', alignItems: 'center', height: 64, px: 6, // padding ngang để giới hạn chiều rộng
-          margin: 'auto'
-        }}>
-        
-          <CommonImage
-            src={mintz_logo}
-            alt="mintz logo"
-            sx={{ width: 100, height:100 }}
-          />
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', height: '100%' }}>
+        <IconButton
+          onClick={props.onToggleCollapsed}
+          edge='start'
+          sx={{
+            color: '#000',
+            borderRadius: '4px',
+            width: '36px',
+            height: '36px',
+            fontSize: '1rem',
+            backgroundColor: '#f0f0f0',
+          }}
+        >
+          {props.collapsed ? <ChevronRight /> : <ChevronLeft />}
+        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <SelectLanguage />
+          <Profile />
+        </Box>
       </Toolbar>
-      <CollapsedSideBar
-        collapsed={collapsed}
-        onToggleCollapsed={handleToggleCollapsed}
-      />
     </AppBar>
   );
 };
