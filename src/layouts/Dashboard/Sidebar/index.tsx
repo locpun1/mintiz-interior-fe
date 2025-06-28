@@ -25,14 +25,13 @@ import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Logo from './Logo';
 import type { SectionItem } from './Sections';
-import Sections from './Sections';
 import SubMenu from './SubMenu';
 import Scrollbar from '@/components/Scrollbar';
 
 import { MINI_SIDEBAR_WIDTH, SIDEBAR_WIDTH } from '@/constants/layouts';
 import useDerivedState from '@/hooks/useDerivedState';
 import usePrevious from '@/hooks/usePrevious';
-import { useAppSelector } from '@/store';
+import Sections from './Sections';
 import type { MouseEvent } from '@/types/react';
 
 export const CollapseContext = createContext<boolean | null>(null);
@@ -47,8 +46,7 @@ interface Props {
 const Sidebar = (props: Props) => {
   const { openSidebar, collapsed, onCloseSidebar, onToggleCollapsed } = props;
   const { pathname } = useLocation();
-  const { t } = useTranslation('section');
-  const sections = useMemo(() => Sections(t), [t]);
+  const sections = Sections(); 
   const theme = useTheme();
   const prevPathName = usePrevious(pathname);
 
@@ -173,7 +171,7 @@ const MenuItems = (props: MenuItemsProps) => {
   return (
     <List disablePadding>
       {items.reduce<ReactNode[]>((acc, item, i) => {
-        const { title, path, children, info, icon } = item;
+        const { title, path, children, icon } = item;
         const key = `${title}-${level}-${i}`;
         // const partialMatch = pathname.startsWith(path);
         const exactMatch = pathname === path || pathname.startsWith(`${path}/`);
@@ -184,7 +182,6 @@ const MenuItems = (props: MenuItemsProps) => {
               active={exactMatch}
               level={level}
               icon={icon}
-              info={info}
               key={key}
               path={path}
               title={title}
@@ -199,7 +196,6 @@ const MenuItems = (props: MenuItemsProps) => {
               active={exactMatch}
               level={level}
               icon={icon}
-              info={info}
               key={key}
               path={path}
               title={title}

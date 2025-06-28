@@ -1,60 +1,27 @@
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/constants/auth';
+// src/utils/AuthHelper.ts
+import { ACCESS_TOKEN } from '@/constants/auth';
 
-function parsedToken(key: string) {
-  const token = sessionStorage.getItem(key) || localStorage.getItem(key);
-  if (!token) {
-    return;
-  }
+export function setAccessToken(token: string) {
   try {
-    return JSON.parse(token);
+    localStorage.setItem(ACCESS_TOKEN, token);
   } catch (error) {
-    console.error('GET TOKEN PARSE ERROR', error);
+    console.error('SET ACCESS TOKEN ERROR', error);
   }
 }
 
-const getStorageToken = {
-  get accessToken() {
-    return parsedToken(ACCESS_TOKEN);
-  },
-  get refreshToken() {
-    return parsedToken(REFRESH_TOKEN);
-  },
-};
-
-const convertToken = (storage: Storage, key: string, value: string) => {
+export function getAccessToken(): string | null {
   try {
-    const storageValue = JSON.stringify(value);
-    storage.setItem(key, storageValue);
+    return localStorage.getItem(ACCESS_TOKEN);
   } catch (error) {
-    console.error('SET TOKEN PARSE ERROR', error);
+    console.error('GET ACCESS TOKEN ERROR', error);
+    return null;
   }
-};
+}
 
-const setStorageToken = (isRemember = !!localStorage.getItem(ACCESS_TOKEN)) => {
-  const storage = isRemember ? localStorage : sessionStorage;
-  return {
-    accessToken(value: string) {
-      convertToken(storage, ACCESS_TOKEN, value);
-      return this;
-    },
-    refreshToken(value: string) {
-      convertToken(storage, REFRESH_TOKEN, value);
-      return this;
-    },
-  };
-};
-
-const removeStorageToken = () => {
+export function removeAccessToken() {
   try {
     localStorage.removeItem(ACCESS_TOKEN);
-    localStorage.removeItem(REFRESH_TOKEN);
-    sessionStorage.removeItem(ACCESS_TOKEN);
-    sessionStorage.removeItem(REFRESH_TOKEN);
   } catch (error) {
-    console.error('REMOVE TOKEN ERROR', error);
+    console.error('REMOVE ACCESS TOKEN ERROR', error);
   }
-};
-
-const isSaveLocalStorage = !!localStorage.getItem(ACCESS_TOKEN);
-
-export { isSaveLocalStorage, parsedToken, getStorageToken, removeStorageToken, setStorageToken };
+}

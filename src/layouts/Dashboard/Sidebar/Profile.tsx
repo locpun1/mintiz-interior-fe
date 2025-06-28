@@ -26,7 +26,7 @@ import { ROUTE_PATH } from '@/constants/routes';
 import { signOut } from '@/services/auth-service';
 import { setIsAuth, setProfile } from '@/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { removeStorageToken } from '@/utils/AuthHelper';
+import { removeAccessToken } from '@/utils/AuthHelper';
 
 // ==============================|| PROFILE COMPONENT ||============================== //
 
@@ -46,7 +46,7 @@ const Profile = () => {
     await signOut();
     dispatch(setIsAuth(false));
     dispatch(setProfile(null));
-    removeStorageToken();
+    removeAccessToken();
   };
 
   const open = Boolean(anchorEl);
@@ -74,7 +74,7 @@ const Profile = () => {
             src={avatar1}
             sx={{ width: 32, height: 32, borderRadius: '100%' }}
           />
-          <Typography variant='subtitle1'>{profile?.email}</Typography>
+          <Typography variant='subtitle1'>{profile?.fullName}</Typography>
         </Stack>
       </ButtonBase>
       <Popper

@@ -23,13 +23,12 @@ import { ROUTE_PATH } from '@/constants/routes';
 import useBoolean from '@/hooks/useBoolean';
 import useNotification from '@/hooks/useNotification';
 import { loginSchema } from '@/schemas/auth-schema';
-import { signIn } from '@/services/auth-service';
-import { getCurrentUser } from '@/services/user-service';
 import { setIsAuth } from '@/slices/auth';
 import { setProfile } from '@/slices/user';
 import { useAppDispatch } from '@/store';
-import { setStorageToken } from '@/utils/AuthHelper';
+import { setAccessToken } from '@/utils/AuthHelper';
 import Logger from '@/utils/Logger';
+import { getCurrentUser, signIn } from '@/services/auth-service';
 
 interface LoginFormInputs {
   username: string;
@@ -66,28 +65,29 @@ export default function Login() {
         username: values.username,
         password: values.password,
       });
-
-      if (respAuth.data?.accessToken) {
-        setStorageToken(remember)
-          .accessToken(respAuth.data.accessToken)
-          .refreshToken(respAuth.data.refreshToken);
-        const respUser = await getCurrentUser();
-        dispatch(setProfile(respUser.data));
+      const accessToken = respAuth.data?.accessToken;
+      const userProfile = respAuth.data?.user;
+      if (accessToken && userProfile) {
+        // 2. Lưu accessToken vào localStorage
+        setAccessToken(accessToken);
+        
+        // 3. Cập nhật state của Redux/Context
+        // Thông tin user đã có sẵn từ response login, không cần gọi /me nữa
+        dispatch(setProfile(userProfile));
         dispatch(setIsAuth(true));
-        setError('');
+
+        // 4. Thông báo và chuyển hướng
         notify({
           message: t('login_success'),
           severity: 'success',
         });
-        let route = ROUTE_PATH.HOME;
-        if (!_.isNull(location.state) && location.state !== ROUTE_PATH.LOGIN) {
-          route = location.state;
-        }
-        navigate(route);
+        
+        const route = location.state || ROUTE_PATH.HOME;
+        navigate(route, { replace: true });
+
       } else {
-        setFocus('username');
-        setError(respAuth.message);
-        throw new Error(respAuth.message);
+        // Xử lý trường hợp response không có accessToken (dù backend luôn trả về nếu thành công)
+        setError(respAuth.message || 'Login failed, no access token returned.');
       }
     } catch (error: any) {
       Logger.log(error);

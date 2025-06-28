@@ -3,12 +3,12 @@ import { useEffect } from 'react';
 
 import LoadingOverlay from '@/components/ProTable/core/LoadingOverlay';
 
-import { getCurrentUser } from '@/services/user-service';
 import { setInitApp, setIsAuth, setProfile } from '@/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { FCC } from '@/types/react';
-import { getStorageToken } from '@/utils/AuthHelper';
+import { getAccessToken, removeAccessToken } from '@/utils/AuthHelper';
 import Logger from '@/utils/Logger';
+import { getCurrentUser } from '@/services/auth-service';
 
 const InitLoadingProvider: FCC = ({ children }) => {
   const { isInitialized } = useAppSelector((state) => state.auth);
@@ -16,16 +16,21 @@ const InitLoadingProvider: FCC = ({ children }) => {
 
   const requestUser = async () => {
     try {
-      if (getStorageToken.accessToken) {
+      const token = getAccessToken();
+      if (token) {
         const resp = await getCurrentUser();
-        const isAuth = resp.statusCode === axios.HttpStatusCode.Ok;
-        dispatch(setIsAuth(isAuth));
-        if (isAuth) {
-          dispatch(setProfile(resp.data));
+        const userProfile = resp.data;
+        if (userProfile) {
+          dispatch(setProfile(userProfile));
+          dispatch(setIsAuth(true));
+        } else {
+          throw new Error('User profile not found in response');
         }
       }
     } catch (error) {
+      removeAccessToken();
       Logger.log(error);
+      dispatch(setIsAuth(false));
     } finally {
       dispatch(setInitApp());
     }
