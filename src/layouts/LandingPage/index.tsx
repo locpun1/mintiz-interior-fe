@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import Header from '../Dashboard/Header';
 import Footer from '../Dashboard/Footer';
+import Header from './Header';
 
 const LandingPageLayout = () => {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false);
