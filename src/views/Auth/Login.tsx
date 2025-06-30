@@ -29,6 +29,8 @@ import { useAppDispatch } from '@/store';
 import { setAccessToken } from '@/utils/AuthHelper';
 import Logger from '@/utils/Logger';
 import { getCurrentUser, signIn } from '@/services/auth-service';
+import { ROLE } from '@/constants/roles';
+import { UserProfile } from '@/types/user-types';
 
 interface LoginFormInputs {
   username: string;
@@ -66,7 +68,7 @@ export default function Login() {
         password: values.password,
       });
       const accessToken = respAuth.data?.accessToken;
-      const userProfile = respAuth.data?.user;
+      const userProfile = respAuth.data?.user as any as UserProfile;
       if (accessToken && userProfile) {
         // 2. Lưu accessToken vào localStorage
         setAccessToken(accessToken);
@@ -82,7 +84,7 @@ export default function Login() {
           severity: 'success',
         });
         
-        const route = location.state || ROUTE_PATH.HOME;
+        const route = userProfile.role === ROLE.ADMIN ? `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}` : userProfile.role === ROLE.EMPLOYEE ? `${ROUTE_PATH.STAFF}/${ROUTE_PATH.STAFF_HOME}` : location.state || ROUTE_PATH.HOME
         navigate(route, { replace: true });
 
       } else {
