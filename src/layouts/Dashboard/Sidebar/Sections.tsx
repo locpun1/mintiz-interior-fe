@@ -33,7 +33,7 @@ const Sections = (profile: IUser | null): Section[] => {
   const menuItems: SectionItem[] = [
     {
       title: 'Trang chủ',
-      path: ROUTE_PATH.HOME,
+      path: ROUTE_PATH.MANAGE,
       icon: HomeOutlined,
     },
     {

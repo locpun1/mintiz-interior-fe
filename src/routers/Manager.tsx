@@ -13,7 +13,7 @@ const Manager: RouteObject = {
     path:ROUTE_PATH.MANAGE,
     element:<Outlet/>,
     children: [
-        { path: ROUTE_PATH.MANAGE_HOME, element:<ManagementHome />},
+        { index: true, element:<ManagementHome />},
         { path: ROUTE_PATH.MANAGE_ACCOUNT, element:<ManagementAccount/>},
         { path: ROUTE_PATH.MANAGE_BLOG, element:<ManagementBlog/>}
     ]

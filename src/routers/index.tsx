@@ -33,7 +33,7 @@ const HomeEmployee = Loadable(lazy(() => import('@/views/Staff/Home/index')));
 
 const routes: RouteObject[] = [
   {
-    path: '/',
+    path: '/manager',
     element: (
       <ProtectedRoute>
         <DashboardLayout />
@@ -41,8 +41,7 @@ const routes: RouteObject[] = [
     ),
     children: [
       { index: true, element: <HomeManager /> }, 
-      { index: true, element: <HomeEmployee /> }, 
-      Manager, Staff
+      Manager,
     ],
   },
   {
