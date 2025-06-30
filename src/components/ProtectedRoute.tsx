@@ -27,6 +27,14 @@ const ProtectedRoute = ({ children, requiredRoles, requiredPermissions }: Props)
     return <Navigate to={ROUTE_PATH.PERMISSION_DENIED} replace />;
   }
 
+  if (location.pathname === '/' || location.pathname === '') {
+    if (role === 'admin') {
+      return <Navigate to={`/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}`} replace />;
+    } 
+    if (role === 'employee') {
+      return <Navigate to={`/${ROUTE_PATH.STAFF}/${ROUTE_PATH.STAFF_HOME}`} replace />;
+    } 
+  }
   if (
     requiredPermissions &&
     permissions &&

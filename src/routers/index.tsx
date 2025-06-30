@@ -12,6 +12,8 @@ import AuthLayout from '@/layouts/Auth/AuthLayout';
 import DashboardLayout from '@/layouts/Dashboard';
 import Login from '@/views/Auth/Login';
 import LandingPageLayout from '@/layouts/LandingPage';
+import Manager from './Manager';
+import Staff from './Staff';
 
 // Home, AboutUs, News, Languages
 const Home = Loadable(lazy(() => import('@/views/LandingPage/Home/index')));
@@ -23,7 +25,11 @@ const Languages = Loadable(lazy(() => import('@/views/LandingPage/Languages/inde
 const NotFound = Loadable(lazy(() => import('@/views/Errors/NotFound')));
 const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDenied')));
 
-// Auth
+// ManagementHome
+const HomeManager = Loadable(lazy(() => import('@/views/Manager/Home/index')));
+
+//EmployeeHome
+const HomeEmployee = Loadable(lazy(() => import('@/views/Staff/Home/index')));
 
 const routes: RouteObject[] = [
   {
@@ -33,7 +39,11 @@ const routes: RouteObject[] = [
         <DashboardLayout />
       </ProtectedRoute>
     ),
-    children: [{ index: true, element: <Home /> }, Customers],
+    children: [
+      { index: true, element: <HomeManager /> }, 
+      { index: true, element: <HomeEmployee /> }, 
+      Manager, Staff
+    ],
   },
   {
     path: 'auth',
@@ -43,7 +53,7 @@ const routes: RouteObject[] = [
       </PublicRoute>
     ),
     children: [
-      // { index: true, element: <Navigate to={'login'} replace /> },
+      { index: true, element: <Navigate to={'login'} replace /> },
       { path: 'login', element: <Login /> },
     ],
   },

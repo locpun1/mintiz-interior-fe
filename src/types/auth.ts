@@ -1,4 +1,5 @@
 import { HttpResponse } from './common';
+import { UserProfile } from './user-types';
 
 export type LoginRequest = {
   username: string;
@@ -8,6 +9,7 @@ export type LoginRequest = {
 export type LoginResponse = {
   accessToken: string;
   refreshToken: string;
+  user: UserProfile
 };
 
 export type ResetPasswordRequest = {
