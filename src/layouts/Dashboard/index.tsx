@@ -44,7 +44,7 @@ const DashboardLayout = () => {
         <Box sx={{ flexGrow: 1 }}>
           <Outlet />
         </Box>
-        <Footer />
+        {/* <Footer /> */}
       </Box>
     </Box>
   );

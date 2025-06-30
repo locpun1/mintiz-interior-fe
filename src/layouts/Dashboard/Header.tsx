@@ -5,9 +5,9 @@ import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import { CSSObject, Theme, useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import SelectLanguage from './SelectLanguage';
+import MenuIcon from '@mui/icons-material/Menu';
 import Profile from './Sidebar/Profile';
-import { useAppSelector } from '@/store';
+import usePageTitle from '@/hooks/usePageTitle';
 
 interface Props {
   collapsed: boolean;
@@ -34,6 +34,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
 const Header = (props: Props) => {
   const theme = useTheme();
   const lgUp = useMediaQuery(theme.breakpoints.up('lg'));
+  const pageTitle = usePageTitle();
 
   return (
     <AppBar
@@ -54,20 +55,25 @@ const Header = (props: Props) => {
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', height: '100%' }}>
-        <IconButton
-          onClick={props.onToggleCollapsed}
-          edge='start'
-          sx={{
-            color: '#000',
-            borderRadius: '4px',
-            width: '36px',
-            height: '36px',
-            fontSize: '1rem',
-            backgroundColor: '#f0f0f0',
-          }}
-        >
-          {props.collapsed ? <ChevronRight /> : <ChevronLeft />}
-        </IconButton>
+        <Box sx={{display:'flex'}}>
+          <IconButton
+            onClick={props.onToggleCollapsed}
+            edge='start'
+            sx={{
+              color: '#000',
+              borderRadius: '4px',
+              width: '36px',
+              height: '36px',
+              fontSize: '1rem',
+              backgroundColor: '#f0f0f0',
+            }}
+          >
+            {props.collapsed ? <MenuIcon /> : <MenuIcon />}
+          </IconButton>
+          <Typography noWrap sx={{fontSize:'24px',fontWeight:'700'}}>
+            {pageTitle}
+          </Typography>
+        </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {/* <SelectLanguage /> */}
           <Profile />
