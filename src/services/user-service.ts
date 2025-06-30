@@ -1,9 +1,18 @@
-import type { HttpResponse } from '@/types/common';
+import type { HttpResponse, PaginatedResponse } from '@/types/common';
 import { IUser } from '@/types/user';
 import HttpClient from '@/utils/HttpClient';
 
-const prefix = 'users';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'; 
+const prefix = `${API_BASE_URL}/api/users`;
 
-export const getCurrentUser = () => {
-  return HttpClient.get<HttpResponse<IUser>>(`${prefix}/me`);
+interface GetUsersParams {
+  limit?: number;
+  page?: number;
+  role?: 'admin' | 'employee';
+}
+
+type UsersResponse = PaginatedResponse<IUser>;
+
+export const getUsers = (params: GetUsersParams) => {
+  return HttpClient.get<any, HttpResponse<UsersResponse>>(`${prefix}`, { params });
 };
