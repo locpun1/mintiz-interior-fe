@@ -1,12 +1,17 @@
 // src/layouts/Dashboard/Sidebar/Sections.ts
 
 import type { SvgIconComponent } from '@mui/icons-material';
-// Import các icon bạn cần
-import { HomeOutlined, PeopleOutline, PostAdd, ContactsOutlined } from '@mui/icons-material';
+import { 
+  HomeOutlined, 
+  PostAdd, 
+  ContactsOutlined,
+  ManageAccountsOutlined, 
+  AccountCircleOutlined  
+} from '@mui/icons-material';
 
 import { ROUTE_PATH } from '@/constants/routes';
+import type { IUser } from '@/types/user';
 
-// Các interface không đổi
 export interface SectionItem {
   title: string;
   path: string;
@@ -19,38 +24,53 @@ interface Section {
   items: SectionItem[];
 }
 
-// Hàm Sections bây giờ không cần tham số
-const Sections = (): Section[] => [
-  {
-    section: null, // Không có tiêu đề section
-    items: [
-      {
-        title: 'Trang chủ', // Dùng chuỗi tĩnh
-        path: `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}`, // Giả sử bạn có hằng số này
-        icon: HomeOutlined,
-      },
-      {
-        title: 'Quản lý Bài viết',
-        path: `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}`, // Thay bằng route của bạn
-        icon: PostAdd,
-      },
-      // {
-      //   title: 'Quản lý Liên hệ',
-      //   path: ROUTE_PATH.CONTACTS, // Thay bằng route của bạn
-      //   icon: ContactsOutlined,
-      // },
-    ],
-  },
-  {
-    section: 'Quản trị', // Một section có tiêu đề
-    items: [
-      {
-        title: 'Quản lý Tài khoản',
-        path: `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_ACCOUNT}`, // Thay bằng route của bạn
-        icon: PeopleOutline,
-      },
-    ],
-  },
-];
+const Sections = (profile: IUser | null): Section[] => {
+  if (!profile) {
+    return [];
+  }
+
+  const menuItems: SectionItem[] = [
+    {
+      title: 'Trang chủ',
+      path: ROUTE_PATH.MANAGE,
+      icon: HomeOutlined,
+    },
+    {
+      title: 'Quản lý Bài viết',
+      path: ROUTE_PATH.POSTS,
+      icon: PostAdd,
+    },
+    {
+        title: 'Đăng xuất',
+        path: ROUTE_PATH.CONTACTS,
+        icon: ContactsOutlined,
+    }
+  ];
+
+  let accountItem: SectionItem;
+
+  if (profile.role === 'admin') {
+    accountItem = {
+      title: 'Quản lý Tài khoản',
+      path: ROUTE_PATH.USERS_MANAGEMENT, 
+      icon: ManageAccountsOutlined,
+    };
+  } else { 
+    accountItem = {
+      title: 'Quản lý thông tin',
+      path: ROUTE_PATH.MY_PROFILE,
+      icon: AccountCircleOutlined,
+    };
+  }
+  
+  menuItems.splice(1, 0, accountItem);
+
+  return [
+    {
+      section: null, 
+      items: menuItems,
+    }
+  ];
+};
 
 export default Sections;

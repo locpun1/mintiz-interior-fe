@@ -1,7 +1,8 @@
 export const ROUTE_PATH = {
   HOME: '/',
-  PRODUCTS: '/products',
-  TO_PROFILE: '/profile',
+  TO_PROFILE:'/profile',
+  POSTS: '/posts',
+  USERS_MANAGEMENT: '/USERS_MANAGEMENT',
 
   PRODUCT_CATEGORY: '/products/categories',
   PRODUCT_CATEGORY_CREATE: '/products/categories/create',
@@ -9,9 +10,8 @@ export const ROUTE_PATH = {
   PRODUCT_CATEGORY_DELETE: '/products/categories/delete',
 
   //Manager
-  MANAGE:"manage",
-  MANAGE_HOME:'home',
-  MANAGE_ACCOUNT:'account',
+  MANAGE:"/manager",
+  MANAGE_ACCOUNT:'/manager/account',
   MANAGE_BLOG:'blog',
 
   //Staff

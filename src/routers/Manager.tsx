@@ -7,13 +7,11 @@ const ManagementHome = Loadable(lazy(() => import('@/views/Manager/Home/index'))
 const ManagementAccount = Loadable(lazy(() => import('@/views/Manager/Account/index')));
 const ManagementBlog = Loadable(lazy(() => import('@/views/Manager/Blog/index')));
 
-
-
 const Manager: RouteObject = {
     path:ROUTE_PATH.MANAGE,
     element:<Outlet/>,
     children: [
-        { path: ROUTE_PATH.MANAGE_HOME, element:<ManagementHome />},
+        { index: true, element:<ManagementHome />},
         { path: ROUTE_PATH.MANAGE_ACCOUNT, element:<ManagementAccount/>},
         { path: ROUTE_PATH.MANAGE_BLOG, element:<ManagementBlog/>}
     ]
