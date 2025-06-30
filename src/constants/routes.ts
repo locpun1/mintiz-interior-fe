@@ -8,6 +8,19 @@ export const ROUTE_PATH = {
   PRODUCT_CATEGORY_UPDATE: '/products/categories/:id/update',
   PRODUCT_CATEGORY_DELETE: '/products/categories/delete',
 
+  //Manager
+  MANAGE:"manage",
+  MANAGE_HOME:'home',
+  MANAGE_ACCOUNT:'account',
+  MANAGE_BLOG:'blog',
+
+  //Staff
+  STAFF:"staff",
+  STAFF_HOME:'home',
+  STAFF_ACCOUNT:'account-customer',
+  STAFF_BLOG:'blog',
+
+
   // Product
   PRODUCT_LISTS: '/products/lists',
   PRODUCT_LISTS_CREATE: '/products/lists/create',

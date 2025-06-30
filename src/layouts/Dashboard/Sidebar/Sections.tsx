@@ -26,19 +26,19 @@ const Sections = (): Section[] => [
     items: [
       {
         title: 'Trang chủ', // Dùng chuỗi tĩnh
-        path: ROUTE_PATH.HOME, // Giả sử bạn có hằng số này
+        path: `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}`, // Giả sử bạn có hằng số này
         icon: HomeOutlined,
       },
       {
         title: 'Quản lý Bài viết',
-        path: ROUTE_PATH.POSTS, // Thay bằng route của bạn
+        path: `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}`, // Thay bằng route của bạn
         icon: PostAdd,
       },
-      {
-        title: 'Quản lý Liên hệ',
-        path: ROUTE_PATH.CONTACTS, // Thay bằng route của bạn
-        icon: ContactsOutlined,
-      },
+      // {
+      //   title: 'Quản lý Liên hệ',
+      //   path: ROUTE_PATH.CONTACTS, // Thay bằng route của bạn
+      //   icon: ContactsOutlined,
+      // },
     ],
   },
   {
@@ -46,7 +46,7 @@ const Sections = (): Section[] => [
     items: [
       {
         title: 'Quản lý Tài khoản',
-        path: ROUTE_PATH.USERS, // Thay bằng route của bạn
+        path: `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_ACCOUNT}`, // Thay bằng route của bạn
         icon: PeopleOutline,
       },
     ],
