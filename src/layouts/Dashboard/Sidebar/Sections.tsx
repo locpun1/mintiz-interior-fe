@@ -3,7 +3,6 @@
 import type { SvgIconComponent } from '@mui/icons-material';
 import { 
   HomeOutlined, 
-  PeopleOutline, 
   PostAdd, 
   ContactsOutlined,
   ManageAccountsOutlined, 

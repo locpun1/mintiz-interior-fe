@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 
-import Customers from './Customers';
+
 import Loadable from '@/components/Loadable';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import PublicRoute from '@/components/PublicRoute';
@@ -28,8 +28,6 @@ const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDe
 // ManagementHome
 const HomeManager = Loadable(lazy(() => import('@/views/Manager/Home/index')));
 
-//EmployeeHome
-const HomeEmployee = Loadable(lazy(() => import('@/views/Staff/Home/index')));
 
 const routes: RouteObject[] = [
   {
