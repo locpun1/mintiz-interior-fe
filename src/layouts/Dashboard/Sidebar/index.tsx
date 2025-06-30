@@ -33,6 +33,7 @@ import usePrevious from '@/hooks/usePrevious';
 import Sections from './Sections';
 import type { MouseEvent } from '@/types/react';
 import { useAppSelector } from '@/store';
+import ProfileSection from './ProfileSection';
 
 export const CollapseContext = createContext<boolean | null>(null);
 export const SidebarContext = createContext<boolean | null>(null);
@@ -77,6 +78,7 @@ const Sidebar = (props: Props) => {
               >
                 <Logo />
               </Box>
+              <ProfileSection />
               {sections.map((section, i) => (
                 <MenuSection key={i} pathname={pathname} {...section} />
               ))}

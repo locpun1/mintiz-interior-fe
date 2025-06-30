@@ -69,12 +69,12 @@ const Profile = () => {
         onClick={handleClick}
       >
         <Stack direction='row' spacing={1.25} alignItems='center' sx={{ p: 0.5 }}>
+          <Typography variant='subtitle1'>{profile?.fullName}</Typography>
           <Avatar
             alt='profile user'
             src={avatar1}
             sx={{ width: 32, height: 32, borderRadius: '100%' }}
           />
-          <Typography variant='subtitle1'>{profile?.fullName}</Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -86,7 +86,7 @@ const Profile = () => {
         }}
         placement='bottom-start'
       >
-        <Paper sx={{ width: 290, minWidth: 240, maxWidth: { xs: 250, md: 250 } }}>
+        <Paper sx={{ maxWidth: { xs: 250, md: 250 } }}>
           <ClickAwayListener onClickAway={handleClick}>
             <Card>
               <List component='nav' sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 24 } }}>
