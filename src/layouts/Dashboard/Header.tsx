@@ -1,6 +1,6 @@
 import { MINI_SIDEBAR_WIDTH, SIDEBAR_WIDTH } from '@/constants/layouts';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { Box, useMediaQuery } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import { CSSObject, Theme, useTheme } from '@mui/material/styles';
@@ -75,7 +75,7 @@ const Header = (props: Props) => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SelectLanguage />
+          {/* <SelectLanguage /> */}
           <Profile />
         </Box>
       </Toolbar>
