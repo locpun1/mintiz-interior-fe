@@ -28,9 +28,7 @@ import { setProfile } from '@/slices/user';
 import { useAppDispatch } from '@/store';
 import { setAccessToken } from '@/utils/AuthHelper';
 import Logger from '@/utils/Logger';
-import { getCurrentUser, signIn } from '@/services/auth-service';
-import { ROLE } from '@/constants/roles';
-import { UserProfile } from '@/types/user-types';
+import { signIn } from '@/services/auth-service';
 
 interface LoginFormInputs {
   username: string;
@@ -50,7 +48,6 @@ export default function Login() {
   const [_loading, setLoading] = useBoolean();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const notify = useNotification();
   const [_error, setError] = useState('');
   const [showPassword, setShowPassword] = useBoolean(false);
@@ -68,27 +65,17 @@ export default function Login() {
         password: values.password,
       });
       const accessToken = respAuth.data?.accessToken;
-      const userProfile = respAuth.data?.user as any as UserProfile;
+      const userProfile = respAuth.data?.user;
       if (accessToken && userProfile) {
-        // 2. Lưu accessToken vào localStorage
         setAccessToken(accessToken);
-        
-        // 3. Cập nhật state của Redux/Context
-        // Thông tin user đã có sẵn từ response login, không cần gọi /me nữa
         dispatch(setProfile(userProfile));
         dispatch(setIsAuth(true));
-
-        // 4. Thông báo và chuyển hướng
         notify({
           message: t('login_success'),
           severity: 'success',
         });
-        
-        const route = userProfile.role === ROLE.ADMIN ? `${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}` : userProfile.role === ROLE.EMPLOYEE ? `${ROUTE_PATH.STAFF}/${ROUTE_PATH.STAFF_HOME}` : location.state || ROUTE_PATH.HOME
-        navigate(route, { replace: true });
-
+        navigate(ROUTE_PATH.MANAGE, { replace: true });
       } else {
-        // Xử lý trường hợp response không có accessToken (dù backend luôn trả về nếu thành công)
         setError(respAuth.message || 'Login failed, no access token returned.');
       }
     } catch (error: any) {

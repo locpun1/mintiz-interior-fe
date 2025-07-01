@@ -13,7 +13,6 @@ import DashboardLayout from '@/layouts/Dashboard';
 import Login from '@/views/Auth/Login';
 import LandingPageLayout from '@/layouts/LandingPage';
 import Manager from './Manager';
-import Staff from './Staff';
 
 // Home, AboutUs, News, Languages
 const Home = Loadable(lazy(() => import('@/views/LandingPage/Home/index')));
@@ -56,9 +55,7 @@ const routes: RouteObject[] = [
   },
   {
     path: '/',
-    element: (
-        <LandingPageLayout />
-    ),
+    element: <LandingPageLayout />,
     children: [
       { index: true, element: <Navigate to={'home'} replace /> },
       { path: 'home', element: <Home /> },

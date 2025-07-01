@@ -98,3 +98,12 @@ export type ErrorResponse = {
   message: string;
   statusCode: number;
 };
+
+export interface PaginatedResponse<T> {
+  users?: T[]; // Dùng users hoặc tên phù hợp
+  posts?: T[];
+  totalPages: number;
+  currentPage: number;
+  totalUsers?: number;
+  totalPosts?: number;
+}
