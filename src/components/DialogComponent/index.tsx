@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { Box, DialogProps } from '@mui/material';
 import ActionButton from '@/components/ProButton/ActionButton';
@@ -16,6 +15,9 @@ interface Props extends Omit<DialogProps, 'open' | 'fullScreen'> {
   dialogContentHeight?: string | number;
   showSaveButton?: boolean;
   customButtons?: ReactNode;
+  hasError?: boolean,
+  isActiveFooter?:boolean,
+  isCenter?:boolean
 }
 
 const DialogComponent = ({
@@ -23,24 +25,29 @@ const DialogComponent = ({
   handleClose,
   children,
   dialogTitle,
-  dialogContentHeight = 500,
+  dialogContentHeight,
   showSaveButton = false,
   customButtons,
+  hasError,
+  isActiveFooter = true,
+  isCenter=true,
   ...rest
 }: Props) => {
-  const { t } = useTranslation('common', { keyPrefix: 'actions' });
+  
   return (
     <DialogContainer {...rest} open={!!dialogKey} onClose={handleClose}>
-      <DialogHeader title={dialogTitle || ''} marginTop={2} />
-      <DialogContent>
-        <Box sx={{ height: dialogContentHeight, padding: 2 }}>{children}</Box>
+      {isActiveFooter && <DialogHeader onClose={handleClose} title={dialogTitle || ''} marginTop={2} />}
+      <DialogContent sx={{ textAlign: isActiveFooter || isCenter ? "" : "center", maxHeight: 'fit-content'}}>
+        {/* <Box sx={{ height: {xs: hasError ? 800 : 500, md: hasError ? 420 : 350}, padding: 2, maxHeight:"fit-content" }}>{children}</Box> */}
+        <Box sx={{ padding: 2}}>{children}</Box>
       </DialogContent>
-      <DialogFooter>
-        <ActionButton actionType='cancel' onClick={handleClose}>
-          {t('cancel')}
-        </ActionButton>
+      {isActiveFooter &&<DialogFooter>
         {customButtons}
+        <ActionButton border='1px solid #00C7BE' fontColor='#00C7BE' actionType='cancel' onClick={handleClose}>
+          Hủy
+        </ActionButton>
       </DialogFooter>
+      }
     </DialogContainer>
   );
 };

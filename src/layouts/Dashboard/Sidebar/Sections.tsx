@@ -52,7 +52,7 @@ const Sections = (profile: IUser | null): Section[] => {
   if (profile.role === 'admin') {
     accountItem = {
       title: 'Quản lý Tài khoản',
-      path: ROUTE_PATH.USERS_MANAGEMENT, 
+      path: ROUTE_PATH.MANAGE_ACCOUNT, 
       icon: ManageAccountsOutlined,
     };
   } else { 

@@ -22,6 +22,12 @@ export type ForgotPasswordRequest = {
   token: string;
 };
 
+export type ChangePasswordRequest = {
+  password: string;
+  is_default: number;
+  user_id: string | number
+};
+
 export type VerifyUsernameRequest = {
   username: string;
 };

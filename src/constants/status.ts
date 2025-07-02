@@ -13,3 +13,14 @@ export const CATEGORY_LABELS: { [key in CategoryNews]: string} = {
     [CategoryNews.LIFE]: "ĐỜI SỐNG",
     [CategoryNews.INFORMATION_TECH]: "CÔNG NGHỆ",
 }
+
+export const RoleUser = {
+    ADMIN: 'admin',
+    EMPLOYEE: 'employee'
+}
+
+export type RoleUser = typeof RoleUser[keyof typeof RoleUser];
+export const ROLE_LABELS: { [key in RoleUser]: string} = {
+    [RoleUser.ADMIN]: 'Quản trị viên',
+    [RoleUser.EMPLOYEE]: 'Nhân viên kiểm soát'
+}

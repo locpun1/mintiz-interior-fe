@@ -7,12 +7,13 @@ import DateTime from './DateTime';
 import { __BASEURL__ } from '@/config';
 import { getAccessToken, removeAccessToken, setAccessToken } from './AuthHelper';
 
-
+const accessToken = getAccessToken();
 const config: AxiosRequestConfig = {
   baseURL: __BASEURL__,
   headers: {
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json',
     TimeZone: DateTime.TimeZone(),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
   },
   withCredentials: true,
   timeout: 10 * 60 * 1000,

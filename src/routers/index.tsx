@@ -13,6 +13,8 @@ import DashboardLayout from '@/layouts/Dashboard';
 import Login from '@/views/Auth/Login';
 import LandingPageLayout from '@/layouts/LandingPage';
 import Manager from './Manager';
+import Staff from './Staff';
+import ChangePassword from '@/views/Auth/ChangePassword';
 
 // Home, AboutUs, News, Languages
 const Home = Loadable(lazy(() => import('@/views/LandingPage/Home/index')));
@@ -38,7 +40,7 @@ const routes: RouteObject[] = [
     ),
     children: [
       { index: true, element: <HomeManager /> }, 
-      Manager,
+      Manager
     ],
   },
   {
@@ -51,6 +53,7 @@ const routes: RouteObject[] = [
     children: [
       { index: true, element: <Navigate to={'login'} replace /> },
       { path: 'login', element: <Login /> },
+      { path: 'change-password', element: <ChangePassword /> },
     ],
   },
   {
