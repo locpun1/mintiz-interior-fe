@@ -1,4 +1,5 @@
 import {
+  ChangePasswordRequest,
   ForgotPasswordRequest,
   LoginRequest,
   LoginResponse,
@@ -47,5 +48,13 @@ export const forgotPassword = (params: ForgotPasswordRequest) => {
   return HttpClient.post<ForgotPasswordRequest, HttpResponse<ResetPasswordResponse>>(
     `${prefix}/forgot-password`,
     params,
+  );
+};
+
+export const changePassword = (data: ChangePasswordRequest) => {
+  if(!data) return;
+  return HttpClient.put<any, HttpResponse<ChangePasswordRequest>>(
+    `${prefix}/change-password`,
+    data,
   );
 };

@@ -40,6 +40,7 @@ const HomeDashboardManager: React.FC = () => {
                 initialValue={searchTerm}
                 placeholder="Tìm kiếm"
                 onSearch={handleSearch}
+                style={{ width: '50%'}}
             />
             <Page title="Dashboard">
                 <Stack sx={{display:'flex',flexDirection:'column'}}>
