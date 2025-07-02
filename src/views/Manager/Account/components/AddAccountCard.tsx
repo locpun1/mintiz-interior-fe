@@ -1,18 +1,25 @@
 import React from "react";
 import { Box, Card, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
+import IconButton from "@/components/IconButton/IconButton";
 
-const AddAccountCard: React.FC = () => {
+interface AddAccountCardProps{
+    handleAdd: () => void;
+}
+const AddAccountCard: React.FC<AddAccountCardProps> = ({handleAdd}) => {
     return (
         <Card sx={{
-            width: 240, height: 220, m: 1,
+            height: 233,
             border: '2px dashed #ccc',
             display: 'flex', flexDirection: 'column',
             justifyContent: 'center', alignItems: 'center',
             cursor: 'pointer',
             borderRadius: '15px'
         }}>
-            <AddIcon fontSize="large" />
+            <IconButton
+                handleFunt={handleAdd}
+                icon={<AddIcon fontSize="large" sx={{ color: '#1C1A1B'}} />}
+            />
             <Typography>Thêm tài khoản</Typography>
         </Card>
     );

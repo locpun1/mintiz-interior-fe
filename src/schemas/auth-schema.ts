@@ -4,9 +4,9 @@ export const usernameValidateSchema = string().required('Username is required');
 
 const passwordValidateSchema = string()
   .required('Password is required')
-  .min(8, 'Password must be at least 8 characters')
-  .matches(/[a-zA-Z]/, 'Password must contain at least one letter')
-  .matches(/\d/, 'Password must contain at least one number');
+  // .min(8, 'Password must be at least 8 characters')
+  // .matches(/[a-zA-Z]/, 'Password must contain at least one letter')
+  // .matches(/\d/, 'Password must contain at least one number');
 
 const confirmPasswordValidateSchema = (label: string) =>
   string()

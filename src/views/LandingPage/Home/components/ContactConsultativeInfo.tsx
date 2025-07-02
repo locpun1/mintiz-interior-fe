@@ -24,67 +24,67 @@ const ContactConsultativeInfo: React.FC = () => {
 
     const handleCustomInputChange = (name: string, value: string | null | Dayjs | number ) => {
         if (Object.prototype.hasOwnProperty.call(formData, name)) {
-        const validName = name as keyof ProfileFormData; 
+            const validName = name as keyof ProfileFormData; 
     
-        setFormData((prevData) => ({
-            ...prevData,
-            [validName]: value, 
-        }));
+            setFormData((prevData) => ({
+                ...prevData,
+                [validName]: value, 
+            }));
 
-        if (validName === 'email' || validName === 'phone_number') {
-            if(validName === 'phone_number' && typeof value === 'string'){
-                const phone = value.replace(/\s|-/g, '');
-                if (!/^\d+$/.test(phone)) {
-                    setErrors(prev => ({
-                        ...prev,
-                        phone_number: 'Số điện thoại chỉ chứa số',
-                    }));
-                    return;
-                }
-                if(phone.startsWith('0') && phone.length !== 10){
-                    setErrors(prev => ({
-                        ...prev,
-                        phone_number: 'Số điện thoại phải có 10 chữ số (nếu bắt đầu bằng 0)',
-                    }));
-                    return;
-                }
+            if (validName === 'email' || validName === 'phone_number') {
+                if(validName === 'phone_number' && typeof value === 'string'){
+                    const phone = value.replace(/\s|-/g, '');
+                    if (!/^\d+$/.test(phone)) {
+                        setErrors(prev => ({
+                            ...prev,
+                            phone_number: 'Số điện thoại chỉ chứa số',
+                        }));
+                        return;
+                    }
+                    if(phone.startsWith('0') && phone.length !== 10){
+                        setErrors(prev => ({
+                            ...prev,
+                            phone_number: 'Số điện thoại phải có 10 chữ số (nếu bắt đầu bằng 0)',
+                        }));
+                        return;
+                    }
 
-                if(phone.startsWith('+84') && (phone.length < 11 || phone.length > 12)){
-                    setErrors(prev => ({
-                        ...prev,
-                        phone_number: 'Số điện thoại phải có 11-12 chữ số (nếu bắt đầu bằng +84)',
-                    }));
-                    return;
-                }
+                    if(phone.startsWith('+84') && (phone.length < 11 || phone.length > 12)){
+                        setErrors(prev => ({
+                            ...prev,
+                            phone_number: 'Số điện thoại phải có 11-12 chữ số (nếu bắt đầu bằng +84)',
+                        }));
+                        return;
+                    }
 
-                if(!phoneRegex.test(phone)){
-                    setErrors(prev => ({
-                        ...prev,
-                        phone_number: 'Số điện thoại không đúng định dạng (bắt đầu từ +84|03|05|07|08|09',
-                    }));
-                    return;
+                    if(!phoneRegex.test(phone)){
+                        setErrors(prev => ({
+                            ...prev,
+                            phone_number: 'Số điện thoại không đúng định dạng (bắt đầu từ +84|03|05|07|08|09',
+                        }));
+                        return;
+                    }
+                }
+                if(validName === 'email' && typeof value === 'string'){
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // chuẩn email đơn giản
+                    if(!emailRegex.test(value)){
+                        setErrors(prev => ({
+                            ...prev,
+                            email: "Email không hợp lệ"
+                        }));
+                        return;
+                    }
+                }
+                if (errors[validName as 'email' | 'phone_number']) {
+                    setErrors(prev => {
+                        const newErrors = { ...prev };
+                        delete newErrors[validName as 'email' | 'phone_number'];
+                        return newErrors;
+                    });
                 }
             }
-            if(validName === 'email' && typeof value === 'string'){
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // chuẩn email đơn giản
-                if(!emailRegex.test(value)){
-                    setErrors(prev => ({
-                        ...prev,
-                        email: "Email không hợp lệ"
-                    }));
-                    return;
-                }
-            }
-            if (errors[validName as 'email' | 'phone_number']) {
-                setErrors(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors[validName as 'email' | 'phone_number'];
-                    return newErrors;
-                });
-            }
-        }
         } else {
-        console.warn(`CustomInput called onChange with an unexpected name: ${name}`);
+            console.warn(`CustomInput called onChange with an unexpected name: ${name}`);
         }
     };
 

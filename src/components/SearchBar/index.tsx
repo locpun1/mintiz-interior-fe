@@ -1,16 +1,16 @@
 import { Search } from "@mui/icons-material";
-import { Box, Divider, InputAdornment, TextField } from "@mui/material";
+import { Box, Divider, InputAdornment, SxProps, TextField, Theme } from "@mui/material";
 import React, { useState } from "react";
 
 interface InputSearchProps{
     onSearch: (searchTerm: string) => void;
     placeholder?: string;
     initialValue?: string;
-    width?:string;
+    style?:SxProps<Theme>;
 }
 
 const InputSearch: React.FC<InputSearchProps> = (props) => {
-    const { onSearch, placeholder, initialValue = " ", width="100%"} = props;
+    const { onSearch, placeholder, initialValue = " ", style} = props;
     const [searchTerm, setSearchTerm] = useState<string>(initialValue);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -23,11 +23,7 @@ const InputSearch: React.FC<InputSearchProps> = (props) => {
     };
     return (
         <Box
-            sx={{
-                width: width,
-                // margin: "12px auto",
-                overflow: "hidden"
-            }}
+            sx={style}
         >
             <TextField
                 fullWidth

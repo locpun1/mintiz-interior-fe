@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
-import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
+import { AccountCircle, Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Alert,
@@ -30,6 +30,8 @@ import { setAccessToken } from '@/utils/AuthHelper';
 import Logger from '@/utils/Logger';
 import { signIn } from '@/services/auth-service';
 
+
+export const ID_USER = 'user_id'
 interface LoginFormInputs {
   username: string;
   password: string;
@@ -64,17 +66,33 @@ export default function Login() {
         username: values.username,
         password: values.password,
       });
+
       const accessToken = respAuth.data?.accessToken;
       const userProfile = respAuth.data?.user;
       if (accessToken && userProfile) {
         setAccessToken(accessToken);
-        dispatch(setProfile(userProfile));
-        dispatch(setIsAuth(true));
-        notify({
-          message: t('login_success'),
-          severity: 'success',
-        });
-        navigate(ROUTE_PATH.MANAGE, { replace: true });
+
+        // Xét trường is_default
+        if(userProfile.is_default === 1){
+          localStorage.setItem(ID_USER, String(userProfile.id));
+
+          navigate(`/${ROUTE_PATH.AUTH}/${ROUTE_PATH.CHANGE_PASSWORD}`)
+        }else{
+          // 3. Cập nhật state của Redux/Context
+          // Thông tin user đã có sẵn từ response login, không cần gọi /me nữa
+          dispatch(setProfile(userProfile));
+          dispatch(setIsAuth(true));
+
+          // 4. Thông báo và chuyển hướng
+          notify({
+            message: t('login_success'),
+            severity: 'success',
+          });
+          
+          navigate(ROUTE_PATH.MANAGE, { replace: true });        
+        }
+
+
       } else {
         setError(respAuth.message || 'Login failed, no access token returned.');
       }
@@ -86,15 +104,15 @@ export default function Login() {
   };
 
   return (
-    <Page title='Login'>
+    <Page title='Mintz'>
       <Box>
         <Typography
           component='h1'
           variant='h4'
           fontWeight={500}
-          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
         >
-          Welcome to Telecom!
+          Đăng nhập
         </Typography>
       </Box>
       {_error && (
@@ -119,12 +137,12 @@ export default function Login() {
             control: control,
           }}
           textFieldProps={{
-            label: 'Username',
+            label: 'Tài khoản',
             error: !!errors.username,
             helperText: errors.username?.message,
             sx: { ariaLabel: 'username' },
           }}
-          prefixIcon={Email}
+          prefixIcon={AccountCircle}
         />
         <ControllerTextField<LoginFormInputs>
           controllerProps={{
@@ -133,7 +151,7 @@ export default function Login() {
             control: control,
           }}
           textFieldProps={{
-            label: 'Password',
+            label: 'Mật khẩu',
             type: showPassword ? 'text' : 'password',
             error: !!errors.password,
             helperText: errors.password?.message,
@@ -156,7 +174,7 @@ export default function Login() {
           prefixIcon={Lock}
         />
         <div>
-          <Box>
+          {/* <Box>
             <Typography
               color='primary'
               component={RouterLink}
@@ -165,7 +183,7 @@ export default function Login() {
             >
               Forgot password?
             </Typography>
-          </Box>
+          </Box> */}
           <FormControlLabel
             label={'Remember me'}
             control={
@@ -173,8 +191,15 @@ export default function Login() {
             }
           />
         </div>
-        <LoadingButton loading={_loading} type='submit' variant='contained' fullWidth>
-          Login
+        <LoadingButton 
+          loading={_loading} type='submit' variant='outlined' fullWidth
+          sx={{
+            color:"#1C1A1B",
+            borderColor: "#1C1A1B",
+            fontWeight:800
+          }}
+        >
+          Đăng nhập
         </LoadingButton>
         {/* <Box display='flex' justifyContent='center' alignItems='center' flexWrap='wrap' gap={2}>
           <Typography>Don't have an account</Typography>
