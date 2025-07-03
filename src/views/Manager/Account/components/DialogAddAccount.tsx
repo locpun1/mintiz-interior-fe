@@ -67,6 +67,13 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
         })
     }
 
+    const handleReset = () => {
+        setFormData({
+            fullName: '', username: '', email: '', address: '', password: '', phone_number: '', passwordConfirm: '', role: 'employee', captchaCode: '' ,avatar_url: null
+
+        })
+    }
+
     useEffect(() => {
         let objectUrl: string | null = null;
         if (avatarPreview && (avatarPreview.startsWith('blob:') || avatarPreview.startsWith('data:'))) {
@@ -198,8 +205,9 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
         const newErrors: Partial<Record<'fullName' | 'username' | 'password'| 'phone_number' | 'passwordConfirm' | 'email' | 'captchaCode', string>> = {};
         if(!formData.fullName.trim()) newErrors.fullName = 'Tên đầy đủ là bắt buộc';
         if(!formData.username) newErrors.username = 'Tên hiển thị là bắt buộc';
-        if(!formData.email) newErrors.email = 'Email là bắt buộc';
-        // if(!formData.passwordConfirm) newErrors.passwordConfirm = 'Nhập lại mật khẩu không được để trống';
+        // if(!formData.email) newErrors.email = 'Email là bắt buộc';
+        if(!formData.password) newErrors.password = 'Nhập lại mật khẩu không được để trống';
+        if(!formData.passwordConfirm) newErrors.passwordConfirm = 'Nhập lại mật khẩu không được để trống';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // True nếu không có lỗi
@@ -217,7 +225,7 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
         data.append('username', formData.username);
         if(formData.email) data.append('email', formData.email);
         if(formData.address) data.append('address', formData.address);
-        // data.append('password', formData.password);
+        data.append('password', formData.password);
         if(formData.phone_number) data.append('phone_number', formData.phone_number);
         data.append('role', formData.role);
         if(formData.captchaCode) data.append('captchaCode', formData.captchaCode);
@@ -333,8 +341,6 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
                                     onChange={handleCustomInputChange}
                                     placeholder="Nhập thông tin"
                                     sx={{ mt: 0}}
-                                    error={!!errors.email}
-                                    helperText={errors.email}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6}}>
@@ -359,9 +365,8 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
                                     onChange={handleCustomInputChange}
                                     placeholder="Nhập thông tin"
                                     sx={{ mt: 0}}
-                                    // error={!!errors.password}
-                                    // helperText={errors.password}
-                                    disabled
+                                    error={!!errors.password}
+                                    helperText={errors.password}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6}}>
@@ -388,9 +393,8 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
                                     onChange={handleCustomInputChange}
                                     placeholder="Nhập thông tin"
                                     sx={{ mt: 0}}
-                                    // error={!!errors.passwordConfirm}
-                                    // helperText={errors.passwordConfirm}
-                                    disabled
+                                    error={!!errors.passwordConfirm}
+                                    helperText={errors.passwordConfirm}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6}}>
@@ -446,11 +450,11 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
                                 </Box>
                             </Grid>
                             <Grid size={{ xs: 12}}>
-                                <Box sx={{ display: 'flex', justifyContent: {xs: 'center', md: 'flex-end'}}}>
+                                <Box gap={2} sx={{ display: 'flex', justifyContent: {xs: 'center', md: 'flex-end'}}}>
                                     <Button
                                         type="submit"
                                         variant="outlined"
-                                        sx={{ width: '150px', position: 'relative', bgcolor:"#1C1A1B", color: 'white', fontWeight:600, borderRadius: '20px', mr: 2}}
+                                        sx={{ width: '150px', position: 'relative', bgcolor:"#1C1A1B", color: 'white', fontWeight:600, borderRadius: '20px'}}
                                     >
                                         {isSubmitting ? 'Đang tạo...' : 'Tạo tài khoản'}
                                         {isSubmitting && (
@@ -464,6 +468,14 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
                                                 }}
                                             />
                                         )}
+                                    </Button>
+                                    <Button
+                                        type="reset"
+                                        variant="outlined"
+                                        sx={{ width: '100px', position: 'relative', border:"1px solid #1C1A1B", color: '#1C1A1B', fontWeight:600, borderRadius: '20px'}}
+                                        onClick={handleReset}
+                                    >
+                                        Reset
                                     </Button>
                                     <Button
                                         type="reset"

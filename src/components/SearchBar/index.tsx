@@ -13,14 +13,16 @@ const InputSearch: React.FC<InputSearchProps> = (props) => {
     const { onSearch, placeholder, initialValue = " ", style} = props;
     const [searchTerm, setSearchTerm] = useState<string>(initialValue);
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
+        const value = event.target.value;
+        setSearchTerm(value);
+        onSearch(value);
     };
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === "Enter") {
-        onSearch(searchTerm);
-        }
-    };
+    // const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    //     if (event.key === "Enter") {
+    //     onSearch(searchTerm);
+    //     }
+    // };
     return (
         <Box
             sx={style}
@@ -31,7 +33,7 @@ const InputSearch: React.FC<InputSearchProps> = (props) => {
                 placeholder={placeholder}
                 value={searchTerm}
                 onChange={handleChange}
-                onKeyPress={handleKeyPress}
+                // onKeyPress={handleKeyPress}
                 InputProps={{
                     startAdornment:(
                         <InputAdornment

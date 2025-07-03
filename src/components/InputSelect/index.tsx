@@ -42,6 +42,8 @@ interface InputSelectProps {
   loading?:boolean;
   sx?: SxProps<Theme>;
   MenuProps?: SelectProps["MenuProps"];
+  title: string,
+  loadingTitle: string
 }
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -61,7 +63,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
   multiple = false,
   loading=false,
   sx = {},
-  MenuProps = undefined
+  MenuProps = undefined,
+  title,
+  loadingTitle
 }) => {
   const handleChange = (event: SelectChangeEvent<typeof value>) => {
     const selectedValue = multiple ? event.target.value : event.target.value;
@@ -92,7 +96,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
       return (
         <MenuItem disabled>
           <CircularProgress size={20} />
-          &nbsp; Đang tải phòng...
+          &nbsp; {loadingTitle}
         </MenuItem>
       );
     }
@@ -106,7 +110,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
       ));
     }
     
-    return <MenuItem disabled>Không có phòng</MenuItem>;
+    return <MenuItem disabled>{title}</MenuItem>;
     
   };
 

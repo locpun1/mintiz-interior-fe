@@ -19,11 +19,10 @@ const CustomerInfomation: React.FC = () => {
     const [contactId, setIdContact] = useState<string | number>('');
     const [openDialogViewCus, setOpenDialogViewCus] = useState(false);
 
-    useEffect(() => {
-        const fetchContactData = async () => {
+    const fetchContactData = async (currentSearch?: string) => {
             setLoading(true)
             try {
-                const contactsResponse = await getContacts({ limit: rowPerPage, page: page });
+                const contactsResponse = await getContacts({ limit: rowPerPage, page: page, searchTerm: currentSearch });
                 setContacts(contactsResponse?.data?.contacts || []);
                 contactsResponse.data?.totalContact && setTotal(contactsResponse.data?.totalContact)
             } catch (error) {
@@ -32,9 +31,13 @@ const CustomerInfomation: React.FC = () => {
                 setLoading(false);
             }
         };
-
-        fetchContactData();
-    }, [page, rowPerPage]);
+    useEffect(() => {
+        if(searchTerm){
+            fetchContactData(searchTerm);
+        }else{
+            fetchContactData();
+        }
+    }, [page, rowPerPage, searchTerm]);
 
     const handleSearch = (value: string) => {
         setSearchTerm(value.trim())
@@ -62,11 +65,14 @@ const CustomerInfomation: React.FC = () => {
                         <Alert severity="error" sx={{ my: 2}}>{error}</Alert>
                 )}
                 <Stack sx={{display:'flex',flexDirection:'column'}}>
-                    <CustomerContact
-                        handleClick={handleOpenDialogViewDetail}
-                        contacts={contacts}
-                        isLoading={loading}
-                    />
+                    <Box px={1} pt={2.5}>
+                        <CustomerContact
+                            handleClick={handleOpenDialogViewDetail}
+                            contacts={contacts}
+                            isLoading={loading}
+                        />  
+                    </Box>
+                    
                     <Box display='flex' justifyContent='center'>
                         <CustomPagination
                             page={page}

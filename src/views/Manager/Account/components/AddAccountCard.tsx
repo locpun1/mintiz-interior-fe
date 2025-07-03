@@ -9,7 +9,7 @@ interface AddAccountCardProps{
 const AddAccountCard: React.FC<AddAccountCardProps> = ({handleAdd}) => {
     return (
         <Card sx={{
-            height: 233,
+            height: 226,
             border: '2px dashed #ccc',
             display: 'flex', flexDirection: 'column',
             justifyContent: 'center', alignItems: 'center',
