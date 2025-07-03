@@ -212,7 +212,7 @@ const DialogEditAccount: React.FC<DialogEditAccountProps> = ({ open, onClose, us
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<'fullName' | 'username' | 'password'| 'phone_number' | 'passwordConfirm' | 'email' | 'captchaCode', string>> = {};
         if(!formData.fullName.trim()) newErrors.fullName = 'Tên đầy đủ là bắt buộc';
-        if(!formData.email) newErrors.email = 'Email là bắt buộc';
+        // if(!formData.email) newErrors.email = 'Email là bắt buộc';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // True nếu không có lỗi

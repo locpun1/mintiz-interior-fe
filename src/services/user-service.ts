@@ -10,6 +10,8 @@ interface GetUsersParams {
   limit?: number;
   page?: number;
   role?: 'admin' | 'employee';
+  status: number;
+  searchTerm?: string
 }
 
 export type UsersResponse = PaginatedResponse<IUser>;
@@ -51,14 +53,27 @@ export const updateAccount = (id: string | number, FormData: FormData) => {
 
 export const getListUsers = async(
   page: number,
-  size: number
+  size: number,
+  status?: number | string,
+  searchTerm?: string
 ): Promise<CheckoutApiUsersResponse> => {
-  let url = `${prefix}/get-all-users?page=${page}&size=${size}&role=employee`;
+  let url = `${prefix}/get-all-users`;
+  const params: Record<string, any> = {
+        page: page,
+        size: size,
+        role: 'employee'
+  };
+  if(searchTerm && searchTerm.trim()){
+    params.searchTerm = searchTerm
+  }
+  if (status !== undefined && status !== 'all') {
+    params.status = status;
+  }
   const response = await HttpClient.get<{
     success: boolean,
     message: string,
     data: CheckoutApiUsersResponse;
-  }>(url);
+  }>(url, { params });
   if(response.data && response.success && response.data){
     return response.data;
   }else{
@@ -87,6 +102,12 @@ export const getUser = async(
 //         `${prefix}/users/${id}`
 //     )
 // }
+
+export const resetUser = (id: string | number) => {
+    return HttpClient.patch<any, HttpResponse<UserProfile | null>>(
+        `${prefix}/reset/${id}`
+    )
+}
 
 export const deleteUser = async (
   id: string | number,

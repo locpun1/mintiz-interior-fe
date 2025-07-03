@@ -16,8 +16,9 @@ interface ProfileDataRequest {
   isRead: number
 }
 interface GetContactsParams {
-  limit?: number;
-  page?: number;
+  limit: number;
+  page: number;
+  searchTerm?: string,
 }
 
 interface PaginatedResponse<T> {
