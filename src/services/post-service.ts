@@ -13,7 +13,7 @@ interface GetPostsParams {
 }
 
 // Định nghĩa kiểu dữ liệu cho response trả về từ API
-type PostsResponse = PaginatedResponse<IPost>;
+export type PostsResponse = PaginatedResponse<IPost>;
 
 export const getPosts = (params: GetPostsParams) => {
   return HttpClient.get<any, HttpResponse<PostsResponse>>('/posts', { params });

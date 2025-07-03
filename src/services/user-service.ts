@@ -12,7 +12,7 @@ interface GetUsersParams {
   role?: 'admin' | 'employee';
 }
 
-type UsersResponse = PaginatedResponse<IUser>;
+export type UsersResponse = PaginatedResponse<IUser>;
 
 export const getUsers = (params: GetUsersParams) => {
   return HttpClient.get<any, HttpResponse<UsersResponse>>(`${prefix}`, { params });
