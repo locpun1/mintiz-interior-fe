@@ -2,7 +2,6 @@ import DialogComponent from "@/components/DialogComponent";
 import { UserProfile } from "@/types/user-types";
 import { getPathImage } from "@/utils/url";
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import React from "react";
 import avatar from "@/assets/images/users/default-avatar.jpg"
 import { getRoleLabel } from "@/utils/labelEnToVi";

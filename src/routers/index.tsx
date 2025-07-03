@@ -12,8 +12,6 @@ import AuthLayout from '@/layouts/Auth/AuthLayout';
 import DashboardLayout from '@/layouts/Dashboard';
 import Login from '@/views/Auth/Login';
 import LandingPageLayout from '@/layouts/LandingPage';
-import Manager from './Manager';
-import Staff from './Staff';
 import ChangePassword from '@/views/Auth/ChangePassword';
 
 // Home, AboutUs, News, Languages
@@ -28,19 +26,23 @@ const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDe
 
 // ManagementHome
 const HomeManager = Loadable(lazy(() => import('@/views/Manager/Home/index')));
+const ManagementAccount = Loadable(lazy(() => import('@/views/Manager/Account/index')));
+const ManagementCustomersInformation = Loadable(lazy(() => import('@/views/Manager/AccountCus/index')));
 
 
 const routes: RouteObject[] = [
   {
-    path: '/manager',
+    path: '/',
     element: (
       <ProtectedRoute>
         <DashboardLayout />
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <HomeManager /> }, 
-      Manager
+      { index: true, element: <Navigate to={'manager'} replace/> },
+      { path: 'manager', element: <HomeManager /> },
+      { path: 'user-account', element: <ManagementAccount /> },
+      { path: 'customer-info', element: <ManagementCustomersInformation /> },
     ],
   },
   {
