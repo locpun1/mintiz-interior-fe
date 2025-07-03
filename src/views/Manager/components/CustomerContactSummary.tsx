@@ -11,7 +11,8 @@ interface CustomerContactCardProps {
 const CustomerContactCard = ({ contact, handleClick }: CustomerContactCardProps) => (
     <Card variant="outlined" sx={{
         borderRadius: 3,
-        display: 'flex', gap: 2,
+        display: 'flex',
+        gap: 2,
         alignItems: 'center',
         p: 2,
         border: 'none',
