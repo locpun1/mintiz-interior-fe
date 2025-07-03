@@ -1,25 +1,28 @@
 import InputText from "@/components/InputText";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { Dayjs } from "dayjs";
-import { useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import { FormEvent, useState } from "react";
 import mintz_logo from "@/assets/images/users/logo.png";
 import CommonImage from "@/components/Image/index";
+import useNotification from "@/hooks/useNotification";
+import { sendInformation } from "@/services/contact-service";
 
 interface ProfileFormData {
-  full_name: string;
+  name: string;
   email: string;
-  phone_number: string;
+  phone: string;
   title: string;
-  content: string;
+  message: string;
 }
 
 const ContactConsultativeInfo: React.FC = () => {
-    const [errors, setErrors] = useState<Partial<Record<'phone_number' | 'email' , string>>>({});
+    const [errors, setErrors] = useState<Partial<Record<'name' | 'email' | 'phone'| 'title' | 'message' , string>>>({});
     const [formData, setFormData] = useState<ProfileFormData>({
-        full_name: '', email: '', phone_number: '', title: '',
-        content: '',
+        name: '', email: '', phone: '', title: '',
+        message: '',
     });
+    const notify = useNotification();
     const phoneRegex = /^(0|\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$/;
 
     const handleCustomInputChange = (name: string, value: string | null | Dayjs | number ) => {
@@ -31,8 +34,8 @@ const ContactConsultativeInfo: React.FC = () => {
                 [validName]: value, 
             }));
 
-            if (validName === 'email' || validName === 'phone_number') {
-                if(validName === 'phone_number' && typeof value === 'string'){
+            if (validName === 'email' || validName === 'phone' || validName === 'name' || validName === 'title' || validName === 'message') {
+                if(validName === 'phone' && typeof value === 'string'){
                     const phone = value.replace(/\s|-/g, '');
                     if (!/^\d+$/.test(phone)) {
                         setErrors(prev => ({
@@ -65,6 +68,7 @@ const ContactConsultativeInfo: React.FC = () => {
                         return;
                     }
                 }
+                
                 if(validName === 'email' && typeof value === 'string'){
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // chuẩn email đơn giản
                     if(!emailRegex.test(value)){
@@ -75,10 +79,11 @@ const ContactConsultativeInfo: React.FC = () => {
                         return;
                     }
                 }
-                if (errors[validName as 'email' | 'phone_number']) {
+
+                if (errors[validName as 'name' | 'email' | 'phone'| 'title' | 'message']) {
                     setErrors(prev => {
                         const newErrors = { ...prev };
-                        delete newErrors[validName as 'email' | 'phone_number'];
+                        delete newErrors[validName as 'name' | 'email' | 'phone'| 'title' | 'message'];
                         return newErrors;
                     });
                 }
@@ -87,6 +92,39 @@ const ContactConsultativeInfo: React.FC = () => {
             console.warn(`CustomInput called onChange with an unexpected name: ${name}`);
         }
     };
+
+    const validateForm = (): boolean => {
+        const newErrors: Partial<Record<'name' | 'email' | 'phone'| 'title' | 'message', string>> = {};
+        if(!formData.name.trim()) newErrors.name = 'Tên đầy đủ là bắt buộc';
+        if(!formData.email) newErrors.email = 'Email là bắt buộc';
+        if(!formData.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
+        if(!formData.title) newErrors.title = 'Tiêu đề không được để trống';
+        if(!formData.message) newErrors.message = 'Nội dung không được để trống';
+
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // True nếu không có lỗi
+    }
+
+    const handleSubmit = async() => {
+        if(!validateForm()){
+            return
+        }
+        const data = {
+            ...formData,
+            'createdAt': dayjs().toISOString(),
+            'updatedAt': dayjs().toISOString(),
+            'isRead':0
+        }
+        try {
+            const res = await sendInformation(data);
+            notify({ message: res.message, severity: 'success'})
+            setFormData({ name: '', email: '', phone: '', title: '', message: ''})
+        } catch (error: any) {
+            const errorMessage = ` Gửi thông tin thất bại ${error.message}`;
+            notify({ message: errorMessage, severity: 'error'})
+        }
+    }
 
     return(
         <Grid container spacing={2}>
@@ -122,7 +160,7 @@ const ContactConsultativeInfo: React.FC = () => {
                 </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 7}}>
-                <Box id="create-task-form" component='form'>
+                <Box id="create-task-form">
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12}}>
                             <Stack direction={{ xs: 'column', md: 'row'}} spacing={{ xs: 0, md: 2}} sx={{ width: { xs: '100%', md: '80%'} }}>
@@ -130,14 +168,16 @@ const ContactConsultativeInfo: React.FC = () => {
                                     <Typography variant="body2" fontWeight={600} gutterBottom sx={{ color: 'white'}}>Tên đầy đủ</Typography>
                                     <InputText
                                         label=""
-                                        name="full_name"
-                                        value={formData.full_name}
+                                        name="name"
+                                        value={formData.name}
                                         onChange={handleCustomInputChange}
                                         type="text"
                                         sx={{ mt: 0 }}
                                         margin="dense"
                                         placeholder="Nhập thông tin"
                                         from="from-contact"
+                                        error={!!errors.name}
+                                        helperText={errors.name}
                                     />
                                 </Box>
                                 <Box flexGrow={1}>
@@ -164,15 +204,15 @@ const ContactConsultativeInfo: React.FC = () => {
                                     <Typography variant="body2" fontWeight={600} gutterBottom sx={{ color: 'white'}}>Điện thoại</Typography>
                                     <InputText
                                         label=""
-                                        name="phone_number"
-                                        value={formData.phone_number}
+                                        name="phone"
+                                        value={formData.phone}
                                         onChange={handleCustomInputChange}
                                         type="text"
                                         sx={{ mt: 0}}
                                         margin="dense"
                                         placeholder="Nhập thông tin"
-                                        error={!!errors.phone_number}
-                                        helperText={errors.phone_number}
+                                        error={!!errors.phone}
+                                        helperText={errors.phone}
                                         from="from-contact"
                                     />
                                 </Box>
@@ -188,6 +228,8 @@ const ContactConsultativeInfo: React.FC = () => {
                                         margin="dense"
                                         placeholder="Nhập thông tin"
                                         from="from-contact"
+                                        error={!!errors.title}
+                                        helperText={errors.title}
                                     />
                                 </Box>
                             </Stack>
@@ -199,14 +241,16 @@ const ContactConsultativeInfo: React.FC = () => {
                                     rows={5}
                                     multiline
                                     label=""
-                                    name="content"
-                                    value={formData.content}
+                                    name="message"
+                                    value={formData.message}
                                     onChange={handleCustomInputChange}
                                     type="text"
                                     sx={{ mt: 0}}
                                     margin="dense"
                                     placeholder="Nhập thông tin"
                                     from="from-contact"
+                                    error={!!errors.message}
+                                    helperText={errors.message}
                                 />
                             </Stack>
                         </Grid>
@@ -227,6 +271,7 @@ const ContactConsultativeInfo: React.FC = () => {
                                             color: 'white'
                                         },
                                     }}
+                                    onClick={handleSubmit}
                                     >
                                     Gửi thông tin
                                 </Button>
