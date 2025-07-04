@@ -78,7 +78,7 @@ const Sidebar = (props: Props) => {
               >
                 <Logo />
               </Box>
-              <ProfileSection />
+              {!collapsed && <ProfileSection />}
               {sections.map((section, i) => (
                 <MenuSection key={i} pathname={pathname} {...section} />
               ))}

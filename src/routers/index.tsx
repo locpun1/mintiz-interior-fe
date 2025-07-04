@@ -1,65 +1,79 @@
-// Pages
+// src/routes/routes.tsx
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-import { Navigate, Outlet, useRoutes } from 'react-router-dom';
+import { Navigate, useRoutes } from 'react-router-dom';
 
-import Customers from './Customers';
-import Loadable from '@/components/Loadable';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import AuthGuard from '@/components/AuthGuard';
 import PublicRoute from '@/components/PublicRoute';
-
-import AuthLayout from '@/layouts/Auth/AuthLayout';
 import DashboardLayout from '@/layouts/Dashboard';
+import AuthLayout from '@/layouts/Auth/AuthLayout';
+import LandingPageLayout from '@/layouts/LandingPage';
 import ChangePassword from '@/views/Auth/ChangePassword';
-import ForgotPassword from '@/views/Auth/ForgotPassword';
-import Login from '@/views/Auth/Login';
-import Registration from '@/views/Auth/Registration';
+import Loadable from '@/components/Loadable';
 
-// Home
-const Home = Loadable(lazy(() => import('@/views/Home')));
+import managerRoutes from './Manager';
 
-// Error
+const Login = Loadable(lazy(() => import('@/views/Auth/Login')));
+const Home = Loadable(lazy(() => import('@/views/LandingPage/Home/index')));
+const AboutUs = Loadable(lazy(() => import('@/views/LandingPage/AboutUs/index')));
 const NotFound = Loadable(lazy(() => import('@/views/Errors/NotFound')));
 const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDenied')));
 
-// Auth
+// ManagementHome
+const HomeManager = Loadable(lazy(() => import('@/views/Manager/Home/index')));
+const ManagementAccount = Loadable(lazy(() => import('@/views/Manager/Account/index')));
+const ManagementCustomersInformation = Loadable(lazy(() => import('@/views/Manager/AccountCus/index')));
+
 
 const routes: RouteObject[] = [
+  // --- NHÁNH 1: CÁC TRANG ĐƯỢC BẢO VỆ (PRIVATE) ---
+  {
+    path: '/manager',
+    element: <AuthGuard />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: managerRoutes,
+      },
+      { path: 'user-account', element: <ManagementAccount /> },
+      { path: 'customer-info', element: <ManagementCustomersInformation /> },
+    ],
+  },
+  
+  // --- NHÁNH 2: CÁC TRANG CÔNG KHAI (PUBLIC) ---
   {
     path: '/',
-    element: (
-      <ProtectedRoute>
-        <DashboardLayout />
-      </ProtectedRoute>
-    ),
-    children: [{ index: true, element: <Home /> }, Customers],
-  },
-  {
-    path: 'auth',
-    element: (
-      <PublicRoute>
-        <AuthLayout />
-      </PublicRoute>
-    ),
+    element: <PublicRoute />,
     children: [
-      { index: true, element: <Navigate to={'login'} replace /> },
-      { path: 'login', element: <Login /> },
-      { path: 'registration', element: <Registration /> },
-      { path: 'forgot-password', element: <ForgotPassword /> },
-      { path: 'change-password', element: <ChangePassword /> },
+      {
+        path: 'auth',
+        element: <AuthLayout />,
+        children: [
+          { index: true, element: <Navigate to="login" replace /> },
+          { path: 'login', element: <Login /> },
+          { path: 'change-password', element: <ChangePassword /> },
+        ],
+      },
+      {
+        element: <LandingPageLayout />,
+        children: [
+          { path: 'home', element: <Home /> },
+          { path: 'about-us', element: <AboutUs /> },
+          // Nếu người dùng vào '/', mặc định hiển thị trang home
+          { index: true, element: <Navigate to="/home" replace /> },
+        ],
+      },
     ],
   },
-  {
-    path: '*',
-    element: <Outlet />,
-    children: [
-      { index: true, element: <NotFound /> },
-      { path: '*', element: <NotFound /> },
-    ],
-  },
+
+  // --- NHÁNH 3: CÁC TRANG LỖI (Nằm ngoài các layout chính) ---
   {
     path: '/403',
     element: <PermissionDenied />,
+  },
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ];
 

@@ -2,12 +2,27 @@ export const ROUTE_PATH = {
   HOME: '/',
   TO_PROFILE:'/profile',
   POSTS: '/posts',
-  USERS_MANAGEMENT: '/USERS_MANAGEMENT',
+  USERS_MANAGEMENT: '/user-account',
+  MY_PROFILE:'/customer-info',
 
   PRODUCT_CATEGORY: '/products/categories',
   PRODUCT_CATEGORY_CREATE: '/products/categories/create',
   PRODUCT_CATEGORY_UPDATE: '/products/categories/:id/update',
   PRODUCT_CATEGORY_DELETE: '/products/categories/delete',
+
+ // --- Manager (Dashboard) ---
+ MANAGE: 'manager', 
+ MANAGE_HOME: 'home', 
+ MANAGE_ACCOUNT: 'account', 
+ MANAGE_BLOG: 'blog', 
+ BLOG_CREATE: 'create', 
+
+  //Staff
+  STAFF:"staff",
+  STAFF_HOME:'home',
+  STAFF_ACCOUNT:'account-customer',
+  STAFF_BLOG:'blog',
+
 
   // Product
   PRODUCT_LISTS: '/products/lists',

@@ -1,4 +1,5 @@
 import {
+  ChangePasswordRequest,
   ForgotPasswordRequest,
   LoginRequest,
   LoginResponse,
@@ -8,7 +9,7 @@ import {
 } from '@/types/auth';
 import type { HttpResponse } from '@/types/common';
 import HttpClient from '@/utils/HttpClient';
-import { IUser } from '@/types/user';
+import { UserProfile } from '@/types/user-types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'; 
 const prefix = `${API_BASE_URL}/api/auth`;
@@ -18,7 +19,7 @@ export const signIn = (params: LoginRequest) => {
 };
 
 export const getCurrentUser = () => {
-  return HttpClient.get<HttpResponse<{success: boolean, data: IUser}>>(`${prefix}/me`);
+  return HttpClient.get<HttpResponse<{success: boolean, data: UserProfile}>>(`${prefix}/me`);
 };
 
 export const signUp = (params: LoginRequest) => {
@@ -47,5 +48,13 @@ export const forgotPassword = (params: ForgotPasswordRequest) => {
   return HttpClient.post<ForgotPasswordRequest, HttpResponse<ResetPasswordResponse>>(
     `${prefix}/forgot-password`,
     params,
+  );
+};
+
+export const changePassword = (data: ChangePasswordRequest) => {
+  if(!data) return;
+  return HttpClient.put<any, HttpResponse<ChangePasswordRequest>>(
+    `${prefix}/change-password`,
+    data,
   );
 };

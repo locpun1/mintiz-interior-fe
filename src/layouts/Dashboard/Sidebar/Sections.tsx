@@ -3,7 +3,6 @@
 import type { SvgIconComponent } from '@mui/icons-material';
 import { 
   HomeOutlined, 
-  PeopleOutline, 
   PostAdd, 
   ContactsOutlined,
   ManageAccountsOutlined, 
@@ -33,12 +32,12 @@ const Sections = (profile: IUser | null): Section[] => {
   const menuItems: SectionItem[] = [
     {
       title: 'Trang chủ',
-      path: ROUTE_PATH.HOME,
+      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}`,
       icon: HomeOutlined,
     },
     {
       title: 'Quản lý Bài viết',
-      path: ROUTE_PATH.POSTS,
+      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}`,
       icon: PostAdd,
     },
     {
@@ -53,7 +52,7 @@ const Sections = (profile: IUser | null): Section[] => {
   if (profile.role === 'admin') {
     accountItem = {
       title: 'Quản lý Tài khoản',
-      path: ROUTE_PATH.USERS_MANAGEMENT, 
+      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_ACCOUNT}`,
       icon: ManageAccountsOutlined,
     };
   } else { 

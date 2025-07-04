@@ -7,12 +7,13 @@ import DateTime from './DateTime';
 import { __BASEURL__ } from '@/config';
 import { getAccessToken, removeAccessToken, setAccessToken } from './AuthHelper';
 
-
+const accessToken = getAccessToken();
 const config: AxiosRequestConfig = {
   baseURL: __BASEURL__,
   headers: {
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json',
     TimeZone: DateTime.TimeZone(),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
   },
   withCredentials: true,
   timeout: 10 * 60 * 1000,
@@ -87,7 +88,7 @@ class Axios {
             removeAccessToken();
             // Chuyển hướng về trang đăng nhập
             // Cách tốt nhất là dispatch một action logout ở đây
-            window.location.href = '/login'; 
+            window.location.href = '/auth/login'; 
             
             return Promise.reject(refreshError);
           } finally {

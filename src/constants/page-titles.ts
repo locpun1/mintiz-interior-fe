@@ -1,30 +1,17 @@
 // src/constants/page-titles.ts
+import { ROUTE_PATH } from './routes'; 
 
-import { ROUTE_PATH } from './routes'; // Import các hằng số route của bạn
+const FULL_PATH = {
+  MANAGER_HOME:     `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}`,     
+  MANAGER_ACCOUNT:  `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_ACCOUNT}`, 
+  MANAGER_BLOG:     `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}`,     
+  BLOG_CREATE:      `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}/${ROUTE_PATH.BLOG_CREATE}`,
+}
 
-// Dùng Record<string, string> để đảm bảo key và value đều là chuỗi
 export const PAGE_TITLES: Record<string, string> = {
-  // --- Auth ---
-  [ROUTE_PATH.LOGIN]: 'Đăng nhập',
-  // [ROUTE_PATH.FORGOT_PASSWORD]: 'Quên mật khẩu',
 
-  // --- Dashboard ---
-  [ROUTE_PATH.HOME]: 'Dashboard',
+  [FULL_PATH.MANAGER_HOME]: 'Dashboard',
 
-  // --- Posts ---
-  [ROUTE_PATH.POSTS]: 'Quản lý Bài viết',
-  // [ROUTE_PATH.POST_CREATE]: 'Tạo bài viết mới',
-  // [ROUTE_PATH.POST_EDIT]: 'Chỉnh sửa bài viết',
-
-  // --- Contacts ---
-  [ROUTE_PATH.CONTACTS]: 'Quản lý Liên hệ',
-
-  // --- Users (Admin) ---
-  [ROUTE_PATH.USERS_MANAGEMENT]: 'Quản lý Tài khoản',
-
-  // --- Profile (Employee) ---
-  [ROUTE_PATH.MY_PROFILE]: 'Thông tin cá nhân',
-  
-  // --- Trang không tìm thấy ---
-  [ROUTE_PATH.NOT_FOUND]: '404 - Không tìm thấy trang',
+  [FULL_PATH.MANAGER_BLOG]: 'Quản lý Bài viết',
+  [FULL_PATH.BLOG_CREATE]: 'Quản lý bài viết/ Tạo bài viết mới/ Tạo bài đăng',
 };

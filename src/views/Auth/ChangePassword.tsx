@@ -4,18 +4,20 @@ import { ROUTE_PATH } from '@/constants/routes';
 import useBoolean from '@/hooks/useBoolean';
 import useNotification from '@/hooks/useNotification';
 import { changePasswordSchema } from '@/schemas/auth-schema';
-import { forgotPassword } from '@/services/auth-service';
+import { changePassword } from '@/services/auth-service';
+import { ChangePasswordRequest } from '@/types/auth';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Lock } from '@mui/icons-material';
+import { Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Button, TextField, Typography } from '@mui/material';
-import axios from 'axios';
+import { Alert, Box, IconButton, InputAdornment, Typography } from '@mui/material';
 import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import {  useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ID_USER } from './Login';
 
 interface IChangePasswordForm {
+  currentPassword?: string;
   password: string;
   confirmPassword: string;
 }
@@ -31,54 +33,54 @@ export default function ChangePassword() {
     resolver: yupResolver(changePasswordSchema),
   });
   const password = watch('password');
-  const [searchParams] = useSearchParams();
   const [_loading, setLoading] = useBoolean(false);
   const navigate = useNavigate();
-  const { t } = useTranslation('auth');
   const notify = useNotification();
   const [_hasErrors, setHasErrors] = useBoolean(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useBoolean(false);
+  const [showPassword, setShowPassword] = useBoolean(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useBoolean(false);
+  const userId = localStorage.getItem(ID_USER)
 
   useEffect(() => {
     if (password && password?.length === getValues('confirmPassword')?.length) {
       trigger('confirmPassword');
     }
   }, [password, trigger]);
-
-  const onSubmit = (values: IChangePasswordForm) => {
+  
+  const onSubmit = async(values: IChangePasswordForm) => {
     setLoading.on();
-    forgotPassword({
+    const body: ChangePasswordRequest = {
       password: values.password,
-      token: searchParams.get('token') || '',
-    })
-      .then((resp) => {
-        if (resp.statusCode === axios.HttpStatusCode.Ok) {
-          setHasErrors.off();
-          notify({
-            message: t('reset_password_successful'),
-            severity: 'success',
-          });
-          navigate(`/${ROUTE_PATH.AUTH}/${ROUTE_PATH.LOGIN}`);
-        } else {
-          throw new Error(resp.message);
-        }
+      is_default: 0,
+      user_id: userId ? Number(userId) : ''
+    }
+    try {
+      await changePassword(body)
+      notify({
+        message: 'Thay đổi mật khẩu thành công',
+        severity: 'success'
       })
-      .catch((err) => {
-        setHasErrors.on();
-      })
-      .finally(() => {
-        setLoading.off();
+      navigate(`/${ROUTE_PATH.AUTH}/${ROUTE_PATH.LOGIN}`);
+    } catch (error: any) {
+      notify({
+        message: `Thay đổi mật khẩu không thành công, ${error.message}`,
+        severity: 'error',
       });
+    }finally{
+        setLoading.off();
+    };
   };
 
   return (
-    <Page title='Change Password'>
+    <Page title='Mintz'>
       <Box
         component='form'
         onSubmit={handleSubmit(onSubmit)}
         sx={{ maxWidth: 400, margin: 'auto', mt: 4 }}
       >
-        <Typography variant='h4' component='h1' gutterBottom>
-          Change Password
+        <Typography textAlign='center' variant='h4' component='h1' gutterBottom>
+          Thay đổi mật khẩu
         </Typography>
         {_hasErrors && (
           <Alert variant='filled' severity='warning'>
@@ -87,15 +89,57 @@ export default function ChangePassword() {
         )}
         <ControllerTextField<IChangePasswordForm>
           controllerProps={{
+            name: 'currentPassword',
+            defaultValue: '',
+            control: control,
+          }}
+          textFieldProps={{
+            label: 'Mật khẩu hiện tại',
+            type: showCurrentPassword ? 'text' : 'password',
+            slotProps:{
+              input: {
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle current password visibility'
+                      onClick={() => setShowCurrentPassword.toggle()}
+                      edge='end'
+                    >
+                      {showCurrentPassword ? <VisibilityOff/> : <Visibility/>}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }
+            }
+          }}
+          prefixIcon={Lock}
+        />
+        <ControllerTextField<IChangePasswordForm>
+          controllerProps={{
             name: 'password',
             defaultValue: '',
             control: control,
           }}
           textFieldProps={{
-            label: 'Password',
-            type: 'password',
+            label: 'Mật khẩu mới',
+            type: showPassword ? 'text' : 'password',
             error: !!errors.password,
             helperText: errors.password?.message,
+            slotProps:{
+              input: {
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle current password visibility'
+                      onClick={() => setShowPassword.toggle()}
+                      edge='end'
+                    >
+                      {showPassword ? <VisibilityOff/> : <Visibility/>}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }
+            }
           }}
           prefixIcon={Lock}
         />
@@ -106,10 +150,25 @@ export default function ChangePassword() {
             control: control,
           }}
           textFieldProps={{
-            label: 'Confirm Password',
-            type: 'password',
+            label: 'Nhập lại mật khẩu',
+            type: showPasswordConfirm ? 'text' : 'password',
             error: !!errors.confirmPassword,
             helperText: errors.confirmPassword?.message,
+            slotProps:{
+              input: {
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle current password visibility'
+                      onClick={() => setShowPasswordConfirm.toggle()}
+                      edge='end'
+                    >
+                      {showPasswordConfirm ? <VisibilityOff/> : <Visibility/>}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }
+            }
           }}
           prefixIcon={Lock}
         />
@@ -120,7 +179,7 @@ export default function ChangePassword() {
           fullWidth
           sx={{ mt: 2 }}
         >
-          Change Password
+          Lưu
         </LoadingButton>
       </Box>
     </Page>
