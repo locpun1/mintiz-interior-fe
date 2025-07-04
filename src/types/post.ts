@@ -8,6 +8,7 @@ export interface IPost {
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
   author: IUser;
+  imageUrl: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -29,8 +29,8 @@ interface CustomInputProps {
   type: CustomInputType;
   placeholder?:string,
   name: string;
-  label: string;
-  value: string | Dayjs | null | number;
+  label?: string;
+  value?: string | Dayjs | null | number;
   maxDate?: Dayjs | undefined;
   onChange: (name: string, value: string | Dayjs | null | number) => void;
   error?: boolean;
@@ -71,7 +71,7 @@ const InputText: React.FC<CustomInputProps> = ({
   helperText,
   required = false,
   fullWidth = true,
-  margin = 'normal',
+  margin = 'none',
   variant = 'outlined',
   disabled = false,
   sx = {},
