@@ -113,14 +113,14 @@ const Profile = () => {
                   />
                 </ListItemButton>
                 <Divider />
-                {profile.role === ROLE.EMPLOYEE && (
+                {profile?.role === ROLE.EMPLOYEE && (
                   <>
                     <ListItemButton>
                       <ListItemIcon>
                         <EditOutlinedIcon />
                       </ListItemIcon>
                       <ListItemText
-                        onClick={() => navigate(ROUTE_PATH.TO_PROFILE)}
+                        onClick={() => navigate(`${ROUTE_PATH.TO_PROFILE}`)}
                         primary='Chỉnh sửa thông tin'
                         sx={{
                           '& .MuiTypography-root': {

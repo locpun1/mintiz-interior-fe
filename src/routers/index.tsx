@@ -30,16 +30,13 @@ const Profile = Loadable(lazy(() => import('@/views/Manager/Profile/index')));
 const routes: RouteObject[] = [
   // --- NHÁNH 1: CÁC TRANG ĐƯỢC BẢO VỆ (PRIVATE) ---
   {
-    path: '/manager',
+    path: '/manage',
     element: <AuthGuard />,
     children: [
       {
         element: <DashboardLayout />,
         children: managerRoutes,
-      },
-      { path: 'user-account', element: <ManagementAccount /> },
-      { path: 'customer-info', element: <ManagementCustomersInformation /> },
-      { path: 'profile', element: <Profile /> },
+      }
 
     ],
   },

@@ -1,9 +1,9 @@
 export const ROUTE_PATH = {
   HOME: '/',
-  TO_PROFILE:'/profile',
+  TO_PROFILE:'profile',
   POSTS: '/posts',
   USERS_MANAGEMENT: '/user-account',
-  MY_PROFILE:'/customer-info',
+  MY_PROFILE:'customer-info',
 
   PRODUCT_CATEGORY: '/products/categories',
   PRODUCT_CATEGORY_CREATE: '/products/categories/create',
@@ -11,7 +11,7 @@ export const ROUTE_PATH = {
   PRODUCT_CATEGORY_DELETE: '/products/categories/delete',
 
  // --- Manager (Dashboard) ---
- MANAGE: 'manager', 
+ MANAGE: 'manage', 
  MANAGE_HOME: 'home', 
  MANAGE_ACCOUNT: 'account', 
  MANAGE_BLOG: 'blog', 

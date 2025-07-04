@@ -14,6 +14,7 @@ import InputText from "@/components/InputText";
 import { UserProfile } from "@/types/user-types";
 import { updateAccount } from "@/services/user-service";
 import DialogConformEditAccount from "../Account/components/DialogConformEditAccount";
+import { IUser } from "@/types/user";
 
 interface DetailItemProps {
     label: string;
@@ -194,16 +195,16 @@ function Profile (){
         if(formData.avatar_url) data.append('avatar_url', formData.avatar_url);
         
         try {
-            const res = await updateAccount(userId, data)
+            const res = userId && await updateAccount(userId, data)
             if(res){
-                const updatedProfile = res.data;
+                const updatedProfile = res.data as any as IUser;
                 notify({ message: 'Cập nhật thông tin thành công!', severity: 'success' });
                 setSubmitSuccess(true)
                 dispatch(setProfile(updatedProfile))
                 setOpenDialogConfirmEditAccount(true)
                 setFormData({
-                    fullName: '', username: profile.username, email: '', address: '',
-                    role: getRoleLabel(profile.role), phone_number: '', avatar_url: null,
+                    fullName: '', username: profile ? profile.username : '', email: '', address: '',
+                    role: profile ? getRoleLabel(profile.role) : '', phone_number: '', avatar_url: null,
                 });
                 setIsEditMode(false)
                 setAvatarPreview(null);
@@ -427,8 +428,8 @@ function Profile (){
                                                     sx={{ border: '1px solid #1C1A1B', width: '150px', color: '#1C1A1B'}}
                                                     onClick={() => {
                                                         setFormData({
-                                                            fullName: '', username: profile.username, email: '', address: '',
-                                                            role: getRoleLabel(profile.role), phone_number: '', avatar_url: null,
+                                                            fullName: '', username: profile ? profile.username : '', email: '', address: '',
+                                                            role: profile ? getRoleLabel(profile.role) : '', phone_number: '', avatar_url: null,
                                                         });
                                                     }}
                                                     disabled={!isEditMode}

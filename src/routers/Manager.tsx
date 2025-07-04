@@ -8,6 +8,9 @@ const ManagementAccount = Loadable(lazy(() => import('@/views/Manager/Account/in
 const ManagementBlog = Loadable(lazy(() => import('@/views/Manager/Blog/index')));
 const CreatePost = Loadable(lazy(() => import('@/views/Manager/Blog/CreatePost')));
 
+const ManagementCustomersInformation = Loadable(lazy(() => import('@/views/Manager/AccountCus/index')));
+const Profile = Loadable(lazy(() => import('@/views/Manager/Profile/index')));
+
 const managerRoutes: RouteObject[] = [
   { index: true, element: <Navigate to={ROUTE_PATH.MANAGE_HOME} replace /> },
   { path: ROUTE_PATH.MANAGE_HOME, element: <ManagementHome /> },
@@ -20,6 +23,9 @@ const managerRoutes: RouteObject[] = [
       { path: ROUTE_PATH.BLOG_CREATE, element: <CreatePost /> },
     ],
   },
+  { path: ROUTE_PATH.MY_PROFILE, element: <ManagementCustomersInformation/>},
+  { path: ROUTE_PATH.TO_PROFILE, element: <Profile/>},
+
 ];
 
 export default managerRoutes;

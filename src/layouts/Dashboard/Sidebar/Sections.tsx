@@ -58,7 +58,7 @@ const Sections = (profile: IUser | null): Section[] => {
   } else { 
     accountItem = {
       title: 'Quản lý thông tin',
-      path: ROUTE_PATH.MY_PROFILE,
+      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MY_PROFILE}`,
       icon: AccountCircleOutlined,
     };
   }
