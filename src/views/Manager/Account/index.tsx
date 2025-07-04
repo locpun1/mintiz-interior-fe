@@ -182,23 +182,53 @@ const ManagementAccount: React.FC = () => {
     return(
         <Box p={2}>
             <Page title="Quản lý tài khoản">
-                {!openAddAccount && (
-                    <Box px={1.5}>
-                        {loading && (
-                            <Box display='flex' justifyContent='center' my={3}>
-                                <CircularProgress/>
+            {!openAddAccount && (
+                <Box px={1.5}>
+                    {loading && (
+                        <Box display='flex' justifyContent='center' my={3}>
+                            <CircularProgress/>
+                        </Box>
+                    )}
+                    {error && !loading && (
+                        <Alert severity="error" sx={{ my: 2}}>{error}</Alert>
+                    )}
+                    {!loading && !error && (
+                        <>
+                            <InputSearch
+                                initialValue={searchTerm}
+                                placeholder="Tìm kiếm"
+                                onSearch={handleSearch}
+                                style={{ width: {xs: '100%', md:'50%'}}}
+                            />
+                            <Box mt={2}>
+                                <FilterTabs DataStatusUser={DataStatusUser} viewMode={viewMode} onChange={setViewMode} />
                             </Box>
-                        )}
-                        {error && !loading && (
-                            <Alert severity="error" sx={{ my: 2}}>{error}</Alert>
-                        )}
-                        {!loading && !error && (
-                            <>
-                                <InputSearch
-                                    initialValue={searchTerm}
-                                    placeholder="Tìm kiếm"
-                                    onSearch={handleSearch}
-                                    style={{ width: {xs: '100%', md:'50%'}}}
+                            <Grid container spacing={1.5} pt={2}>
+                                <Grid size={{ xs:12, sm:6, md:4, lg:3}}>
+                                    <AddAccountCard handleAdd={handleAddAccount} />
+                                </Grid>
+                                {listUsers.length === 0 ? (
+                                    <Typography sx={{ mx: 2, mt: 3}} variant="h6">Không tồn tại bản ghi nào cả</Typography>
+                                ) : (
+                                    listUsers.map((user, index) => (
+                                    <Grid size={{ xs:12, sm:6, md:4, lg:3}} key={index}>
+                                        <UserCard
+                                            userProfile={user}
+                                            handleClick={handleClick}
+                                            handleDelete={handleOpenDelete}
+                                            handleEdit={handleOpenEdit}
+                                            handleReset={handleOpenReset}
+                                        />
+                                    </Grid>
+                                )))}
+                            </Grid> 
+                            <Box display='flex' justifyContent='center' alignItems='center'>
+                                <CustomPagination
+                                    count={total}
+                                    page={page}
+                                    rowsPerPage={rowsPerPage}
+                                    onPageChange={handlePageChange}
+                                    sx={{ mt: 1.5}}
                                 />
                                 <Box mt={2}>
                                     <FilterTabs DataStatusUser={DataStatusUser} viewMode={viewMode} onChange={setViewMode} />
@@ -230,7 +260,8 @@ const ManagementAccount: React.FC = () => {
                                         onPageChange={handlePageChange}
                                         sx={{ mt: 1.5}}
                                     />
-                                </Box>                        
+                                </Box> 
+                            </Box>                       
                             </>
                         )}
                                 
