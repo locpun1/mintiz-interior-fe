@@ -34,7 +34,8 @@ const DialogHeader = (props: Props) => {
       </Typography>
       <IconButton 
         handleFunt={onClose}
-        icon={<Close sx={{ mr:2}}/>}
+        icon={<Close sx={{ mr:2, color: '#1C1A1B'}}/>}
+        backgroundColor='white'
       />
       {description && <Typography variant='subtitle2'>{description}</Typography>}
     </Wrapper>

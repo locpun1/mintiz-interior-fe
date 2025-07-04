@@ -12,6 +12,7 @@ const DialogConformDeleteSuccess: React.FC<DialogConformDeleteSuccessProps> = (p
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
             isCenter={false}
         >
             <Typography fontWeight={500}>

@@ -30,6 +30,7 @@ const DialogDetailCustomerInfo: React.FC<DialogDetailCustomerInfoProps> = ({ ope
             dialogKey={open}
             handleClose={onClose}
             isActiveFooter={false}
+            isActiveHeader={false}
         >
             <Box p={2} width={{ xs: '100%', md: 380}} display='flex' flexDirection='column'>
                 <Grid container spacing={1}>

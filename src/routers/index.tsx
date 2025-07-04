@@ -23,6 +23,8 @@ const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDe
 const HomeManager = Loadable(lazy(() => import('@/views/Manager/Home/index')));
 const ManagementAccount = Loadable(lazy(() => import('@/views/Manager/Account/index')));
 const ManagementCustomersInformation = Loadable(lazy(() => import('@/views/Manager/AccountCus/index')));
+const Profile = Loadable(lazy(() => import('@/views/Manager/Profile/index')));
+
 
 
 const routes: RouteObject[] = [
@@ -37,6 +39,8 @@ const routes: RouteObject[] = [
       },
       { path: 'user-account', element: <ManagementAccount /> },
       { path: 'customer-info', element: <ManagementCustomersInformation /> },
+      { path: 'profile', element: <Profile /> },
+
     ],
   },
   

@@ -253,6 +253,7 @@ const DialogEditAccount: React.FC<DialogEditAccountProps> = ({ open, onClose, us
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
         >
             {loading && (
                 <Box display='flex' justifyContent='center' my={3}>

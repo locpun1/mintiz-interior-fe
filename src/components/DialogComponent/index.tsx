@@ -17,7 +17,8 @@ interface Props extends Omit<DialogProps, 'open' | 'fullScreen'> {
   customButtons?: ReactNode;
   hasError?: boolean,
   isActiveFooter?:boolean,
-  isCenter?:boolean
+  isCenter?:boolean,
+  isActiveHeader?:boolean
 }
 
 const DialogComponent = ({
@@ -31,12 +32,13 @@ const DialogComponent = ({
   hasError,
   isActiveFooter = true,
   isCenter=true,
+  isActiveHeader=true,
   ...rest
 }: Props) => {
   
   return (
     <DialogContainer {...rest} open={!!dialogKey} onClose={handleClose}>
-      {isActiveFooter && <DialogHeader onClose={handleClose} title={dialogTitle || ''} marginTop={2} />}
+      {isActiveHeader && <DialogHeader onClose={handleClose} title={dialogTitle || ''} marginTop={2} />}
       <DialogContent sx={{ textAlign: isActiveFooter || isCenter ? "" : "center", maxHeight: 'fit-content'}}>
         {/* <Box sx={{ height: {xs: hasError ? 800 : 500, md: hasError ? 420 : 350}, padding: 2, maxHeight:"fit-content" }}>{children}</Box> */}
         <Box sx={{ padding: 2}}>{children}</Box>

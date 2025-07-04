@@ -13,6 +13,7 @@ const DialogConformCreateAccount: React.FC<DialogConformCreateAccountProps> = (p
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
             isCenter={false}
         >
             <Typography fontWeight={500}>

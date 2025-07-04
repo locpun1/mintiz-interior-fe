@@ -12,6 +12,7 @@ const DialogConformEditAccount: React.FC<DialogConformEditAccountProps> = (props
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
             isCenter={false}
         >
             <Typography fontWeight={500}>
