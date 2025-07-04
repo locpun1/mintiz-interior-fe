@@ -23,19 +23,6 @@ import DialogOpenConfirmResetAccount from "./components/DialogOpenConfirmResetAc
 import DialogConfirmResetSuccess from "./components/DialogConfirmResetSuccess";
 import Page from "@/components/Page";
 
-const debounceFetchFile = debounce(
-  (
-    fn: (page: number, limit: number, status?: string | number, searchTerm?: string) => void,
-    page: number,
-    limit: number,
-    status?: string | number,
-    searchTerm?: string
-  ) => {
-    fn(page, limit, status, searchTerm);
-  },
-  500
-);
-
 export interface DataStatusUserProps {
     id: number | string;
     value: number | string,
@@ -100,11 +87,21 @@ const ManagementAccount: React.FC = () => {
         }
     },[])
 
+    const debounceGetUsers = useCallback(
+        debounce(
+            (currentPage: number, currentSize: number, status?: string | number, currentSearchTerm?: string) => {
+                getUsers(currentPage, currentSize, status, currentSearchTerm);
+            },
+            500
+        ),[getUsers]
+    );
+    
+
     useEffect(() => {
         if(searchTerm){
-            // debounceFetchFile(getUsers, page, rowsPerPage, viewMode, searchTerm)
-            getUsers(page, rowsPerPage, viewMode, searchTerm)
+            debounceGetUsers(page, rowsPerPage, viewMode, searchTerm)
         }else{
+            debounceGetUsers.cancel(); // huỷ mọi pending call
             getUsers(page, rowsPerPage, viewMode)
         }
     },[page, rowsPerPage, searchTerm, viewMode])
@@ -230,37 +227,6 @@ const ManagementAccount: React.FC = () => {
                                     onPageChange={handlePageChange}
                                     sx={{ mt: 1.5}}
                                 />
-                                <Box mt={2}>
-                                    <FilterTabs DataStatusUser={DataStatusUser} viewMode={viewMode} onChange={setViewMode} />
-                                </Box>
-                                <Grid container spacing={1.5} pt={2}>
-                                    <Grid size={{ xs:12, sm:6, md:4, lg:3}}>
-                                        <AddAccountCard handleAdd={handleAddAccount} />
-                                    </Grid>
-                                    {listUsers.length === 0 ? (
-                                        <Typography sx={{ mx: 2, mt: 3}} variant="h6">Không tồn tại bản ghi nào cả</Typography>
-                                    ) : (
-                                        listUsers.map((user, index) => (
-                                        <Grid size={{ xs:12, sm:6, md:4, lg:3}} key={index}>
-                                            <UserCard
-                                                userProfile={user}
-                                                handleClick={handleClick}
-                                                handleDelete={handleOpenDelete}
-                                                handleEdit={handleOpenEdit}
-                                                handleReset={handleOpenReset}
-                                            />
-                                        </Grid>
-                                    )))}
-                                </Grid> 
-                                <Box display='flex' justifyContent='center' alignItems='center'>
-                                    <CustomPagination
-                                        count={total}
-                                        page={page}
-                                        rowsPerPage={rowsPerPage}
-                                        onPageChange={handlePageChange}
-                                        sx={{ mt: 1.5}}
-                                    />
-                                </Box> 
                             </Box>                       
                             </>
                         )}

@@ -12,10 +12,17 @@ import { IUser } from "@/types/user";
 import useNotification from "@/hooks/useNotification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import useAuth from "@/hooks/useAuth";
+import { ROLE } from "@/constants/roles";
+import { Contact } from "@/types/contact-types";
+import {  getContacts } from "@/services/contact-service";
+import CustomerContact from "../components/CustomerContactSummary";
+import DialogDetailCustomerInfo from "../AccountCus/components/DetailCustomerInfo";
 
 const HomeDashboardManager: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [users, setUsers] = useState<IUser[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [pendingPosts, setPendingPosts] = useState<IPost[]>([]);
   const [dialog, setDialog] = useState<{
     open: boolean;
@@ -25,6 +32,10 @@ const HomeDashboardManager: React.FC = () => {
   const [rejectionReason, setRejectionReason] = useState('');
   const notify = useNotification();
   const queryClient = useQueryClient();
+  const { profile } = useAuth();
+
+  const [openDialogViewContact, setOpenDialogViewContact] = useState(false);
+  const [contactId, setIdContact] = useState<string | number>('');
 
   const handleSearch = (value: string) => {
     setSearchTerm(value.trim())
@@ -43,9 +54,37 @@ const HomeDashboardManager: React.FC = () => {
       notify({ severity: 'error', message: 'Tải dữ liệu dashboard thất bại' });
     }
   }, [notify]);
+
+  const fetchDashboardDataEmployee = useCallback(async () => {
+    try {
+      const [contactsResponse, postsResponse] = await Promise.all([
+        getContacts({ limit: 6, page: 0, searchTerm: searchTerm }),
+        getPosts({ status: 'pending', limit: 2, page: 1 })
+      ]);
+      setContacts(contactsResponse?.data?.contacts || []);
+      setPendingPosts(postsResponse?.data?.posts || []);
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+      notify({ severity: 'error', message: 'Tải dữ liệu dashboard thất bại' });
+    }
+  }, [notify]);
+  
+  const renderApiList = (role: string) => {
+    switch (role) {
+      case ROLE.EMPLOYEE:
+        fetchDashboardDataEmployee()
+        break;
+      default:
+        fetchDashboardData()
+        break;
+    }
+  }
+
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    if(profile){
+      renderApiList(profile.role)
+    }
+  }, [profile]);
 
   const reviewMutation = useMutation({
     mutationFn: (variables: { postId: number; status: 'approved' | 'rejected'; reason?: string }) =>
@@ -93,8 +132,13 @@ const HomeDashboardManager: React.FC = () => {
     handleCloseDialog();
   };
 
+  const handleOpenViewContact = (id: string | number) => {
+    setOpenDialogViewContact(true)
+    setIdContact(id)
+  }
+
   return (
-    <Box>
+    <Box p={2}>
       <InputSearch
         initialValue={searchTerm}
         placeholder="Tìm kiếm"
@@ -102,12 +146,26 @@ const HomeDashboardManager: React.FC = () => {
       />
       <Page title="Dashboard">
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <SummaryCard
-            title="Quản lý tài khoản"
-            seeMoreLink="/manager/account"
-          >
-            <AccountSummary users={users} />
-          </SummaryCard>
+          {profile?.role === ROLE.ADMIN && (
+            <Box my={1.5}>
+              <SummaryCard
+                title="Quản lý tài khoản"
+                seeMoreLink="/manager/account"
+              >
+                <AccountSummary users={users} />
+              </SummaryCard>
+            </Box>
+          )}
+          {profile?.role === ROLE.EMPLOYEE && (
+            <Box my={1.5}>
+              <SummaryCard
+                title="Quản lý thông tin"
+                seeMoreLink="/manage/customer-info"
+              >
+                <CustomerContact contacts={contacts} handleClick={handleOpenViewContact}/>
+              </SummaryCard>
+            </Box>
+          )}
           <SummaryCard
             title="Quản lý bài viết"
             seeMoreLink="/manager/blog"
@@ -132,6 +190,13 @@ const HomeDashboardManager: React.FC = () => {
         inputValue={rejectionReason}
         onInputChange={setRejectionReason}
       />
+      {openDialogViewContact && contactId && (
+        <DialogDetailCustomerInfo
+          open={openDialogViewContact}
+          onClose={() => { setOpenDialogViewContact(false)}}
+          contactId={contactId}
+        />
+      )}
     </Box>
   )
 }
