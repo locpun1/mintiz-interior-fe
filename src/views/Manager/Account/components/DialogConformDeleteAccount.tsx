@@ -13,6 +13,7 @@ const DialogConformDeleteAccount: React.FC<DialogConformDeleteAccountProps> = (p
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
             isCenter={false}
         >
             <Typography fontWeight={500}>

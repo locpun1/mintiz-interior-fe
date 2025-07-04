@@ -239,8 +239,11 @@ const InputText: React.FC<CustomInputProps> = ({
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                     border: from ? "1px solid grey" : "1px solid rgb(53, 50, 50)",
                 },
-                color: from ? 'white' : 'black',
+                color: from ? 'white' : 'black'
             }
+        }}
+        sx={{
+          ...sx,
         }}
       {...finalTextFieldProps}
     />

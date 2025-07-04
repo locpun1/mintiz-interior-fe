@@ -23,20 +23,21 @@ const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDe
 const HomeManager = Loadable(lazy(() => import('@/views/Manager/Home/index')));
 const ManagementAccount = Loadable(lazy(() => import('@/views/Manager/Account/index')));
 const ManagementCustomersInformation = Loadable(lazy(() => import('@/views/Manager/AccountCus/index')));
+const Profile = Loadable(lazy(() => import('@/views/Manager/Profile/index')));
+
 
 
 const routes: RouteObject[] = [
   // --- NHÁNH 1: CÁC TRANG ĐƯỢC BẢO VỆ (PRIVATE) ---
   {
-    path: '/manager',
+    path: '/manage',
     element: <AuthGuard />,
     children: [
       {
         element: <DashboardLayout />,
         children: managerRoutes,
-      },
-      { path: 'user-account', element: <ManagementAccount /> },
-      { path: 'customer-info', element: <ManagementCustomersInformation /> },
+      }
+
     ],
   },
   

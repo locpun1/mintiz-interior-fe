@@ -14,6 +14,7 @@ const DialogOpenConfirmResetAccount: React.FC<DialogOpenConfirmResetAccountProps
             handleClose={handleClose}
             isActiveFooter={false}
             isCenter={false}
+            isActiveHeader={false}
         >
             <Typography fontWeight={500}>
                 Xác nhận đặt lại mật khẩu cho nhân viên

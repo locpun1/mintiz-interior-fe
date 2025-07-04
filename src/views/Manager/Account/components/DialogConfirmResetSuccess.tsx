@@ -27,6 +27,7 @@ const DialogConfirmResetSuccess: React.FC<DialogConfirmResetSuccessProps> = (pro
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
             isCenter={false}
         >
             <Typography variant="body1" fontWeight={500}>
