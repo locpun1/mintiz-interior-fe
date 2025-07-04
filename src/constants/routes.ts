@@ -10,10 +10,12 @@ export const ROUTE_PATH = {
   PRODUCT_CATEGORY_UPDATE: '/products/categories/:id/update',
   PRODUCT_CATEGORY_DELETE: '/products/categories/delete',
 
-  //Manager
-  MANAGE:"/manager",
-  MANAGE_ACCOUNT:'/manager/account',
-  MANAGE_BLOG:'blog',
+ // --- Manager (Dashboard) ---
+ MANAGE: 'manager', 
+ MANAGE_HOME: 'home', 
+ MANAGE_ACCOUNT: 'account', 
+ MANAGE_BLOG: 'blog', 
+ BLOG_CREATE: 'create', 
 
   //Staff
   STAFF:"staff",

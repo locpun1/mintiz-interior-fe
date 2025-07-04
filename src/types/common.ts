@@ -17,6 +17,7 @@ export interface PaginationParams {
 }
 
 export interface HttpResponse<T = any> {
+  success: boolean;
   data: T | null;
   message: string;
   statusCode?: number;
