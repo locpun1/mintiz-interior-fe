@@ -33,7 +33,7 @@ const HomeDashboardManager: React.FC = () => {
   const fetchDashboardData = useCallback(async () => {
     try {
       const [usersResponse, postsResponse] = await Promise.all([
-        getUsers({ limit: 6, page: 1 }),
+        getUsers({ limit: 6, page: 1, status: 0 }),
         getPosts({ status: 'pending', limit: 2, page: 1 })
       ]);
       setUsers(usersResponse?.data?.users || []);
