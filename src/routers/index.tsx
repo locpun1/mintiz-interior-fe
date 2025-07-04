@@ -51,6 +51,7 @@ const routes: RouteObject[] = [
         children: [
           { index: true, element: <Navigate to="login" replace /> },
           { path: 'login', element: <Login /> },
+          { path: 'change-password', element: <ChangePassword /> },
         ],
       },
       {
