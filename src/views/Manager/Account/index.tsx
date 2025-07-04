@@ -1,6 +1,6 @@
 import InputSearch from "@/components/SearchBar";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import AddAccountCard from "./components/AddAccountCard";
 import UserCard from "./components/UserCard";
 import Grid from "@mui/material/Grid2";
@@ -87,13 +87,11 @@ const ManagementAccount: React.FC = () => {
         }
     },[])
 
-    const debounceGetUsers = useCallback(
-        debounce(
-            (currentPage: number, currentSize: number, status?: string | number, currentSearchTerm?: string) => {
-                getUsers(currentPage, currentSize, status, currentSearchTerm);
-            },
-            500
-        ),[getUsers]
+    const debounceGetUsers = useMemo(
+        () => debounce((currentPage: number, currentSize: number, status?: string | number, currentSearchTerm?: string) => {
+            getUsers(currentPage, currentSize, status, currentSearchTerm);
+        }, 500),
+        [getUsers]
     );
     
 

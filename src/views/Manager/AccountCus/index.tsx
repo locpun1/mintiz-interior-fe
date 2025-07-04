@@ -38,8 +38,8 @@ const CustomerInfomation: React.FC = () => {
         () => debounce((currentSearchTerm?: string) => {
             fetchContactData(currentSearchTerm);
         }, 500),
-    [fetchContactData]
-);
+        [fetchContactData]
+    );
 
     useEffect(() => {
         if(searchTerm){

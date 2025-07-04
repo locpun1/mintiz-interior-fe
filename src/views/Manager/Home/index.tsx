@@ -6,7 +6,7 @@ import SummaryCard from "../components/SummaryCard";
 import AccountSummary from "../components/AccountSummary";
 import PostSummary from "../components/PostSummary";
 import { IPost } from "@/types/post";
-import { getUsers } from "@/services/user-service";
+import { deleteUser, DeleteUserPayload, getUser, getUsers } from "@/services/user-service";
 import { getPosts, reviewPost } from "@/services/post-service";
 import { IUser } from "@/types/user";
 import useNotification from "@/hooks/useNotification";
@@ -18,6 +18,11 @@ import { Contact } from "@/types/contact-types";
 import {  getContacts } from "@/services/contact-service";
 import CustomerContact from "../components/CustomerContactSummary";
 import DialogDetailCustomerInfo from "../AccountCus/components/DetailCustomerInfo";
+import { UserProfile } from "@/types/user-types";
+import DialogDetailUser from "../Account/components/DialogDetailUser";
+import DialogEditAccount from "../Account/components/DialogEditAccount";
+import DialogConformDeleteAccount from "../Account/components/DialogConformDeleteAccount";
+import DialogConformDeleteSuccess from "../Account/components/DialogConformDeleteSuccess";
 
 const HomeDashboardManager: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -35,7 +40,14 @@ const HomeDashboardManager: React.FC = () => {
   const { profile } = useAuth();
 
   const [openDialogViewContact, setOpenDialogViewContact] = useState(false);
+  const [openDialogView, setOpenDialogView] = useState(false);
+  const [openDialogEdit, setOpenDialogEdit] = useState(false);
+  const [openDialogDelete, setOpenDialogDelete] = useState(false);
+  const [openDialogDeleteSuccess, setOpenDialogDeleteSuccess] = useState(false);
+
   const [contactId, setIdContact] = useState<string | number>('');
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [userId, setUserId] = useState<string | number>('');
 
   const handleSearch = (value: string) => {
     setSearchTerm(value.trim())
@@ -44,7 +56,7 @@ const HomeDashboardManager: React.FC = () => {
   const fetchDashboardData = useCallback(async () => {
     try {
       const [usersResponse, postsResponse] = await Promise.all([
-        getUsers({ limit: 6, page: 1, status: 0 }),
+        getUsers({ limit: 6, page: 1, status: 0, searchTerm: searchTerm }),
         getPosts({ status: 'pending', limit: 2, page: 1 })
       ]);
       setUsers(usersResponse?.data?.users || []);
@@ -137,6 +149,43 @@ const HomeDashboardManager: React.FC = () => {
     setIdContact(id)
   }
 
+  const handleOpenView = async(id: string | number) => {
+    try {
+      const res = await getUser(id);
+      const data = res as any as UserProfile;
+      setUser(data);
+      setOpenDialogView(true)
+    } catch (error: any) {
+      setUser(null)
+    }
+  }
+
+  const handleOpenDelete = (id: string | number) => {
+    setOpenDialogDelete(true);
+    setUserId(id);
+  }
+
+  const handleDelete = async() => {
+    try {
+      const data: DeleteUserPayload = {
+        is_deleted: 1
+      }
+      await deleteUser(userId, data);
+      setOpenDialogDelete(false);
+      setOpenDialogDeleteSuccess(true)
+    } catch (error: any) {
+      notify({
+        message: error.message,
+        severity: 'error'
+      })
+    }
+  }
+
+  const handleOpenEdit = (id: string | number) => {
+    setOpenDialogEdit(true)
+    setUserId(id);
+  }
+
   return (
     <Box p={2}>
       <InputSearch
@@ -152,7 +201,12 @@ const HomeDashboardManager: React.FC = () => {
                 title="Quản lý tài khoản"
                 seeMoreLink="/manager/account"
               >
-                <AccountSummary users={users} />
+                <AccountSummary 
+                  users={users} 
+                  handleOpenView={handleOpenView} 
+                  handleOpenDelete={handleOpenDelete}
+                  handleOpenEdit={handleOpenEdit}
+                />
               </SummaryCard>
             </Box>
           )}
@@ -195,6 +249,43 @@ const HomeDashboardManager: React.FC = () => {
           open={openDialogViewContact}
           onClose={() => { setOpenDialogViewContact(false)}}
           contactId={contactId}
+        />
+      )}
+      {openDialogView && user && (
+        <DialogDetailUser
+          open={openDialogView}
+          onClose={() => {
+            setOpenDialogView(false)
+          }}
+          userDetail={user}
+        />
+      )}
+      {openDialogEdit && (
+        <DialogEditAccount
+          open={openDialogEdit}
+          onClose={() => {
+            setOpenDialogEdit(false);
+            renderApiList(ROLE.ADMIN)
+          }}
+          userId={userId}
+        />
+      )}
+      {openDialogDelete && (
+        <DialogConformDeleteAccount
+          open={openDialogDelete}
+          handleClose={() => {
+            setOpenDialogDelete(false)
+          }}
+          handleAgree={handleDelete}
+        />
+      )}
+      {openDialogDeleteSuccess && (
+        <DialogConformDeleteSuccess
+          open={openDialogDeleteSuccess}
+          handleClose={() => {
+            setOpenDialogDeleteSuccess(false)
+            renderApiList(ROLE.ADMIN)
+          }}
         />
       )}
     </Box>
