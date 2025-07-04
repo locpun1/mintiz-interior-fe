@@ -1,226 +1,139 @@
 import Page from "@/components/Page";
 import InputSearch from "@/components/SearchBar";
 import { Box, Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SummaryCard from "../components/SummaryCard";
 import AccountSummary from "../components/AccountSummary";
 import PostSummary from "../components/PostSummary";
 import { IPost } from "@/types/post";
-import { deleteUser, DeleteUserPayload, getUser, getUsers } from "@/services/user-service";
-import { getPosts } from "@/services/post-service";
-import { Contact } from "@/types/contact-types";
-import { getContacts } from "@/services/contact-service";
-import useAuth from "@/hooks/useAuth";
-import { ROLE } from "@/constants/roles";
-import CustomerContact from "../components/CustomerContactSummary";
-import DialogDetailCustomerInfo from "../AccountCus/components/DetailCustomerInfo";
-import DialogEditAccount from "../Account/components/DialogEditAccount";
-import DialogConformDeleteAccount from "../Account/components/DialogConformDeleteAccount";
+import { getUsers } from "@/services/user-service";
+import { getPosts, reviewPost } from "@/services/post-service";
+import { IUser } from "@/types/user";
 import useNotification from "@/hooks/useNotification";
-import DialogConformDeleteSuccess from "../Account/components/DialogConformDeleteSuccess";
-import { UserProfile } from "@/types/user-types";
-import DialogDetailUser from "../Account/components/DialogDetailUser";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 const HomeDashboardManager: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [users, setUsers] = useState<IUser[]>([]);
-    const [pendingPosts, setPendingPosts] = useState<IPost[]>([]);
-    const [contacts, setContacts] = useState<Contact[]>([]);
-    const { profile} = useAuth();
-    const [contactId, setIdContact] = useState<string | number>('');
-    const [openDialogViewCus, setOpenDialogViewCus] = useState(false);
-    const [openEditAccount, setOpenEditAccount] = useState(false);
-    const [openDeleteAccount, setOpenDeleteAccount] = useState(false);
-    const [openDeleteSuccess, setOpenDeleteSuccess] = useState(false);
-    const [openDialogDetail, setOpenDialogDetail] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [idUser, setIdUser] = useState<string | number>('');
-    const notify = useNotification();
-    const [listUser, setListUser] = useState<UserProfile | null>(null);
-    
-    const handleSearch = (value: string) => {
-        setSearchTerm(value.trim())
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [pendingPosts, setPendingPosts] = useState<IPost[]>([]);
+  const [dialog, setDialog] = useState<{
+    open: boolean;
+    type: 'approve' | 'reject' | null;
+    postId: number | null;
+  }>({ open: false, type: null, postId: null });
+  const [rejectionReason, setRejectionReason] = useState('');
+  const notify = useNotification();
+  const queryClient = useQueryClient();
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value.trim())
+  }
+
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const [usersResponse, postsResponse] = await Promise.all([
+        getUsers({ limit: 6, page: 1 }),
+        getPosts({ status: 'pending', limit: 2, page: 1 })
+      ]);
+      setUsers(usersResponse?.data?.users || []);
+      setPendingPosts(postsResponse?.data?.posts || []);
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+      notify({ severity: 'error', message: 'Tải dữ liệu dashboard thất bại' });
     }
+  }, [notify]);
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-    const renderListApi = (role: string, searchTerm?: string) => {
-        switch (role) {
-            case ROLE.EMPLOYEE:
-                const fetchDashboardEmployeeData = async () => {
-                    try {
-                        const [contactsResponse, postsResponse] = await Promise.all([
-                            getContacts({ limit: 6, page: 0 }),
-                            getPosts({ status: 'pending', limit: 2, page: 1 }),
-                        ]);
-                        setContacts(contactsResponse?.data?.contacts || []);
-                        setPendingPosts(postsResponse?.data?.posts || []);
-                    } catch (error) {
-                        console.error("Failed to fetch dashboard data:", error);
-                    }
-                };
-                fetchDashboardEmployeeData();
-                break;
-            default:
-                const fetchDashboardAdminData = async () => {
-                    try {
-                        const [usersResponse, postsResponse] = await Promise.all([
-                            getUsers({ limit: 6, page: 1, status: 0, searchTerm: searchTerm }),
-                            getPosts({ status: 'pending', limit: 2, page: 1 }),
-                        ]);
-                        setUsers(usersResponse?.data?.users || []);
-                        setPendingPosts(postsResponse?.data?.posts || []);
-                    } catch (error) {
-                        console.error("Failed to fetch dashboard data:", error);
-                    }
-                };
+  const reviewMutation = useMutation({
+    mutationFn: (variables: { postId: number; status: 'approved' | 'rejected'; reason?: string }) =>
+      reviewPost(variables.postId, { status: variables.status, rejectionReason: variables.reason }),
+    onSuccess: (data, variables) => {
+      const successMessage = variables.status === 'approved'
+        ? `Đã chấp nhận bài viết`
+        : `Đã từ chối bài viết`;
+      notify({ severity: 'success', message: successMessage });
 
-                fetchDashboardAdminData();
-                break;
-        }
+      fetchDashboardData();
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+    onError: (error: any) => {
+      notify({ severity: 'error', message: error.message || 'Thao tác thất bại' });
     }
+  });
 
-    useEffect(() => {
-        if(profile){
-            if(searchTerm){
-               renderListApi(profile.role, searchTerm) 
-            }else{
-               renderListApi(profile.role) 
-            }
-        }
-    }, [profile, searchTerm]);
+  const handleApprove = (postId: number) => {
+    setDialog({ open: true, type: 'approve', postId });
+  };
 
-    const handleOpenDialogViewDetail = async(id: string | number) => {
-        setIdContact(id)
-        setOpenDialogViewCus(true)
+  const handleReject = (postId: number) => {
+    setRejectionReason('');
+    setDialog({ open: true, type: 'reject', postId });
+  };
+
+  const handleCloseDialog = () => {
+    setDialog({ open: false, type: null, postId: null });
+  };
+
+  const handleConfirmAction = () => {
+    if (!dialog.postId) return;
+
+    if (dialog.type === 'approve') {
+      reviewMutation.mutate({ postId: dialog.postId, status: 'approved' });
     }
-
-    const handleOpenEdit = (id: string | number) => {
-        setOpenEditAccount(true)
-        setIdUser(id)
+    else if (dialog.type === 'reject') {
+      if (!rejectionReason.trim()) {
+        notify({ severity: 'warning', message: 'Vui lòng nhập lý do từ chối.' });
+        return;
+      }
+      reviewMutation.mutate({ postId: dialog.postId, status: 'rejected', reason: rejectionReason });
     }
+    handleCloseDialog();
+  };
 
-    const handleOpenDelete = (id: string | number) => {
-        setOpenDeleteAccount(true)
-        setIdUser(id)
-    }
-
-    const handleDelete = async() => {
-        try {
-            const data: DeleteUserPayload = {
-                is_deleted: 1
-            }
-            await deleteUser(idUser, data);
-            setOpenDeleteAccount(false)
-            setOpenDeleteSuccess(true)
-        } catch (error: any) {
-            notify({
-                message: error.message,
-                severity: 'error' 
-            })
-        }
-    }
-
-    const handleClickDetail = async(id: string | number) => {
-        try {
-            const res = await getUser(id);
-            const data = res as any as UserProfile;
-            setListUser(data)
-            setOpenDialogDetail(true)
-        } catch (error) {
-            setListUser(null)
-        }
-    }
-
-    return (
-        <Box>
-            <Box p={2}>
-                <InputSearch
-                    initialValue={searchTerm}
-                    placeholder="Tìm kiếm"
-                    onSearch={handleSearch}
-                    style={{ width: { xs: '100%', md: '50%'}}}
-                />
-            </Box>
-            <Page title="Dashboard">
-                <Stack sx={{display:'flex',flexDirection:'column'}}>
-                    {profile.role === ROLE.ADMIN && (
-                        <Box p={1}>
-                            <SummaryCard
-                                title="Quản lý tài khoản"
-                                seeMoreLink="/user-account" 
-                            >
-                                <AccountSummary 
-                                    handleClickDetail={handleClickDetail} 
-                                    users={users} 
-                                    handleOpenEdit={handleOpenEdit} 
-                                    handleOpenDelete={handleOpenDelete} 
-                                />
-                            </SummaryCard>
-                        </Box>
-                    )}
-                    {profile.role === ROLE.EMPLOYEE && (
-                        <Box p={1}>
-                            <SummaryCard
-                                title="Quản lý thông tin"
-                                seeMoreLink="/customer-info"
-                            >
-                                <CustomerContact handleClick={handleOpenDialogViewDetail} contacts={contacts}/>
-                            </SummaryCard>
-                        </Box>
-                    )}
-                    <SummaryCard
-                        title="Quản lý bài viết"
-                        seeMoreLink="/manager/blog" 
-                    >
-                        <PostSummary pendingPosts={pendingPosts} />
-                    </SummaryCard>
-                </Stack>
-            </Page>
-            {openDialogViewCus && contactId && (
-                <DialogDetailCustomerInfo
-                    open={openDialogViewCus}
-                    onClose={() => { setOpenDialogViewCus(false)}}
-                    contactId={contactId}
-                />
-            )}
-            {openDialogDetail && listUser &&  (
-                <DialogDetailUser
-                    open={openDialogDetail}
-                    onClose={() => {
-                        setOpenDialogDetail(false)
-                    }}
-                    userDetail={listUser}
-                />
-            )}
-            {openEditAccount &&  (
-                <DialogEditAccount
-                    open={openEditAccount}
-                    onClose={() => {
-                        setOpenEditAccount(false)
-                        renderListApi(ROLE.ADMIN)
-                    }}
-                    userId={idUser}
-                />
-            )}
-            {openDeleteAccount && (
-                <DialogConformDeleteAccount
-                    open={openDeleteAccount}
-                    handleClose={() => {
-                        setOpenDeleteAccount(false)
-                    }}
-                    handleAgree={handleDelete}
-                />
-            )}
-            {openDeleteSuccess && (
-                <DialogConformDeleteSuccess
-                    open={openDeleteSuccess}
-                    handleClose={() => {
-                        setOpenDeleteSuccess(false)
-                        renderListApi(ROLE.ADMIN)
-                    }}
-                />
-            )}
+  return (
+    <Box>
+      <InputSearch
+        initialValue={searchTerm}
+        placeholder="Tìm kiếm"
+        onSearch={handleSearch}
+      />
+      <Page title="Dashboard">
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <SummaryCard
+            title="Quản lý tài khoản"
+            seeMoreLink="/manager/account"
+          >
+            <AccountSummary users={users} />
+          </SummaryCard>
+          <SummaryCard
+            title="Quản lý bài viết"
+            seeMoreLink="/manager/blog"
+          >
+            <PostSummary pendingPosts={pendingPosts}
+              onApprove={handleApprove}
+              onReject={handleReject} />
+          </SummaryCard>
         </Box>
-    )
+      </Page>
+      <ConfirmDialog
+        open={dialog.open}
+        onClose={handleCloseDialog}
+        onConfirm={handleConfirmAction}
+        isSubmitting={reviewMutation.isPending}
+        title={dialog.type === 'approve' ? 'Xác nhận duyệt bài viết' : 'Lý do từ chối'}
+        content={dialog.type === 'approve' ? 'Bạn có chắc chắn muốn chấp nhận bài viết này không?' : undefined}
+        confirmText={dialog.type === 'approve' ? 'Xác nhận' : 'Gửi báo cáo'}
+        confirmColor={dialog.type === 'approve' ? 'primary' : 'error'}
+        requiresInput={dialog.type === 'reject'}
+        inputLabel="Nhập lý do"
+        inputValue={rejectionReason}
+        onInputChange={setRejectionReason}
+      />
+    </Box>
+  )
 }
 
 export default HomeDashboardManager;
