@@ -16,14 +16,10 @@ import managerRoutes from './Manager';
 const Login = Loadable(lazy(() => import('@/views/Auth/Login')));
 const Home = Loadable(lazy(() => import('@/views/LandingPage/Home/index')));
 const AboutUs = Loadable(lazy(() => import('@/views/LandingPage/AboutUs/index')));
+const News = Loadable(lazy(() => import('@/views/LandingPage/News/index')));
 const NotFound = Loadable(lazy(() => import('@/views/Errors/NotFound')));
 const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDenied')));
 
-// ManagementHome
-const HomeManager = Loadable(lazy(() => import('@/views/Manager/Home/index')));
-const ManagementAccount = Loadable(lazy(() => import('@/views/Manager/Account/index')));
-const ManagementCustomersInformation = Loadable(lazy(() => import('@/views/Manager/AccountCus/index')));
-const Profile = Loadable(lazy(() => import('@/views/Manager/Profile/index')));
 
 
 
@@ -60,6 +56,7 @@ const routes: RouteObject[] = [
         children: [
           { path: 'home', element: <Home /> },
           { path: 'about-us', element: <AboutUs /> },
+          { path: 'news', element: <News /> },
           // Nếu người dùng vào '/', mặc định hiển thị trang home
           { index: true, element: <Navigate to="/home" replace /> },
         ],

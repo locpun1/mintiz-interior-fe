@@ -2,8 +2,8 @@ import draw from "@/assets/images/users/draw.png";
 import light from "@/assets/images/users/light.png";
 import team from "@/assets/images/users/team.png";
 import cooperate from "@/assets/images/users/cooperate.png";
-import image_service_1 from "@/assets/images/users/image_service_1.png";
-import image_service_2 from "@/assets/images/users/image_service_2.png";
+import image_service_1 from "@/assets/images/users/image-slide.jpeg";
+import image_service_2 from "@/assets/images/users/image-slide -1.jpeg";
 import image_service_3 from "@/assets/images/users/image_service_3.png";
 import image_service_4 from "@/assets/images/users/image_service_4.png";
 import image_service_5 from "@/assets/images/users/image_service_5.png";
@@ -88,61 +88,42 @@ export const CONTENT_MISSION = [
 export const CONTENT_SERVICE = [
     {
         id: 1,
-        stt: '01',
+        order: '01',
         title: 'Thiết kế Concept Nội Thât Khách sạn & Resort',
-        image: image_service_1,
-        content: [
-            "Lên ý tưởng tổng thể dựa trên phân khúc: 3 sao, 4 sao, 5 sao, Boutique Hotel, Resort, Villa Resort...",
-            "Tư vấn định hình phong cách: Modern, Indochine, Minimalist, Tropical, Contemporary...",
-            "Phác thảo moodboard, phối màu, vật liệu định hướng",
-        ],
+        image_url: image_service_1,
+        content: "Lên ý tưởng tổng thể dựa trên phân khúc: 3 sao, 4 sao, 5 sao, Boutique Hotel, Resort, Villa Resort...\nTư vấn định hình phong cách: Modern, Indochine, Minimalist, Tropical, Contemporary...\nPhác thảo moodboard, phối màu, vật liệu định hướng",
         isReverse: true, 
     },
     {
         id: 2,
-        stt: '02',
+        order: '02',
         title: 'Thiết kế Layout Công Năng',
-        image: image_service_2,
-        content: [
-            'Bố trí không gian tối ưu: phòng ngủ, sảnh, nhà hàng, khu tiện ích.',
-            'Đảm bảo luồng giao thông nội bộ thuận tiện, phù hợp vận hành khách sạn.',
-            'Tối ưu hóa diện tích sử dụng '
-        ],
+        image_url: image_service_2,
+        content: 'Bố trí không gian tối ưu: phòng ngủ, sảnh, nhà hàng, khu tiện ích.\nĐảm bảo luồng giao thông nội bộ thuận tiện, phù hợp vận hành khách sạn.\nTối ưu hóa diện tích sử dụng ',
         isReverse: false, 
     },
     {
         id: 3,
-        stt: '03',
+        order: '03',
         title: 'Diễn Họa 3D Phối Cảnh Nội Thất',
-        image: image_service_3,
-        content: [
-            'Hình ảnh 3D chân thực, sát thực tế thi công.',
-            'Giúp chủ đầu tư dễ dàng hình dung tổng thể trước khi triển khai.',
-            'Hỗ trợ điều chỉnh sớm các chi tiết không hợp lý'],
+        image_url: image_service_3,
+        content: 'Hình ảnh 3D chân thực, sát thực tế thi công.\nGiúp chủ đầu tư dễ dàng hình dung tổng thể trước khi triển khai.\nHỗ trợ điều chỉnh sớm các chi tiết không hợp lý',
         isReverse: true, 
     },
     {
         id: 4,
-        stt: '04',
+        order: '04',
         title: 'Hồ Sơ Kỹ Thuật Thi Công Nội Thất Khách Sạn',
-        image: image_service_4,
-        content:[
-            'Triển khai đầy đủ các bản vẽ kỹ thuật: mặt bằng chi tiết, triển khai đồ nội thất rời – nội thất cố định.',
-            'Phù hợp quy chuẩn xây dựng & dễ dàng cho nhà thầu thi công.',
-            'Tư vấn phối hợp các hạng mục: nội thất – điện – nước – HVAC'
-        ],
+        image_url: image_service_4,
+        content:'Triển khai đầy đủ các bản vẽ kỹ thuật: mặt bằng chi tiết, triển khai đồ nội thất rời – nội thất cố định.\nPhù hợp quy chuẩn xây dựng & dễ dàng cho nhà thầu thi công.\nTư vấn phối hợp các hạng mục: nội thất – điện – nước – HVAC',
         isReverse: false, 
     },
     {
         id: 5,
-        stt: '05',
+        order: '05',
         title: 'Tư Vấn Vật Liệu & Thiết Bị Nội Thất Khách Sạn',
-        image: image_service_5,
-        content: [
-            'Lựa chọn vật liệu bền, đẹp, phù hợp khí hậu Việt Nam.',
-            'Đề xuất các giải pháp tiết kiệm chi phí mà vẫn đảm bảo thẩm mỹ.',
-            'Gợi ý thiết bị nội thất đồng bộ (furniture package cho khách sạn)'
-        ],
+        image_url: image_service_5,
+        content: 'Lựa chọn vật liệu bền, đẹp, phù hợp khí hậu Việt Nam.\nĐề xuất các giải pháp tiết kiệm chi phí mà vẫn đảm bảo thẩm mỹ.\nGợi ý thiết bị nội thất đồng bộ (furniture package cho khách sạn)',
         isReverse: true, 
     }
 ]

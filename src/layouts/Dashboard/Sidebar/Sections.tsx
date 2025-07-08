@@ -6,11 +6,13 @@ import {
   PostAdd, 
   ContactsOutlined,
   ManageAccountsOutlined, 
-  AccountCircleOutlined  
+  AccountCircleOutlined,  
+  Settings
 } from '@mui/icons-material';
 
 import { ROUTE_PATH } from '@/constants/routes';
 import type { IUser } from '@/types/user';
+import { ROLE } from '@/constants/roles';
 
 export interface SectionItem {
   title: string;
@@ -47,23 +49,32 @@ const Sections = (profile: IUser | null): Section[] => {
     }
   ];
 
-  let accountItem: SectionItem;
+  let accountItem: SectionItem[];
 
   if (profile.role === 'admin') {
-    accountItem = {
-      title: 'Quản lý Tài khoản',
-      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_ACCOUNT}`,
-      icon: ManageAccountsOutlined,
-    };
+    accountItem = [
+      {
+        title: 'Quản lý Tài khoản',
+        path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_ACCOUNT}`,
+        icon: ManageAccountsOutlined,
+      },
+      {
+        title: 'Quản lý Hình ảnh, Dịch vụ',
+        path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_SETTINGS}`,
+        icon: Settings
+      }
+    ];
   } else { 
-    accountItem = {
-      title: 'Quản lý thông tin',
-      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MY_PROFILE}`,
-      icon: AccountCircleOutlined,
-    };
+    accountItem = [
+      {
+        title: 'Quản lý thông tin',
+        path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MY_PROFILE}`,
+        icon: AccountCircleOutlined,
+      }
+    ];
   }
   
-  menuItems.splice(1, 0, accountItem);
+  menuItems.splice(1, 0, ...accountItem);
 
   return [
     {

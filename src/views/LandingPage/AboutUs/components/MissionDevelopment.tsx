@@ -1,10 +1,40 @@
-import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
-import React from "react";
+import { Box, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid2'
-import { CONTENT_MISSION, CONTENT_SERVICE } from "@/constants/contentAbout";
+import { CONTENT_MISSION } from "@/constants/contentAbout";
 import CommonImage from "@/components/Image/index";
+import { IServices } from "@/types/settings";
+import { getServices } from "@/services/settings-service";
+import { getPathImage } from "@/utils/url";
+
+interface ServicesData extends IServices{
+    order: number | string,
+    isReverse: boolean
+}
 
 const MissionDevelopment: React.FC = () => {
+    const page = 0;
+    const rowsPerPage = 10
+    const [services, setServices] = useState<IServices[]>([]);
+
+    useEffect(() => {
+        const fetchServices = async() => {
+            const res = await getServices({ page: page, size: rowsPerPage});
+            const data = res.data?.services as any as IServices[];
+            const newData: ServicesData[] = data?.map(
+                (service, index) => {
+                    const numericId = Number(service.id);
+                    return {
+                        ...service,
+                        order: String(index + 1).padStart(2, '0'),
+                        isReverse: !isNaN(numericId) && numericId % 2 !== 0 //true nếu là số lẻ
+                    }
+                }
+            )
+            setServices(newData);
+        }
+        fetchServices()
+    }, [page, rowsPerPage])
     return (
         <Box
             sx={{
@@ -46,14 +76,14 @@ const MissionDevelopment: React.FC = () => {
                 })}
             </Grid>
             <Typography sx={{ borderTop: '2px solid white', py: 1, mt: 4}} variant="h5" fontWeight={600}>Dịch vụ của chúng tôi</Typography>
-            {CONTENT_SERVICE.map((content, index) => {
+            {services.slice(0,5).map((content, index) => {
                 return(
                     <Grid key={index} sx={{ mt: 3}} container spacing={4} direction={ content.isReverse === true ? 'row-reverse' : 'row'}>
                         <Grid size={{ xs: 12, md: 6}}>
                             <CommonImage
-                                src={content.image}
+                                src={getPathImage(content.image_url)}
                                 sx={{
-                                    width: { xs: '100%', md: '100%'},
+                                    width: '100%',
                                     height: { xs: 200, md: 300 },
                                     borderRadius: 2
                                 }}
@@ -62,17 +92,16 @@ const MissionDevelopment: React.FC = () => {
                         <Grid size={{ xs: 12, md: 6}}>
                             <Box display='flex' flexDirection='row' gap={1}>
                                 <Typography variant="h4" sx={{ fontWeight: 700}}>
-                                    {content.stt}
+                                    {content.order}
                                 </Typography>
                                 <Typography variant="h6" sx={{ fontWeight: 400, whiteSpace: 'normal', wordBreak: 'break-word', mt: { xs: 0, md: 0.5} }}>
                                     {content.title}
                                 </Typography>
                             </Box>
-                            {content.content.map((item, idx) => {
+                            {content.content.split('\n').map((line, index) => {
+                                const newLine = line.replace('/^\s*[-*~>]/', '•');
                                 return (
-                                    <Stack key={idx} direction='column'>
-                                        <Typography sx={{ whiteSpace: 'normal', wordBreak: 'break-word',fontSize: {xs: '13px', md: '15px'} }}>{`• ${item}`}</Typography>
-                                    </Stack>
+                                    <Typography key={index} sx={{ whiteSpace: 'normal', wordBreak: 'break-word',fontSize: {xs: '13px', md: '15px'} }}>{`${newLine.trim()}`}</Typography>   
                                 )
                             })}
                         </Grid>

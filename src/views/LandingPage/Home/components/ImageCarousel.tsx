@@ -1,126 +1,167 @@
 import { Box, IconButton, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import slide_image_1 from "@/assets/images/users/slide-image - 1.jpg";
-import slide_image_2 from "@/assets/images/users/slide-image-2.jpg";
-import slide_image_3 from "@/assets/images/users/home-image.png";
-import slide_image_4 from "@/assets/images/users/slide-image-3.jpg";
-import slide_image_5 from "@/assets/images/users/slide-image-4.jpg";
-
 import { FiberManualRecord } from "@mui/icons-material";
+import { IImageSlide } from "@/types/settings";
+import { getSlides } from "@/services/settings-service";
+import { getPathImage } from "@/utils/url";
+import image_slide from '@/assets/images/users/image-slide.jpeg';
+import image_slide_1 from '@/assets/images/users/image-slide -1.jpeg';
 
-const images = [
-    {id: 1, url: `${slide_image_1}`},
-    {id: 2, url: `${slide_image_2}`},
-    {id: 3, url: `${slide_image_3}`},
-    {id: 4, url: `${slide_image_4}`},
-    {id: 5, url: `${slide_image_5}`},
+interface SrcSetWidth extends IImageSlide{
+    srcSet1200: string,
+    srcSet768: string
+}
+
+const fixedImages: SrcSetWidth[] = [
+    {id: 1, name: 'image_slide', url: `${image_slide}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide_1}` },
+    {id: 2, name: 'image_slide_1', url: `${image_slide_1}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide_1}`},
 
 ]
 
 const ImageCarousel: React.FC = () => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [prevIndex, setPrevIndex] = useState(0);
-    const [fade, setFade] = useState(false);
-    const totalSlides = images.length;
+  const [images, setImages] = useState<SrcSetWidth[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(0);
+  const [fade, setFade] = useState(false);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const nextIndex = (currentIndex + 1) % totalSlides;
-            setPrevIndex(currentIndex);
-            setCurrentIndex(nextIndex);
-            setFade(true);
-        },5000); // chuyển ảnh mỗi 5 giây
+  useEffect(() => {
+    const fetchSlides = async () => {
+      const res = await getSlides({ size: rowsPerPage, page: page});
+      const data = res.data?.slides as any as IImageSlide[];
+      const newData: SrcSetWidth[] = data.map(
+        (slide) => ({
+          id: slide.id,
+          name: slide.name,
+          url: getPathImage(slide.url),
+          createdAt: slide.createdAt,
+          updatedAt: slide.updatedAt,
+          srcSet1200: getPathImage(slide.url),
+          srcSet768: getPathImage(slide.url),
+        })
+      )
+      setImages(newData)
+    }
+    fetchSlides()
+  }, [rowsPerPage, page])
 
-        return () =>  clearInterval(interval); // clear khi component bị hủy;
-    }, [currentIndex,totalSlides]);
+  const displayImages = images.length > 0 ? images : fixedImages;
+  const totalSlides = displayImages.length;
 
-    
-    const handleDotClick = (index: number) => {
-        setPrevIndex(currentIndex);
-        setCurrentIndex(index);
-        setFade(true);
-    };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % totalSlides;
+      setPrevIndex(currentIndex);
+      setCurrentIndex(nextIndex);
+      setFade(true);
+    }, 5000);
 
-    useEffect(() => {
+    return () => clearInterval(interval);
+  }, [currentIndex, totalSlides]);
+
+  useEffect(() => {
     if (fade) {
-      const timeout = setTimeout(() => {
-        setFade(false);
-      }, 500); // thời gian giống transition
+      const timeout = setTimeout(() => setFade(false), 500);
       return () => clearTimeout(timeout);
     }
-    }, [fade]);
+  }, [fade]);
 
-    return(
-        <Box 
-            sx={{ 
-                position: 'relative', 
-                width: "100vw", // Tràn full chiều ngang
-                flexGrow: 1, 
-                overflow: "hidden",
-                height: {xs: 450, md: 600},
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: "100vw",
+        overflow: "hidden",
+        height: { xs: 450, md: 600 },
+      }}
+    >
+      {displayImages.length > 0 && (
+        <>
+          {/* Layer chứa ảnh trước */}
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              opacity: fade ? 0 : 1,
+              transition: "opacity 0.5s ease-in-out",
+              zIndex: 1,
             }}
-        >
-        {/* Layer chứa 2 ảnh chồng nhau */}
-            <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
-                {/* Ảnh cũ */}
-                <Box
-                sx={{
-                    backgroundImage: `url(${images[prevIndex].url})`,
-                    backgroundSize: "100% 100%",
-                    backgroundPosition: "center",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    transition: "opacity 0.5s ease-in-out",
-                    opacity: fade ? 0 : 1,
-                    zIndex: 1,
+          >
+            <picture>
+              <source media="(min-width: 1200px)" srcSet={displayImages[prevIndex]?.srcSet1200} />
+              <source media="(min-width: 768px)" srcSet={displayImages[prevIndex]?.srcSet768} />
+              <img
+                src={displayImages[prevIndex].url}
+                alt={`Slide ${prevIndex}`}
+                style={{ 
+                  width: "100%", 
+                  height: "100%", 
+                  objectFit: "fill" 
                 }}
-                />
-                {/* Ảnh mới */}
-                <Box
-                sx={{
-                    backgroundImage: `url(${images[currentIndex].url})`,
-                    backgroundSize: "100% 100%",
-                    backgroundPosition: "center",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    transition: "opacity 0.5s ease-in-out",
-                    opacity: fade ? 1 : 0,
-                    zIndex: 2,
-                }}
-                />
-            </Box>
-            {/* Chấm tròn điều hướng */}
-            <Box 
-                sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    width: "100%",
-                    margin: 'auto',
-                    zIndex: 3, // Quan trọng: đảm bảo nằm trên 2 ảnh
-                }}
-            >
-                <Stack direction='row' justifyContent='center' sx={{ mt: 1}}>
-                    {images.map((img, index) => (
-                        <IconButton
-                            key={img.id}
-                            onClick={() => handleDotClick(index)}
-                            size="small"
-                            sx={{ color: currentIndex === index ? 'black' : 'grey.400'}}
-                        >
-                            <FiberManualRecord fontSize="small"/>
-                        </IconButton>
-                    ))}
-                </Stack>
-            </Box>
+              />
+            </picture>
+          </Box>
 
-        </Box>
-    )
-}
+          {/* Layer chứa ảnh mới */}
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              opacity: fade ? 1 : 0,
+              transition: "opacity 0.5s ease-in-out",
+              zIndex: 2,
+            }}
+          >
+            <picture>
+              <source media="(min-width: 1200px)" srcSet={displayImages[currentIndex]?.srcSet1200} />
+              <source media="(min-width: 768px)" srcSet={displayImages[currentIndex]?.srcSet768} />
+              <img
+                src={displayImages[currentIndex].url}
+                alt={`Slide ${currentIndex}`}
+                style={{ 
+                  width: "100%", 
+                  height: "100%", 
+                  objectFit: "cover" 
+                }}
+              />
+            </picture>
+          </Box>
+
+          {/* Chấm điều hướng */}
+          {displayImages.length > 1 && (
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                zIndex: 3,
+              }}
+            >
+              <Stack direction="row" justifyContent="center" sx={{ mt: 1 }}>
+                {displayImages.map((img, index) => (
+                  <IconButton
+                    key={img.id}
+                    onClick={() => {
+                      setPrevIndex(currentIndex);
+                      setCurrentIndex(index);
+                      setFade(true);
+                    }}
+                    size="small"
+                    sx={{ color: currentIndex === index ? "black" : "grey.400" }}
+                  >
+                    <FiberManualRecord fontSize="small" />
+                  </IconButton>
+                ))}
+              </Stack>
+            </Box>
+          )}
+        </>
+      )}
+
+    </Box>
+  );
+};
 
 export default ImageCarousel;
+

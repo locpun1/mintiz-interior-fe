@@ -1,7 +1,7 @@
 import InputSearch from "@/components/SearchBar";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import AddAccountCard from "./components/AddAccountCard";
+import AddAccountCard from "./components/AddCard";
 import UserCard from "./components/UserCard";
 import Grid from "@mui/material/Grid2";
 import { UserProfile } from "@/types/user-types";
@@ -161,7 +161,6 @@ const ManagementAccount: React.FC = () => {
     const handleReset = async() => {
         try {
             const res = await resetUser(idUser);
-            console.log("res: ", res);
             const data = res.data as any as UserProfile;
             setUser(data);
             setOpenResetAccount(false)
@@ -193,14 +192,13 @@ const ManagementAccount: React.FC = () => {
                                 initialValue={searchTerm}
                                 placeholder="Tìm kiếm"
                                 onSearch={handleSearch}
-                                style={{ width: {xs: '100%', md:'50%'}}}
                             />
                             <Box mt={2}>
-                                <FilterTabs DataStatusUser={DataStatusUser} viewMode={viewMode} onChange={setViewMode} />
+                                <FilterTabs data={DataStatusUser} viewMode={viewMode} onChange={setViewMode} />
                             </Box>
                             <Grid container spacing={1.5} pt={2}>
                                 <Grid size={{ xs:12, sm:6, md:4, lg:3}}>
-                                    <AddAccountCard handleAdd={handleAddAccount} />
+                                    <AddAccountCard title="Thêm tài khoản" handleAdd={handleAddAccount} />
                                 </Grid>
                                 {listUsers.length === 0 ? (
                                     <Typography sx={{ mx: 2, mt: 3}} variant="h6">Không tồn tại bản ghi nào cả</Typography>

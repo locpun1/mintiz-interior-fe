@@ -103,8 +103,12 @@ export type ErrorResponse = {
 export interface PaginatedResponse<T> {
   users?: T[]; // Dùng users hoặc tên phù hợp
   posts?: T[];
+  slides?: T[];
+  services?: T[];
   totalPages: number;
   currentPage: number;
   totalUsers?: number;
   totalPosts?: number;
+  totalSlides?: number;
+  totalServices?: number;
 }
