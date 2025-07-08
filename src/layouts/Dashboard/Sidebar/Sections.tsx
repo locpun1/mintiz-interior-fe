@@ -42,11 +42,11 @@ const Sections = (profile: IUser | null): Section[] => {
       path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}`,
       icon: PostAdd,
     },
-    {
-        title: 'Đăng xuất',
-        path: ROUTE_PATH.CONTACTS,
-        icon: ContactsOutlined,
-    }
+    // {
+    //     title: 'Đăng xuất',
+    //     path: `/${ROUTE_PATH.AUTH}/${ROUTE_PATH.LOGOUT}`,
+    //     icon: ContactsOutlined,
+    // }
   ];
 
   let accountItem: SectionItem[];
