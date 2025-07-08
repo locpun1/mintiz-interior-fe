@@ -130,7 +130,9 @@ class Axios {
     return new Promise((resolve, reject) => {
       this.Instance.post<D, AxiosResponse<R>>(url, data, rest)
         .then((response) => resolve(integrity ? response : response.data))
-        .catch((error: AxiosError) => reject(error.response?.data));
+        .catch((error: AxiosError) => {
+          reject(error.response?.data || error)
+        });
     });
   }
 

@@ -36,7 +36,7 @@ const AccountCard = ({ user, handleOpenEdit, handleOpenDelete, handleOpenView }:
           <IconButton onClick={(e) => {e.stopPropagation(); user.id && handleOpenDelete(user.id)}} size="small" color="error"><DeleteIcon fontSize="small" /></IconButton>
         </Stack>
       </Box>
-      <Typography variant="body2" color="text.secondary">Email: {user.username}</Typography>
+      <Typography variant="body2" color="text.secondary">Username: {user.username}</Typography>
       <Typography variant="body2" color="text.secondary">Pass: ********</Typography>
     </Box>
 

@@ -30,6 +30,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { removeAccessToken } from '@/utils/AuthHelper';
 import DialogChangePassword from '@/views/Manager/components/DialogChangePassword';
 import { ROLE } from '@/constants/roles';
+import { getPathImage } from '@/utils/url';
 
 // ==============================|| PROFILE COMPONENT ||============================== //
 
@@ -80,7 +81,7 @@ const Profile = () => {
           <Typography variant='subtitle1'>{profile?.fullName}</Typography>
           <Avatar
             alt='profile user'
-            src={avatar1}
+            src={profile?.avatar_url && getPathImage(profile.avatar_url) || avatar1}
             sx={{ width: 32, height: 32, borderRadius: '100%' }}
           />
         </Stack>

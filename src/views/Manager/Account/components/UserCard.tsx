@@ -32,7 +32,7 @@ const UserCard: React.FC<UserCardProps> = ({ userProfile,  handleClick, handleDe
                     <Avatar src={userProfile.avatar_url ? getPathImage(userProfile.avatar_url) : avatar} sx={{ width: 70, height: 70, borderRadius: '50%' }} />
                     <Typography variant="subtitle1" fontWeight="bold">{userProfile.fullName}</Typography>
                 </Stack>
-                <Typography sx={{ wordBreak: 'break-all' }} variant="body2">Email: {userProfile.email || '-'}</Typography>
+                <Typography sx={{ wordBreak: 'break-all' }} variant="body2">Username: {userProfile.username || '-'}</Typography>
                 <Typography variant="body2">Số điện thoại: {userProfile.phone_number || '-'}</Typography>
                 <Box sx={{ display: 'flex', mt: 1, gap: 1, justifyContent:'center' }}>
                     <Button 

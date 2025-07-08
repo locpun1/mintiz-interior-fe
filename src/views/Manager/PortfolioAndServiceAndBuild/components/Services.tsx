@@ -117,7 +117,7 @@ const Services: React.FC<ServicesProps> = ({ searchTerm}) => {
                     <AddCard
                         title="Thêm dịch vụ"
                         handleAdd={handleOpenAddService}
-                        isDisabled={openAddService || openEditService}
+                        isDisabled={openAddService || openEditService || services.length === 6}
                         from="service"
                     />
                     {openAddService && (

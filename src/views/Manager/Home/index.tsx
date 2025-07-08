@@ -199,7 +199,7 @@ const HomeDashboardManager: React.FC = () => {
             <Box my={1.5}>
               <SummaryCard
                 title="Quản lý tài khoản"
-                seeMoreLink="/manager/account"
+                seeMoreLink="/manage/account"
               >
                 <AccountSummary 
                   users={users} 
