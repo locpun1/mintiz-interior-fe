@@ -66,7 +66,7 @@ export default function Login() {
         username: values.username,
         password: values.password,
       });
-
+      
       const accessToken = respAuth.data?.accessToken;
       const userProfile = respAuth.data?.user;
       if (accessToken && userProfile) {
@@ -97,7 +97,7 @@ export default function Login() {
         setError(respAuth.message || 'Login failed, no access token returned.');
       }
     } catch (error: any) {
-      Logger.log(error);
+      setError(error.message)
     } finally {
       setLoading.off();
     }
@@ -116,7 +116,7 @@ export default function Login() {
         </Typography>
       </Box>
       {_error && (
-        <Alert variant='filled' severity='warning'>
+        <Alert variant='filled' severity='error'>
           {_error}
         </Alert>
       )}

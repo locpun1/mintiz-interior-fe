@@ -71,7 +71,6 @@ const ImageCarousel: React.FC = () => {
     <Box
       sx={{
         position: "relative",
-        width: "100vw",
         overflow: "hidden",
         height: { xs: 450, md: 600 },
       }}
