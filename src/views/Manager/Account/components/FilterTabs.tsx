@@ -1,25 +1,18 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, useTheme, useMediaQuery } from "@mui/material";
-import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { DataStatusUserProps } from "..";
-
-type TabValue = 'all' | 0 | 1 ;
 
 interface Props{
-    viewMode: TabValue;
-    onChange: (mode: TabValue) => void;
-    DataStatusUser: DataStatusUserProps[]
+    viewMode: any;
+    onChange: (mode: any) => void;
+    data: any[]
 }
 
-const FilterTabs: React.FC<Props> = ({ viewMode, onChange, DataStatusUser}) => {
-
+const FilterTabs: React.FC<Props> = ({ viewMode, onChange, data}) => {
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
     const handleChange = (newValue: string | number) => {
-    onChange(newValue as TabValue);
-  };
+        onChange(newValue as any);
+    };
 
     return (
         <Box 
@@ -28,7 +21,7 @@ const FilterTabs: React.FC<Props> = ({ viewMode, onChange, DataStatusUser}) => {
             alignItems='center'
             gap={2}
         >
-            {DataStatusUser.map((item) => (
+            {data.map((item) => (
                 viewMode === item.value ? (
                     <Button
                         fullWidth={isSmall}
@@ -45,19 +38,18 @@ const FilterTabs: React.FC<Props> = ({ viewMode, onChange, DataStatusUser}) => {
                         {item.label}
                     </Button>
                 ) : (
-                    <Box display="flex" alignItems="center" gap={1} sx={{ cursor: 'pointer' }} onClick={() => handleChange(item.value)}>
+                    <Box display="flex" alignItems="center" gap={1} sx={{ cursor: 'pointer',borderBottom: "2px solid black", pb: '2px' }} onClick={() => handleChange(item.value)}>
                         <Typography
                             variant="body1"
                             sx={{ 
-                                fontWeight: "bold", 
-                                borderBottom: "2px solid black" 
+                                fontWeight: "bold",  
                             }}
                         >
                             {item.label}
-                            <Typography component="span" sx={{ ml: 0.5, }}>
-                                {item.icon}
-                            </Typography>
                         </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            {item.icon}
+                        </Box>
                     </Box>
                 )
             ))}

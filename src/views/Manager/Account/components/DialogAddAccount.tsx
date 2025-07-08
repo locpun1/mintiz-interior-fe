@@ -77,12 +77,12 @@ const DialogAddAccount: React.FC<DialogAddAccountProps> = ({onBack}) => {
     useEffect(() => {
         let objectUrl: string | null = null;
         if (avatarPreview && (avatarPreview.startsWith('blob:') || avatarPreview.startsWith('data:'))) {
-        if (avatarPreview.startsWith('blob:')) objectUrl = avatarPreview;
+            if (avatarPreview.startsWith('blob:')) objectUrl = avatarPreview;
         }
         return () => {
-        if (objectUrl) {
-            URL.revokeObjectURL(objectUrl);
-        }
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+            }
         };
     }, [avatarPreview]);
 
