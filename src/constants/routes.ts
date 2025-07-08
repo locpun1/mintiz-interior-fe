@@ -88,6 +88,7 @@ export const ROUTE_PATH = {
   REGISTRATION: 'registration',
   FORGOT_PASSWORD: 'forgot-password',
   CHANGE_PASSWORD: 'change-password',
+  LOGOUT: 'logout',
 
   CREATE: 'create',
   UPDATE: 'update',
