@@ -14,11 +14,42 @@ interface GetPostsParams {
   authorId?: number;
 }
 
+interface GetPostsPublicParams {
+  limit?: number;
+  page?: number;
+  category?: string
+}
+
 // Định nghĩa kiểu dữ liệu cho response trả về từ API
 export type PostsResponse = PaginatedResponse<IPost>;
 
 export const getPosts = (params: GetPostsParams) => {
   return HttpClient.get<any, HttpResponse<PostsResponse>>(`${prefix}`, { params });
+};
+
+export const getPostsPublic = async(
+  page: number,
+  limit: number,
+  category?: string
+): Promise<PostsResponse> => {
+  let url = `${prefix}/public`;
+  const params: Record<string, any> = {
+        page: page,
+        limit: limit,
+  };
+  if(category !== undefined && category !== 'Tất cả'){
+    params.category = category
+  }
+  const response = await HttpClient.get<{
+    success: boolean,
+    message: string,
+    data: PostsResponse;
+  }>(url, { params });
+  if(response.data && response.success && response.data){
+    return response.data;
+  }else{
+    throw new Error(response.message || 'Failed to fetch list user');
+  }
 };
 
 export const uploadPostImage = (file: File): Promise<HttpResponse<{ imageUrl: string }>> => {
