@@ -5,21 +5,19 @@ import AddAccountCard from "./components/AddCard";
 import UserCard from "./components/UserCard";
 import Grid from "@mui/material/Grid2";
 import { UserProfile } from "@/types/user-types";
-import { deleteUser, DeleteUserPayload, getListUsers, getUser, resetUser } from "@/services/user-service";
+import { activeUser, deleteUser, getListUsers, getUser, resetUser, UserPayload } from "@/services/user-service";
 import CustomPagination from "@/components/Pagination/CustomPagination";
 import DialogDetailUser from "./components/DialogDetailUser";
-import DialogConformDeleteAccount from "./components/DialogConformDeleteAccount";
+import DialogOpenConfirmAccount from "./components/DialogOpenConfirmAccount";
 import useNotification from "@/hooks/useNotification";
 import DialogAddAccount from "./components/DialogAddAccount";
 import DialogEditAccount from "./components/DialogEditAccount";
-import DialogConformDeleteSuccess from "./components/DialogConformDeleteSuccess";
+import DialogConfirmSuccess from "./components/DialogConfirmSuccess";
 import { debounce } from "lodash";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-
 import FilterTabs from "./components/FilterTabs";
-import DialogOpenConfirmResetAccount from "./components/DialogOpenConfirmResetAccount";
 import DialogConfirmResetSuccess from "./components/DialogConfirmResetSuccess";
 import Page from "@/components/Page";
 
@@ -52,25 +50,29 @@ const DataStatusUser: DataStatusUserProps[] = [
 ]
 
 const ManagementAccount: React.FC = () => {
+    const notify = useNotification();
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(11);
     const [total, setTotal] = useState(11);
+    const [error, setError] = useState(null);
+    const [listUsers, setListUsers] = useState<UserProfile[]>([]);
+    const [listUser, setListUser] = useState<UserProfile | null>(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [idUser, setIdUser] = useState<string | number>('');
+    const [viewMode, setViewMode] = useState<'all' | 0 | 1>('all');
+
+    const [loading, setLoading] = useState(false);
     const [openAddAccount, setOpenAddAccount] = useState(false);
     const [openEditAccount, setOpenEditAccount] = useState(false);
     const [openDeleteAccount, setOpenDeleteAccount] = useState(false);
     const [openResetAccount, setOpenResetAccount] = useState(false);
     const [openDeleteSuccess, setOpenDeleteSuccess] = useState(false);
     const [openResetSuccess, setOpenResetSuccess] = useState(false);
-    const [listUsers, setListUsers] = useState<UserProfile[]>([]);
-    const [listUser, setListUser] = useState<UserProfile | null>(null);
-    const [user, setUser] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [openDialogDetail, setOpenDialogDetail] = useState(false);
-    const [idUser, setIdUser] = useState<string | number>('');
-    const notify = useNotification();
-    const [viewMode, setViewMode] = useState<'all' | 0 | 1>('all');
+    const [openActiveAccount, setOpenActiveAccount] = useState(false);
+    const [openConfirmActiveSuccess, setOpenConfirmActiveSuccess] = useState(false);
+    
 
     const getUsers = useCallback(async(currentPage: number, currentSize: number, status?: string | number, currentSearchTerm?: string) => {
         setLoading(false);
@@ -134,7 +136,7 @@ const ManagementAccount: React.FC = () => {
     
     const handleDelete = async() => {
         try {
-            const data: DeleteUserPayload = {
+            const data: UserPayload = {
                 is_deleted: 1
             }
             await deleteUser(idUser, data);
@@ -169,6 +171,27 @@ const ManagementAccount: React.FC = () => {
             notify({
                 message: "Reset mật khẩu thất bại",
                 severity: 'error' 
+            })
+        }
+    }
+
+    const handleOpenActive = (id: string | number) => {
+        setOpenActiveAccount(true)
+        setIdUser(id)
+    }
+
+    const handleActive = async() => {
+        try {
+            const data: UserPayload = {
+                is_deleted: 0
+            }
+            await activeUser(idUser, data)
+            setOpenActiveAccount(false)
+            setOpenConfirmActiveSuccess(true)
+        } catch (error: any) {
+            notify({
+                message: error.message,
+                severity: 'error'
             })
         }
     }
@@ -211,6 +234,7 @@ const ManagementAccount: React.FC = () => {
                                             handleDelete={handleOpenDelete}
                                             handleEdit={handleOpenEdit}
                                             handleReset={handleOpenReset}
+                                            handleActive={handleOpenActive}
                                         />
                                     </Grid>
                                 )))}
@@ -234,7 +258,7 @@ const ManagementAccount: React.FC = () => {
                 <DialogAddAccount
                     onBack={() => {
                         setOpenAddAccount(false)
-                        getListUsers(page, rowsPerPage, viewMode)
+                        getUsers(page, rowsPerPage, viewMode)
                     }}
                 />
             )}
@@ -243,7 +267,7 @@ const ManagementAccount: React.FC = () => {
                     open={openEditAccount}
                     onClose={() => {
                         setOpenEditAccount(false)
-                        getListUsers(page, rowsPerPage, viewMode)
+                        getUsers(page, rowsPerPage, viewMode)
                     }}
                     userId={idUser}
                 />
@@ -258,30 +282,33 @@ const ManagementAccount: React.FC = () => {
                 />
             )}
             {openDeleteAccount && (
-                <DialogConformDeleteAccount
+                <DialogOpenConfirmAccount
                     open={openDeleteAccount}
                     handleClose={() => {
                         setOpenDeleteAccount(false)
                     }}
                     handleAgree={handleDelete}
+                    title="Bạn chắc chắn muốn xóa tài khoản này chứ? Tài khoản này sẽ bị vô hiệu hóa"
                 />
             )}
             {openDeleteSuccess && (
-                <DialogConformDeleteSuccess
+                <DialogConfirmSuccess
                     open={openDeleteSuccess}
                     handleClose={() => {
                         setOpenDeleteSuccess(false)
-                        getListUsers(page, rowsPerPage, viewMode)
+                        getUsers(page, rowsPerPage, viewMode)
                     }}
+                    title="Xin chúc mừng. Bạn vừa xóa tài khoản thành công"
                 />
             )}
             {openResetAccount && (
-                <DialogOpenConfirmResetAccount
+                <DialogOpenConfirmAccount
                     open={openResetAccount}
                     handleClose={() => {
                         setOpenResetAccount(false)
                     }}
                     handleAgree={handleReset}
+                    title="Xác nhận đặt lại mật khẩu cho nhân viên"
                 />
             )}
             {openResetSuccess && user && (
@@ -291,6 +318,26 @@ const ManagementAccount: React.FC = () => {
                         setOpenResetSuccess(false)
                     }}
                     user={user}
+                />
+            )}
+            {openActiveAccount && (
+                <DialogOpenConfirmAccount
+                    open={openActiveAccount}
+                    handleClose={() => {
+                        setOpenActiveAccount(false)
+                    }}
+                    handleAgree={handleActive}
+                    title="Bạn muốn khôi phục tài khoản này?"
+                />
+            )}
+            {openConfirmActiveSuccess && (
+                <DialogConfirmSuccess
+                    open={openConfirmActiveSuccess}
+                    handleClose={() => {
+                        setOpenConfirmActiveSuccess(false)
+                        getUsers(page, rowsPerPage, viewMode)
+                    }}
+                    title="Xin chúc mừng. Bạn vừa kích hoạt tài khoản thành công"
                 />
             )}
         </Box>
