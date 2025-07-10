@@ -17,6 +17,7 @@ export const ROUTE_PATH = {
  MANAGE_BLOG: 'blog', 
  BLOG_CREATE: 'create', 
  MANAGE_SETTINGS: 'settings', 
+ BLOG_DETAIL: ':postId',
 
   //Staff
   STAFF:"staff",

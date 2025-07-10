@@ -1,11 +1,10 @@
 // src/views/Manager/Blog/index.tsx
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import {
   Box,
   Grid,
   Pagination,
   Typography,
-  DialogActions,
 } from "@mui/material";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 
@@ -16,11 +15,13 @@ import BlogSkeleton from "./components/BlogSkeleton";
 import BlogPostCard from "./components/BlogPostCard";
 import { useAppSelector } from "@/store";
 import CreatePostCard from "./components/CreatePostCard";
-import { getPosts, reviewPost } from "@/services/post-service";
+import { getPosts, publishPost, reviewPost } from "@/services/post-service";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useNavigate } from "react-router-dom";
 
 const ManagementBlog: FC = () => {
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
 
   const [dialog, setDialog] = useState<{
@@ -31,13 +32,11 @@ const ManagementBlog: FC = () => {
 
   const [rejectionReason, setRejectionReason] = useState('');
 
-  const [currentPostId, setCurrentPostId] = useState<number | null>(null);
 
   const { profile } = useAppSelector((state) => state.auth);
   const notify = useNotification();
   const queryClient = useQueryClient();
 
-  // === 2. DATA FETCHING VỚI useQuery ===
   const { data, isLoading } = useQuery({
     queryKey: ['posts', filterStatus, page],
     queryFn: () => {
@@ -48,11 +47,9 @@ const ManagementBlog: FC = () => {
     placeholderData: keepPreviousData
   });
 
-  // Lấy dữ liệu đã được tính toán từ `data`
   const posts = data?.data?.posts || [];
   const totalPages = data?.data?.totalPages || 0;
 
-  // === 3. DATA MUTATIONS VỚI useMutation ===
   const reviewMutation = useMutation({
     mutationFn: (variables: { postId: number; status: 'approved' | 'rejected'; reason?: string }) =>
       reviewPost(variables.postId, { status: variables.status, rejectionReason: variables.reason }),
@@ -61,7 +58,20 @@ const ManagementBlog: FC = () => {
         ? `Đã chấp nhận bài viết #${variables.postId}`
         : `Đã từ chối bài viết #${variables.postId}`;
       notify({ severity: 'success', message: successMessage });
-      // Làm mới lại tất cả các query có key bắt đầu bằng ['posts']
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+    onError: (error: any) => {
+      notify({ severity: 'error', message: error.message || 'Thao tác thất bại' });
+    }
+  });
+  const publishMutation = useMutation({
+    mutationFn: (variables: { postId: number, publish: boolean }) =>
+      publishPost(variables.postId, { publish: variables.publish }),
+    onSuccess: (data, variables) => {
+      notify({
+        severity: 'success',
+        message: variables.publish ? 'Đăng tải bài viết thành công' : 'Hủy đăng tải thành công'
+      });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
     },
     onError: (error: any) => {
@@ -69,7 +79,6 @@ const ManagementBlog: FC = () => {
     }
   });
 
-  // === 4. EVENT HANDLERS (Chỉ gọi `mutate`) ===
   const handleApprove = (postId: number) => {
     setDialog({ open: true, type: 'approve', postId });
   };
@@ -78,6 +87,11 @@ const ManagementBlog: FC = () => {
     setRejectionReason('');
     setDialog({ open: true, type: 'reject', postId });
   };
+
+  const handlePublish = (postId: number, currentState: boolean) => {
+    publishMutation.mutate({ postId, publish: !currentState });
+  };
+  const handleEdit = (postId: number) => navigate(`/manager/blog/edit/${postId}`);
 
   const handleCloseDialog = () => {
     setDialog({ open: false, type: null, postId: null });
@@ -99,7 +113,8 @@ const ManagementBlog: FC = () => {
     handleCloseDialog();
   };
 
-
+  const isAdmin = useMemo(() => profile?.role === 'admin', [profile?.role]);
+  const isEmployee = useMemo(() => profile?.role === 'employee', [profile?.role]);
   return (
     <Page title="Quản lý bài viết">
       <BlogToolbar
@@ -115,18 +130,23 @@ const ManagementBlog: FC = () => {
       ) : (
         <Grid container spacing={3}>
           {profile?.role === 'employee' && <Grid item xs={12} sm={6} md={4}><CreatePostCard /></Grid>}
+          {posts.map((post) => {
+            const canAdminReview = isAdmin && post.status === 'pending';
+            const canEmployeePublish = isEmployee && post.status === 'approved';
+            const canEmployeeEdit = isEmployee && (post.status === 'approved' || post.status === 'rejected');
 
-          {posts.map((post) => (
-            <Grid item xs={12} sm={6} md={4} key={post.id}>
-              <BlogPostCard
-                post={post}
-                onApprove={handleApprove}
-                onReject={handleReject}
-              />
-            </Grid>
-          ))}
-
-          {/* Hiển thị thông báo nếu không có bài viết nào */}
+            return (
+              <Grid item xs={12} sm={6} md={4} key={post.id}>
+                <BlogPostCard
+                  post={post}
+                  onApprove={canAdminReview ? handleApprove : undefined}
+                  onReject={canAdminReview ? handleReject : undefined}
+                  onPublish={canEmployeePublish ? handlePublish : undefined}
+                  onEdit={canEmployeeEdit ? handleEdit : undefined}
+                />
+              </Grid>
+            )
+          })}
           {!isLoading && posts.length === 0 && (
             <Grid item xs={12} sx={{ textAlign: 'center', mt: 4 }}>
               <Typography>Không có bài viết nào phù hợp.</Typography>
@@ -135,7 +155,6 @@ const ManagementBlog: FC = () => {
         </Grid>
       )}
 
-      {/* Chỉ hiển thị pagination nếu có nhiều hơn 1 trang */}
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <Pagination

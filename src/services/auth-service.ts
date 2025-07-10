@@ -27,7 +27,7 @@ export const signUp = (params: LoginRequest) => {
 };
 
 export const signOut = () => {
-  return HttpClient.post(`${prefix}/logout`, {}, { withCredentials: true });
+  return HttpClient.post<null, HttpResponse>(`${prefix}/logout`, null);
 };
 
 export const verifyEmail = (params: VerifyUsernameRequest) => {

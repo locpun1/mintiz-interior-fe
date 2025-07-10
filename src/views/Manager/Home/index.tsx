@@ -1,7 +1,7 @@
 import Page from "@/components/Page";
 import InputSearch from "@/components/SearchBar";
 import { Box, Stack } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import SummaryCard from "../components/SummaryCard";
 import AccountSummary from "../components/AccountSummary";
 import PostSummary from "../components/PostSummary";
@@ -55,9 +55,16 @@ const HomeDashboardManager: React.FC = () => {
 
   const fetchDashboardData = useCallback(async () => {
     try {
+      const postParams = {
+        status: 'pending' as const,
+        limit: 2,
+        page: 1,
+        authorId: profile?.role === 'employee' ? profile.id : undefined,
+      };
+
       const [usersResponse, postsResponse] = await Promise.all([
-        getUsers({ limit: 6, page: 1, status: 0, searchTerm: searchTerm }),
-        getPosts({ status: 'pending', limit: 2, page: 1 })
+        getUsers({ limit: 6, page: 1, status: 0 }),
+        getPosts(postParams)
       ]);
       setUsers(usersResponse?.data?.users || []);
       setPendingPosts(postsResponse?.data?.posts || []);
@@ -225,8 +232,9 @@ const HomeDashboardManager: React.FC = () => {
             seeMoreLink="/manager/blog"
           >
             <PostSummary pendingPosts={pendingPosts}
-              onApprove={handleApprove}
-              onReject={handleReject} />
+              onApprove={canReview ? handleApprove : undefined}
+              onReject={canReview ? handleReject : undefined}
+            />
           </SummaryCard>
         </Box>
       </Page>
