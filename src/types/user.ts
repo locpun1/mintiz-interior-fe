@@ -14,3 +14,4 @@ export interface IUser {
     is_deleted?: number;
     is_default?: number;
 }
+

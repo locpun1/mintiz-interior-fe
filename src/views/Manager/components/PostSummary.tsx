@@ -44,8 +44,8 @@ const StatsCard = () => {
 interface PostSummaryProps {
   pendingPosts: IPost[];
   isLoading?: boolean;
-  onApprove: (postId: number) => void;
-  onReject: (postId: number) => void;
+  onApprove?: (postId: number) => void;
+  onReject?: (postId: number) => void;
 }
 
 const PostSummary = ({ pendingPosts, isLoading, onApprove, onReject }: PostSummaryProps) => {
