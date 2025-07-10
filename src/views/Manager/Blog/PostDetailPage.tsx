@@ -1,4 +1,4 @@
-// src/views/Manager/Blog/PostDetailPage.tsx (Ví dụ)
+// src/views/Manager/Blog/PostDetailPage.tsx
 import { FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
