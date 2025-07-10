@@ -2,7 +2,7 @@ import type { FC, ReactNode } from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 
-import type { SvgIconComponent } from '@mui/icons-material';
+import { Logout, type SvgIconComponent } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -32,8 +32,11 @@ import useDerivedState from '@/hooks/useDerivedState';
 import usePrevious from '@/hooks/usePrevious';
 import Sections from './Sections';
 import type { MouseEvent } from '@/types/react';
-import { useAppSelector } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import ProfileSection from './ProfileSection';
+import { signOut } from '@/services/auth-service';
+import { setIsAuth, setProfile } from '@/slices/auth';
+import { removeAccessToken } from '@/utils/AuthHelper';
 
 export const CollapseContext = createContext<boolean | null>(null);
 export const SidebarContext = createContext<boolean | null>(null);
@@ -47,6 +50,7 @@ interface Props {
 const Sidebar = (props: Props) => {
   const { openSidebar, collapsed, onCloseSidebar, onToggleCollapsed } = props;
   const { pathname } = useLocation();
+  const dispatch = useAppDispatch();
   const { profile } = useAppSelector((state) => state.auth);
   const sections = useMemo(() => Sections(profile), [profile]);
   const theme = useTheme();
@@ -59,6 +63,13 @@ const Sidebar = (props: Props) => {
       onCloseSidebar();
     }
   }, [pathname, onCloseSidebar, openSidebar, prevPathName]);
+
+  const handleLogout = async () => {
+    await signOut();
+    dispatch(setIsAuth(false));
+    dispatch(setProfile(null));
+    removeAccessToken();
+  };
 
   if (lgUp) {
     return (
@@ -82,6 +93,41 @@ const Sidebar = (props: Props) => {
               {sections.map((section, i) => (
                 <MenuSection key={i} pathname={pathname} {...section} />
               ))}
+              {!collapsed ? (
+                <Box sx={{ p: 2 }}>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={handleLogout}
+                    startIcon={<Logout/>}
+                    sx={{
+                      border: '1px solid #1C1A1B',
+                      color: '#000000',
+                      fontSize: '15px',
+                      fontWeight: '700',
+                      fontFamily: 'Sarabun',
+                      borderRadius: '12px'
+                    }}
+                  >
+                    Đăng xuất
+                  </Button>
+                </Box>
+              ) : (
+                <Box p={2} ml={0.5}>
+                  <Tooltip placement='right' title="Đăng xuất">
+                    <IconButton 
+                      onClick={handleLogout}
+                      sx={{
+                        '&:hover': {
+                            backgroundColor: 'white',
+                        },
+                      }}
+                    >
+                      <Logout fontSize='small' sx={{ color: '#000000'}}/>
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              )}
             </Scrollbar>
           </CollapseContext.Provider>
         </SidebarContext.Provider>
@@ -125,6 +171,24 @@ const Sidebar = (props: Props) => {
             {sections.map((section, i) => (
               <MenuSection key={i} pathname={pathname} {...section} />
             ))}
+            <Box sx={{ p: 2 }}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  onClick={handleLogout}
+                  startIcon={<Logout/>}
+                  sx={{
+                    border: '1px solid #1C1A1B',
+                    color: '#000000',
+                    fontSize: '15px',
+                    fontWeight: '700',
+                    fontFamily: 'Sarabun',
+                    borderRadius: '12px'
+                  }}
+                >
+                  Đăng xuất
+                </Button>
+              </Box>
           </Scrollbar>
         </CollapseContext.Provider>
       </SidebarContext.Provider>

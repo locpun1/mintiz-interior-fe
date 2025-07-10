@@ -4,8 +4,14 @@ export interface IUser {
     username: string;
     fullName: string;
     role: 'admin' | 'employee';
-    phone?: string | null;
-    avatarUrl?: string | null;
     createdAt: string;
     updatedAt: string;
+    email?: string,
+    address?: string,
+    phone_number?: string,
+    captchaCode?:string,
+    avatar_url?:string,
+    is_deleted?: number;
+    is_default?: number;
 }
+

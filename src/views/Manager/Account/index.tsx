@@ -1,39 +1,25 @@
 import InputSearch from "@/components/SearchBar";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
-import AddAccountCard from "./components/AddAccountCard";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import AddAccountCard from "./components/AddCard";
 import UserCard from "./components/UserCard";
 import Grid from "@mui/material/Grid2";
 import { UserProfile } from "@/types/user-types";
-import { deleteUser, DeleteUserPayload, getListUsers, getUser, resetUser } from "@/services/user-service";
+import { activeUser, deleteUser, getListUsers, getUser, resetUser, UserPayload } from "@/services/user-service";
 import CustomPagination from "@/components/Pagination/CustomPagination";
 import DialogDetailUser from "./components/DialogDetailUser";
-import DialogConformDeleteAccount from "./components/DialogConformDeleteAccount";
+import DialogOpenConfirmAccount from "./components/DialogOpenConfirmAccount";
 import useNotification from "@/hooks/useNotification";
 import DialogAddAccount from "./components/DialogAddAccount";
 import DialogEditAccount from "./components/DialogEditAccount";
-import DialogConformDeleteSuccess from "./components/DialogConformDeleteSuccess";
+import DialogConfirmSuccess from "./components/DialogConfirmSuccess";
 import { debounce } from "lodash";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-
 import FilterTabs from "./components/FilterTabs";
-import DialogOpenConfirmResetAccount from "./components/DialogOpenConfirmResetAccount";
 import DialogConfirmResetSuccess from "./components/DialogConfirmResetSuccess";
-
-const debounceFetchFile = debounce(
-  (
-    fn: (page: number, limit: number, status?: string | number, searchTerm?: string) => void,
-    page: number,
-    limit: number,
-    status?: string | number,
-    searchTerm?: string
-  ) => {
-    fn(page, limit, status, searchTerm);
-  },
-  500
-);
+import Page from "@/components/Page";
 
 export interface DataStatusUserProps {
     id: number | string;
@@ -64,25 +50,29 @@ const DataStatusUser: DataStatusUserProps[] = [
 ]
 
 const ManagementAccount: React.FC = () => {
+    const notify = useNotification();
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(11);
     const [total, setTotal] = useState(11);
+    const [error, setError] = useState(null);
+    const [listUsers, setListUsers] = useState<UserProfile[]>([]);
+    const [listUser, setListUser] = useState<UserProfile | null>(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [idUser, setIdUser] = useState<string | number>('');
+    const [viewMode, setViewMode] = useState<'all' | 0 | 1>('all');
+
+    const [loading, setLoading] = useState(false);
     const [openAddAccount, setOpenAddAccount] = useState(false);
     const [openEditAccount, setOpenEditAccount] = useState(false);
     const [openDeleteAccount, setOpenDeleteAccount] = useState(false);
     const [openResetAccount, setOpenResetAccount] = useState(false);
     const [openDeleteSuccess, setOpenDeleteSuccess] = useState(false);
     const [openResetSuccess, setOpenResetSuccess] = useState(false);
-    const [listUsers, setListUsers] = useState<UserProfile[]>([]);
-    const [listUser, setListUser] = useState<UserProfile | null>(null);
-    const [user, setUser] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [openDialogDetail, setOpenDialogDetail] = useState(false);
-    const [idUser, setIdUser] = useState<string | number>('');
-    const notify = useNotification();
-    const [viewMode, setViewMode] = useState<'all' | 0 | 1>('all');
+    const [openActiveAccount, setOpenActiveAccount] = useState(false);
+    const [openConfirmActiveSuccess, setOpenConfirmActiveSuccess] = useState(false);
+    
 
     const getUsers = useCallback(async(currentPage: number, currentSize: number, status?: string | number, currentSearchTerm?: string) => {
         setLoading(false);
@@ -99,11 +89,19 @@ const ManagementAccount: React.FC = () => {
         }
     },[])
 
+    const debounceGetUsers = useMemo(
+        () => debounce((currentPage: number, currentSize: number, status?: string | number, currentSearchTerm?: string) => {
+            getUsers(currentPage, currentSize, status, currentSearchTerm);
+        }, 500),
+        [getUsers]
+    );
+    
+
     useEffect(() => {
         if(searchTerm){
-            // debounceFetchFile(getUsers, page, rowsPerPage, viewMode, searchTerm)
-            getUsers(page, rowsPerPage, viewMode, searchTerm)
+            debounceGetUsers(page, rowsPerPage, viewMode, searchTerm)
         }else{
+            debounceGetUsers.cancel(); // huỷ mọi pending call
             getUsers(page, rowsPerPage, viewMode)
         }
     },[page, rowsPerPage, searchTerm, viewMode])
@@ -138,7 +136,7 @@ const ManagementAccount: React.FC = () => {
     
     const handleDelete = async() => {
         try {
-            const data: DeleteUserPayload = {
+            const data: UserPayload = {
                 is_deleted: 1
             }
             await deleteUser(idUser, data);
@@ -165,7 +163,6 @@ const ManagementAccount: React.FC = () => {
     const handleReset = async() => {
         try {
             const res = await resetUser(idUser);
-            console.log("res: ", res);
             const data = res.data as any as UserProfile;
             setUser(data);
             setOpenResetAccount(false)
@@ -178,8 +175,30 @@ const ManagementAccount: React.FC = () => {
         }
     }
 
+    const handleOpenActive = (id: string | number) => {
+        setOpenActiveAccount(true)
+        setIdUser(id)
+    }
+
+    const handleActive = async() => {
+        try {
+            const data: UserPayload = {
+                is_deleted: 0
+            }
+            await activeUser(idUser, data)
+            setOpenActiveAccount(false)
+            setOpenConfirmActiveSuccess(true)
+        } catch (error: any) {
+            notify({
+                message: error.message,
+                severity: 'error'
+            })
+        }
+    }
+
     return(
         <Box p={2}>
+            <Page title="Quản lý tài khoản">
             {!openAddAccount && (
                 <Box px={1.5}>
                     {loading && (
@@ -196,14 +215,13 @@ const ManagementAccount: React.FC = () => {
                                 initialValue={searchTerm}
                                 placeholder="Tìm kiếm"
                                 onSearch={handleSearch}
-                                style={{ width: {xs: '100%', md:'50%'}}}
                             />
                             <Box mt={2}>
-                                <FilterTabs DataStatusUser={DataStatusUser} viewMode={viewMode} onChange={setViewMode} />
+                                <FilterTabs data={DataStatusUser} viewMode={viewMode} onChange={setViewMode} />
                             </Box>
                             <Grid container spacing={1.5} pt={2}>
                                 <Grid size={{ xs:12, sm:6, md:4, lg:3}}>
-                                    <AddAccountCard handleAdd={handleAddAccount} />
+                                    <AddAccountCard title="Thêm tài khoản" handleAdd={handleAddAccount} />
                                 </Grid>
                                 {listUsers.length === 0 ? (
                                     <Typography sx={{ mx: 2, mt: 3}} variant="h6">Không tồn tại bản ghi nào cả</Typography>
@@ -216,6 +234,7 @@ const ManagementAccount: React.FC = () => {
                                             handleDelete={handleOpenDelete}
                                             handleEdit={handleOpenEdit}
                                             handleReset={handleOpenReset}
+                                            handleActive={handleOpenActive}
                                         />
                                     </Grid>
                                 )))}
@@ -228,17 +247,18 @@ const ManagementAccount: React.FC = () => {
                                     onPageChange={handlePageChange}
                                     sx={{ mt: 1.5}}
                                 />
-                            </Box>                        
-                        </>
-                    )}
-                              
-                </Box>
-            )}
+                            </Box>                       
+                            </>
+                        )}
+                                
+                    </Box>
+                )}
+            </Page>
             {openAddAccount && (
                 <DialogAddAccount
                     onBack={() => {
                         setOpenAddAccount(false)
-                        getListUsers(page, rowsPerPage, viewMode)
+                        getUsers(page, rowsPerPage, viewMode)
                     }}
                 />
             )}
@@ -247,7 +267,7 @@ const ManagementAccount: React.FC = () => {
                     open={openEditAccount}
                     onClose={() => {
                         setOpenEditAccount(false)
-                        getListUsers(page, rowsPerPage, viewMode)
+                        getUsers(page, rowsPerPage, viewMode)
                     }}
                     userId={idUser}
                 />
@@ -262,30 +282,33 @@ const ManagementAccount: React.FC = () => {
                 />
             )}
             {openDeleteAccount && (
-                <DialogConformDeleteAccount
+                <DialogOpenConfirmAccount
                     open={openDeleteAccount}
                     handleClose={() => {
                         setOpenDeleteAccount(false)
                     }}
                     handleAgree={handleDelete}
+                    title="Bạn chắc chắn muốn xóa tài khoản này chứ? Tài khoản này sẽ bị vô hiệu hóa"
                 />
             )}
             {openDeleteSuccess && (
-                <DialogConformDeleteSuccess
+                <DialogConfirmSuccess
                     open={openDeleteSuccess}
                     handleClose={() => {
                         setOpenDeleteSuccess(false)
-                        getListUsers(page, rowsPerPage, viewMode)
+                        getUsers(page, rowsPerPage, viewMode)
                     }}
+                    title="Xin chúc mừng. Bạn vừa xóa tài khoản thành công"
                 />
             )}
             {openResetAccount && (
-                <DialogOpenConfirmResetAccount
+                <DialogOpenConfirmAccount
                     open={openResetAccount}
                     handleClose={() => {
                         setOpenResetAccount(false)
                     }}
                     handleAgree={handleReset}
+                    title="Xác nhận đặt lại mật khẩu cho nhân viên"
                 />
             )}
             {openResetSuccess && user && (
@@ -295,6 +318,26 @@ const ManagementAccount: React.FC = () => {
                         setOpenResetSuccess(false)
                     }}
                     user={user}
+                />
+            )}
+            {openActiveAccount && (
+                <DialogOpenConfirmAccount
+                    open={openActiveAccount}
+                    handleClose={() => {
+                        setOpenActiveAccount(false)
+                    }}
+                    handleAgree={handleActive}
+                    title="Bạn muốn khôi phục tài khoản này?"
+                />
+            )}
+            {openConfirmActiveSuccess && (
+                <DialogConfirmSuccess
+                    open={openConfirmActiveSuccess}
+                    handleClose={() => {
+                        setOpenConfirmActiveSuccess(false)
+                        getUsers(page, rowsPerPage, viewMode)
+                    }}
+                    title="Xin chúc mừng. Bạn vừa kích hoạt tài khoản thành công"
                 />
             )}
         </Box>

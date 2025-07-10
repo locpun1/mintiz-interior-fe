@@ -1,22 +1,24 @@
 import DialogComponent from "@/components/DialogComponent";
 import { Button, Typography } from "@mui/material";
 import React from "react";
-interface DialogConformDeleteAccountProps{
+interface DialogOpenConfirmAccountProps{
     open: boolean,
     handleClose: () => void,
     handleAgree: () => void,
+    title: string
 }
-const DialogConformDeleteAccount: React.FC<DialogConformDeleteAccountProps> = (props) => {
-    const { open, handleClose, handleAgree} = props;
+const DialogOpenConfirmAccount: React.FC<DialogOpenConfirmAccountProps> = (props) => {
+    const { open, handleClose, handleAgree, title} = props;
     return(
         <DialogComponent
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
             isCenter={false}
         >
             <Typography fontWeight={500}>
-                Bạn chắc chắn muốn xóa tài khoản này chứ? Tài khoản sẽ bị xóa vĩnh viễn không thể khôi phục
+                {title}
             </Typography>
             <Button
                 
@@ -37,4 +39,4 @@ const DialogConformDeleteAccount: React.FC<DialogConformDeleteAccountProps> = (p
     )
 }
 
-export default DialogConformDeleteAccount;
+export default DialogOpenConfirmAccount;

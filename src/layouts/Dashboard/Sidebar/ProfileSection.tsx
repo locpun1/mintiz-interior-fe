@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import { useAppSelector } from '@/store';
 import { Skeleton } from '@mui/material';
 import avatar1 from '@/assets/images/users/avatar-1.png';
+import { getPathImage } from '@/utils/url';
 
 const ProfileSection = () => {
   const { profile, isInitialized } = useAppSelector((state) => state.auth);
@@ -22,7 +23,7 @@ const ProfileSection = () => {
     <Box sx={{ p: 2, textAlign: 'center' }}>
       <Avatar
         alt={profile.fullName}
-        src={profile.avatarUrl || avatar1} 
+        src={profile.avatar_url && getPathImage(profile.avatar_url) || avatar1} 
         sx={{
           width: 80,
           height: 80,

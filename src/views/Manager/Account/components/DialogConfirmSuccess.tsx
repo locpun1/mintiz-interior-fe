@@ -1,21 +1,23 @@
 import DialogComponent from "@/components/DialogComponent";
 import { Button, Typography } from "@mui/material";
 import React from "react";
-interface DialogConformDeleteSuccessProps{
+interface DialogConfirmSuccessProps{
     open: boolean,
     handleClose: () => void,
+    title: string
 }
-const DialogConformDeleteSuccess: React.FC<DialogConformDeleteSuccessProps> = (props) => {
-    const { open, handleClose} = props;
+const DialogConfirmSuccess: React.FC<DialogConfirmSuccessProps> = (props) => {
+    const { open, handleClose, title} = props;
     return(
         <DialogComponent
             dialogKey={open}
             handleClose={handleClose}
             isActiveFooter={false}
+            isActiveHeader={false}
             isCenter={false}
         >
             <Typography fontWeight={500}>
-                Xin chúc mừng. Bạn vừa xóa tài khoản thành công
+                {title}
             </Typography>
             <Button
                 variant="contained"
@@ -28,4 +30,4 @@ const DialogConformDeleteSuccess: React.FC<DialogConformDeleteSuccessProps> = (p
     )
 }
 
-export default DialogConformDeleteSuccess;
+export default DialogConfirmSuccess;

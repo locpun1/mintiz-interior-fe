@@ -5,11 +5,14 @@ import IconButton from "@/components/IconButton/IconButton";
 
 interface AddAccountCardProps{
     handleAdd: () => void;
+    title: string;
+    isDisabled?: boolean;
+    from?: string;
 }
-const AddAccountCard: React.FC<AddAccountCardProps> = ({handleAdd}) => {
+const AddCard: React.FC<AddAccountCardProps> = ({handleAdd, title, isDisabled, from}) => {
     return (
         <Card sx={{
-            height: 226,
+            height: from ? 100 : 226,
             border: '2px dashed #ccc',
             display: 'flex', flexDirection: 'column',
             justifyContent: 'center', alignItems: 'center',
@@ -19,10 +22,11 @@ const AddAccountCard: React.FC<AddAccountCardProps> = ({handleAdd}) => {
             <IconButton
                 handleFunt={handleAdd}
                 icon={<AddIcon fontSize="large" sx={{ color: '#1C1A1B'}} />}
+                disabled={isDisabled}
             />
-            <Typography>Thêm tài khoản</Typography>
+            <Typography>{title}</Typography>
         </Card>
     );
 };
 
-export default AddAccountCard;
+export default AddCard;

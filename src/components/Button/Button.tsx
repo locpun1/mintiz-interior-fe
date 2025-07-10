@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, MouseEvent } from 'react'; 
 import { Button as MuiButton, ButtonProps as MuiButtonProps } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import './Button.scss'
@@ -14,7 +14,7 @@ interface ButtonProps extends MuiButtonProps {
   backgroundColor?: string
   fontColor?: string
   borderRadius?: string
-  handleFunt: Function
+  handleFunt: (event: MouseEvent<HTMLButtonElement>) => void;
   padding?: string
   isEdit?: boolean
   disabled?: boolean
@@ -41,11 +41,11 @@ const Button: React.FC<ButtonProps> = ({
   ...props }) => {
   const [on, setOn] = useState<boolean>(false)
 
-  const handleToggle = () => {
+  const handleToggle = (event: MouseEvent<HTMLButtonElement>) => {
     if (customVariant === 'switchButton') {
       setOn(!on)
     }
-    handleFunt()
+    handleFunt(event);
   }
 
   const getButtonStyles = () => {

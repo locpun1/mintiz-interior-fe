@@ -37,9 +37,20 @@ export const createPost = (payload: { title: string; content: string; imageUrl?:
 };
 
 export const reviewPost = (postId: number, payload: { status: 'approved' | 'rejected', rejectionReason?: string }) => {
-  return HttpClient.patch<typeof payload, HttpResponse<IPost>>(`${prefix}/posts/${postId}/review`, payload);
+  return HttpClient.patch<typeof payload, HttpResponse<IPost>>(`${prefix}/${postId}/review`, payload);
 };
 
 export const deletePost = (postId: number) => {
   return HttpClient.delete(`/posts/${postId}`);
+};
+
+export const getPostById = (postId: number) => {
+  return HttpClient.get<any, HttpResponse<IPost>>(`${prefix}/${postId}`);
+};
+
+export const publishPost = (postId: number, payload: { publish: boolean }) => {
+  return HttpClient.patch<typeof payload, HttpResponse<IPost>>(
+    `${prefix}/${postId}/publish`,
+    payload
+  );
 };

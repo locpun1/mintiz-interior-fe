@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { LogoutOutlined } from '@mui/icons-material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import LockResetIcon from '@mui/icons-material/LockReset';
 import {
   ButtonBase,
   Card,
@@ -27,6 +28,9 @@ import { signOut } from '@/services/auth-service';
 import { setIsAuth, setProfile } from '@/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { removeAccessToken } from '@/utils/AuthHelper';
+import DialogChangePassword from '@/views/Manager/components/DialogChangePassword';
+import { ROLE } from '@/constants/roles';
+import { getPathImage } from '@/utils/url';
 
 // ==============================|| PROFILE COMPONENT ||============================== //
 
@@ -35,6 +39,7 @@ const Profile = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.auth.profile);
   const navigate = useNavigate();
+  const [openDialogChangePassword, setOpenDialogChangePassword] = useState(false)
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -50,6 +55,10 @@ const Profile = () => {
   };
 
   const open = Boolean(anchorEl);
+
+  const handleOpenDialogChangePassword = () => {
+    setOpenDialogChangePassword(true)
+  }
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -72,7 +81,7 @@ const Profile = () => {
           <Typography variant='subtitle1'>{profile?.fullName}</Typography>
           <Avatar
             alt='profile user'
-            src={avatar1}
+            src={profile?.avatar_url && getPathImage(profile.avatar_url) || avatar1}
             sx={{ width: 32, height: 32, borderRadius: '100%' }}
           />
         </Stack>
@@ -92,29 +101,48 @@ const Profile = () => {
               <List component='nav' sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 24 } }}>
                 <ListItemButton>
                   <ListItemIcon>
-                    <EditOutlinedIcon />
+                    <LockResetIcon/>
                   </ListItemIcon>
                   <ListItemText
-                    onClick={() => navigate(ROUTE_PATH.TO_PROFILE)}
-                    primary='Edit Profile'
+                    onClick={handleOpenDialogChangePassword}
+                    primary="Thay đổi mật khẩu"
                     sx={{
                       '& .MuiTypography-root': {
-                        fontSize: '14px',
-                      },
+                        fontSize: '13px'
+                      }
                     }}
                   />
                 </ListItemButton>
                 <Divider />
+                {profile?.role === ROLE.EMPLOYEE && (
+                  <>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <EditOutlinedIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        onClick={() => navigate(`${ROUTE_PATH.TO_PROFILE}`)}
+                        primary='Chỉnh sửa thông tin'
+                        sx={{
+                          '& .MuiTypography-root': {
+                            fontSize: '13px',
+                          },
+                        }}
+                      />
+                    </ListItemButton>
+                    <Divider />
+                  </>
+                )}
                 <ListItemButton>
                   <ListItemIcon>
                     <LogoutOutlined />
                   </ListItemIcon>
                   <ListItemText
                     onClick={handleLogout}
-                    primary='Logout'
+                    primary='Đăng xuất'
                     sx={{
                       '& .MuiTypography-root': {
-                        fontSize: '14px',
+                        fontSize: '13px',
                       },
                     }}
                   />
@@ -124,6 +152,15 @@ const Profile = () => {
           </ClickAwayListener>
         </Paper>
       </Popper>
+      {openDialogChangePassword && profile && (
+        <DialogChangePassword
+          open={openDialogChangePassword}
+          onClose={() => {
+            setOpenDialogChangePassword(false)
+          }}
+          userId={profile.id}
+        />
+      )}
     </Box>
   );
 };

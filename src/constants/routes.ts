@@ -1,9 +1,9 @@
 export const ROUTE_PATH = {
   HOME: '/',
-  TO_PROFILE:'/profile',
+  TO_PROFILE:'profile',
   POSTS: '/posts',
   USERS_MANAGEMENT: '/user-account',
-  MY_PROFILE:'/customer-info',
+  MY_PROFILE:'customer-info',
 
   PRODUCT_CATEGORY: '/products/categories',
   PRODUCT_CATEGORY_CREATE: '/products/categories/create',
@@ -11,11 +11,13 @@ export const ROUTE_PATH = {
   PRODUCT_CATEGORY_DELETE: '/products/categories/delete',
 
  // --- Manager (Dashboard) ---
- MANAGE: 'manager', 
+ MANAGE: 'manage', 
  MANAGE_HOME: 'home', 
  MANAGE_ACCOUNT: 'account', 
  MANAGE_BLOG: 'blog', 
  BLOG_CREATE: 'create', 
+ MANAGE_SETTINGS: 'settings', 
+ BLOG_DETAIL: ':postId',
 
   //Staff
   STAFF:"staff",
@@ -87,6 +89,7 @@ export const ROUTE_PATH = {
   REGISTRATION: 'registration',
   FORGOT_PASSWORD: 'forgot-password',
   CHANGE_PASSWORD: 'change-password',
+  LOGOUT: 'logout',
 
   CREATE: 'create',
   UPDATE: 'update',

@@ -19,6 +19,7 @@ const DialogDetailUser: React.FC<DialogDetailUserProps> = ({ open, onClose, user
             dialogKey={open}
             handleClose={onClose}
             isActiveFooter={false}
+            isActiveHeader={false}
         >
             <Box p={2} width={{ xs: '100%', sm: 350}} display='flex' flexDirection='column'>
                 <Grid container spacing={1}>

@@ -3,10 +3,11 @@ import InputSearch from "@/components/SearchBar";
 import { getContact, getContacts } from "@/services/contact-service";
 import { Contact } from "@/types/contact-types";
 import { Alert, Box, Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import CustomerContact from "../components/CustomerContactSummary";
 import CustomPagination from "@/components/Pagination/CustomPagination";
 import DialogDetailCustomerInfo from "./components/DetailCustomerInfo";
+import { debounce } from "lodash";
 
 const CustomerInfomation: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -19,25 +20,35 @@ const CustomerInfomation: React.FC = () => {
     const [contactId, setIdContact] = useState<string | number>('');
     const [openDialogViewCus, setOpenDialogViewCus] = useState(false);
 
-    const fetchContactData = async (currentSearch?: string) => {
-            setLoading(true)
+    const fetchContactData = useCallback(async (currentSearch?: string) => {
+        setLoading(true)
             try {
                 const contactsResponse = await getContacts({ limit: rowPerPage, page: page, searchTerm: currentSearch });
                 setContacts(contactsResponse?.data?.contacts || []);
                 contactsResponse.data?.totalContact && setTotal(contactsResponse.data?.totalContact)
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Failed to fetch dashboard data:", error);
+                setError(error.message)
             }finally{
                 setLoading(false);
             }
-        };
+    },[rowPerPage, page])
+
+    const debounceGetContacts = useMemo(
+        () => debounce((currentSearchTerm?: string) => {
+            fetchContactData(currentSearchTerm);
+        }, 500),
+        [fetchContactData]
+    );
+
     useEffect(() => {
         if(searchTerm){
-            fetchContactData(searchTerm);
+            debounceGetContacts(searchTerm);
         }else{
+            debounceGetContacts.cancel()
             fetchContactData();
         }
-    }, [page, rowPerPage, searchTerm]);
+    }, [searchTerm]);
 
     const handleSearch = (value: string) => {
         setSearchTerm(value.trim())
