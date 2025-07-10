@@ -6,7 +6,7 @@ import SummaryCard from "../components/SummaryCard";
 import AccountSummary from "../components/AccountSummary";
 import PostSummary from "../components/PostSummary";
 import { IPost } from "@/types/post";
-import { deleteUser, DeleteUserPayload, getUser, getUsers } from "@/services/user-service";
+import { deleteUser, UserPayload, getUser, getUsers } from "@/services/user-service";
 import { getPosts, reviewPost } from "@/services/post-service";
 import { IUser } from "@/types/user";
 import useNotification from "@/hooks/useNotification";
@@ -21,8 +21,8 @@ import DialogDetailCustomerInfo from "../AccountCus/components/DetailCustomerInf
 import { UserProfile } from "@/types/user-types";
 import DialogDetailUser from "../Account/components/DialogDetailUser";
 import DialogEditAccount from "../Account/components/DialogEditAccount";
-import DialogConformDeleteAccount from "../Account/components/DialogConformDeleteAccount";
-import DialogConformDeleteSuccess from "../Account/components/DialogConformDeleteSuccess";
+import DialogConformDeleteAccount from "../Account/components/DialogOpenConfirmAccount";
+import DialogConformDeleteSuccess from "../Account/components/DialogConfirmSuccess";
 
 const HomeDashboardManager: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -167,7 +167,7 @@ const HomeDashboardManager: React.FC = () => {
 
   const handleDelete = async() => {
     try {
-      const data: DeleteUserPayload = {
+      const data: UserPayload = {
         is_deleted: 1
       }
       await deleteUser(userId, data);
@@ -277,6 +277,7 @@ const HomeDashboardManager: React.FC = () => {
             setOpenDialogDelete(false)
           }}
           handleAgree={handleDelete}
+          title="Bạn chắc chắn muốn xóa tài khoản này chứ? Tài khoản này sẽ bị vô hiệu hóa"
         />
       )}
       {openDialogDeleteSuccess && (
@@ -286,6 +287,7 @@ const HomeDashboardManager: React.FC = () => {
             setOpenDialogDeleteSuccess(false)
             renderApiList(ROLE.ADMIN)
           }}
+          title="Xin chúc mừng. Bạn vừa xóa tài khoản thành công"
         />
       )}
     </Box>

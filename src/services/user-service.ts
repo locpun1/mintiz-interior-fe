@@ -34,7 +34,7 @@ export interface CheckoutApiUserResponse {
   data: UserProfile; 
 }
 
-export interface DeleteUserPayload {
+export interface UserPayload {
   is_deleted: number
 }
 
@@ -111,9 +111,17 @@ export const resetUser = (id: string | number) => {
 
 export const deleteUser = async (
   id: string | number,
-  payload: DeleteUserPayload
+  payload: UserPayload
 ): Promise<HttpResponse<UserProfile>> => {
   const url = `${prefix}/delete/${id}`;
   return HttpClient.patch<UserProfile>(url, payload as any);
 };
+
+export const activeUser = async (
+  id: string | number,
+  payload: UserPayload
+): Promise<HttpResponse<UserProfile>> => {
+  const url = `${prefix}/active/${id}`;
+  return HttpClient.patch<UserProfile>(url, payload as any);
+}
 

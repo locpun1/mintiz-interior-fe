@@ -45,6 +45,7 @@ const CustomerInfomation: React.FC = () => {
         if(searchTerm){
             debounceGetContacts(searchTerm);
         }else{
+            debounceGetContacts.cancel()
             fetchContactData();
         }
     }, [searchTerm]);
