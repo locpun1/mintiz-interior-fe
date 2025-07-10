@@ -192,6 +192,7 @@ const HomeDashboardManager: React.FC = () => {
     setOpenDialogEdit(true)
     setUserId(id);
   }
+  const canReview = useMemo(() => profile?.role === 'admin', [profile?.role]);
 
   return (
     <Box p={2}>
