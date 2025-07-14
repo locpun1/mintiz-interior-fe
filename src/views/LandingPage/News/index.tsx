@@ -1,13 +1,19 @@
 import { Box, Button, Card, CardContent, CardMedia, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import TabsViewSwitcher from './components/TabsViewSwitcher';
-import { useState } from 'react';
-import homeImage from "@/assets/images/users/home-image.png";
+import { useCallback, useEffect, useState } from 'react';
 import Grid from "@mui/material/Grid2";
 import { CATEGORY_LABELS, CategoryNews } from '@/constants/status';
 import ContentNewDetail from './components/ContentNewDetail';
 import { ArrowRightAlt } from '@mui/icons-material';
+import { IPost } from '@/types/post';
+import { getPostsPublic } from '@/services/post-service';
+import dayjs from 'dayjs';
+import { getPathImage } from '@/utils/url';
+import { getFormatText } from '@/utils/labelEnToVi';
+import CustomPagination from '@/components/Pagination/CustomPagination';
 
-export type CategoryType = 'all' | 'event' | 'architecture' | 'life' | 'information-tech';
+
+export type CategoryType = 'Tất cả' | 'Sự kiện' | 'Kiến trúc' | 'Đời sống' | 'Công nghệ';
 
 export interface ViewModeProps{
     id: string | number,
@@ -19,27 +25,28 @@ const DataViewMode: ViewModeProps[] = [
     {
         id: 1,
         label: 'Tất cả',
-        value: 'all'
+        value: 'Tất cả',
+
     },
     {
         id: 2,
         label: 'Sự kiện',
-        value: 'event'
+        value: 'Sự kiện',
     },
     {
         id: 3,
         label: 'Kiến trúc',
-        value: 'architecture'
+        value: 'Kiến trúc',
     },
     {
         id: 4,
         label: 'Đời sống',
-        value: 'life'
+        value: 'Đời sống',
     },
     {
         id: 5,
         label: 'Công nghệ',
-        value: 'information-tech'
+        value: 'Công nghệ',
     },
 ]
 
@@ -52,32 +59,50 @@ export interface NewsListProps{
     image: string
 }
 
-const newsList : NewsListProps[] = Array.from({length: 6}).map((_, i) => ({
-  id: i,
-  category: ['event', 'architecture', 'life', 'information-tech'][i % 4],
-  date: 'Th06 26,2025',
-  title: 'Job position: Barista wanted',
-  description: "Would you like to join our team? We offer amazing opportunity and great atmosphere.",
-  image: homeImage,
-}))
-
 export const getCategoryLabel = (category: CategoryNews | null | undefined): string => {
     if(!category) return "TẤT CẢ";
     return CATEGORY_LABELS[category] || category;
 }
 
 const News = () => {
-  const [activeCategory, setActiveCategory] = useState<CategoryType>('all');
+  const [activeCategory, setActiveCategory] = useState<CategoryType>('Tất cả');
   const theme = useTheme();
   const mdUp = useMediaQuery(theme.breakpoints.down('md'));
-  const filterNews = activeCategory === 'all' ? newsList : newsList.filter((item) => item.category === activeCategory)
   const [expanded, setExpanded] = useState(false);
-  const [newContent, setNewContent] = useState<NewsListProps | null>(null);
-
+  const [newContent, setNewContent] = useState<IPost | null>(null);
+  const [news, setNews] = useState<IPost[]>([]);
+  const [page, setPage] = useState<number>(0);
+  const [total, setTotal] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(8);
   
-  const handleToggleExpand = (item: NewsListProps) => {
+  const getNews = useCallback(async(currentPage: number, currentSize: number, category?: string) => {
+    const res = await getPostsPublic(currentPage, currentSize, category);
+    setNews(res.posts || [])
+    setTotal(res.totalPosts || 0);
+  },[])
+
+  const handleActiveCategory = (category: CategoryType) => {
+    setActiveCategory(category);
+    setPage(0);
+  }
+
+  useEffect(() => {
+      if(activeCategory){
+        
+        getNews(page, rowsPerPage, activeCategory)
+      }else{
+        getNews(page, rowsPerPage)
+      }
+  }, [page, rowsPerPage, activeCategory])
+  
+
+  const handleToggleExpand = (item: IPost) => {
     setExpanded((prev) => !prev);
     setNewContent(item)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage)
   }
 
   return (
@@ -105,7 +130,7 @@ const News = () => {
               {DataViewMode.map((category, index) => (
                 <Box
                   key={index}
-                  onClick={() => setActiveCategory(category.value)}
+                  onClick={() => category.value && handleActiveCategory(category.value)}
                   sx={{
                     px: 2,
                     py: 1,
@@ -131,13 +156,14 @@ const News = () => {
         )}
           {/* News Cards */}
           <Grid container spacing={3}>
-            {filterNews.map((item, index) => {
+            {news.map((item, index) => {
+              const formatted = dayjs(item.updatedAt).format('MMM DD,YYYY')
               return(
                 <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3}} key={item.id}>
                   <Card sx={{ bgcolor: '#1C1A1B', color: 'white'}}>
                     <CardMedia
                       component='img'
-                      image={item.image}
+                      image={getPathImage(item.imageUrl)}
                       alt={item.title}
                       sx={{
                           objectFit: 'fill',
@@ -148,24 +174,35 @@ const News = () => {
                     />
                     <CardContent>
                       <Box display='flex' justifyContent='space-between'>
-                        <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                        <Typography variant="subtitle2" sx={{ opacity: 0.7 }}>
                           {getCategoryLabel(item.category)}
                         </Typography>
-                        <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                          {item.date}
+                        <Typography variant="subtitle2" sx={{ opacity: 0.7 }}>
+                          {formatted}
                         </Typography>
                       </Box>
                       <Typography variant="h6" sx={{ mt: 1, fontWeight: 600 }}>
                         {item.title}
                       </Typography>
-                      <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
-                        {item.description}
+                      <Typography variant="body2" 
+                        sx={{ 
+                          mt: 1, opacity: 0.8, 
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {getFormatText(item.content)}
                       </Typography>
                       <Button
                         onClick={() => item && handleToggleExpand(item)}
                         variant="text"
                         sx={{ 
-                          mt: 1, color: "white", fontWeight: 500,
+                          mt: 1, color: "white", fontWeight: 500, fontSize: '13px',
                           textDecoration: 'underline',
                           '&:hover': { textDecoration: 'underline', textDecorationColor: '#fff', bgcolor: '#1C1A1B'} 
                         }}
@@ -179,6 +216,14 @@ const News = () => {
               )
             })}
           </Grid>
+          <Box display='flex' justifyContent='center'>
+            <CustomPagination
+              page={page}
+              count={total}
+              rowsPerPage={rowsPerPage}
+              onPageChange={handlePageChange}
+            />
+          </Box>
         </Box>
       )}
       {expanded && newContent && (

@@ -26,6 +26,7 @@
     "click-to-react-component": "^1.1.0",
     "dayjs": "^1.11.13",
     "deep-object-diff": "^1.1.9",
+    "html-react-parser": "^5.2.5",
     "i18next": "^23.15.2",
     "i18next-http-backend": "^2.6.1",
     "japan-postal-code": "^0.3.0",

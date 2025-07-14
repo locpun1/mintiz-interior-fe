@@ -39,7 +39,7 @@ const BlogPostCard: FC<BlogPostCardProps> = ({ post, onApprove, onReject, onPubl
   const statusInfo = getStatusInfo(post.status);
 
   const handleNavigate = () => {
-    navigate(`/manager/blog/${post.id}`);
+    navigate(`/manage/blog/${post.id}`);
   };
 
   const handleActionClick = (e: MouseEvent<HTMLButtonElement>, action: 'approve' | 'reject' | 'publish' | 'edit') => {
