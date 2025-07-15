@@ -69,7 +69,7 @@ const ImageCarousel: React.FC = () => {
       sx={{
         position: "relative",
         overflow: "hidden",
-        height: { xs: 350, md: 450 },
+        height: { xs: 300, md: 400 },
       }}
     >
       {displayImages.length > 0 && (
