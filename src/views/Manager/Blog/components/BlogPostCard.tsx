@@ -1,5 +1,5 @@
 // src/views/Manager/Blog/components/BlogPostCard.tsx
-import { FC, MouseEvent } from 'react'; 
+import { FC, MouseEvent } from 'react';
 import { Box, Card, CardActions, CardContent, CardMedia, Chip, Typography } from '@mui/material';
 import type { IPost } from '@/types/post';
 import Button from '@/components/Button/Button';
@@ -132,7 +132,7 @@ const BlogPostCard: FC<BlogPostCardProps> = ({ post, onApprove, onReject, onPubl
             {post.isPublished ? 'Hủy Đăng' : 'Đăng Tải'}
           </Button>
         )}
-        {onEdit && (post.status === 'rejected') && (
+        {onEdit && (post.status === 'rejected' || post.status === 'pending') && (
           <Button
             customVariant="secondary"
             width="48%"

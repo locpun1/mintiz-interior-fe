@@ -1,4 +1,3 @@
-// src/routes/routes.tsx
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import { Navigate, useRoutes } from 'react-router-dom';
@@ -20,11 +19,8 @@ const News = Loadable(lazy(() => import('@/views/LandingPage/News/index')));
 const NotFound = Loadable(lazy(() => import('@/views/Errors/NotFound')));
 const PermissionDenied = Loadable(lazy(() => import('@/views/Errors/PermissionDenied')));
 
-
-
-
 const routes: RouteObject[] = [
-  // --- NHÁNH 1: CÁC TRANG ĐƯỢC BẢO VỆ (PRIVATE) ---
+  // --- NHÁNH 1: CÁC TRANG QUẢN LÝ (PRIVATE) ---
   {
     path: '/manage',
     element: <AuthGuard />,
@@ -33,17 +29,15 @@ const routes: RouteObject[] = [
         element: <DashboardLayout />,
         children: managerRoutes,
       }
-
     ],
   },
   
-  // --- NHÁNH 2: CÁC TRANG CÔNG KHAI (PUBLIC) ---
+  // --- NHÁNH 2: CÁC TRANG XÁC THỰC (CHỈ DÀNH CHO NGƯỜI CHƯA ĐĂNG NHẬP) ---
   {
-    path: '/',
+    path: '/auth',
     element: <PublicRoute />,
     children: [
       {
-        path: 'auth',
         element: <AuthLayout />,
         children: [
           { index: true, element: <Navigate to="login" replace /> },
@@ -51,20 +45,22 @@ const routes: RouteObject[] = [
           { path: 'change-password', element: <ChangePassword /> },
         ],
       },
-      {
-        element: <LandingPageLayout />,
-        children: [
-          { path: 'home', element: <Home /> },
-          { path: 'about-us', element: <AboutUs /> },
-          { path: 'news', element: <News /> },
-          // Nếu người dùng vào '/', mặc định hiển thị trang home
-          { index: true, element: <Navigate to="/home" replace /> },
-        ],
-      },
+    ],
+  },
+  
+  // --- NHÁNH 3: CÁC TRANG CÔNG KHAI (LANDING PAGE - DÀNH CHO TẤT CẢ MỌI NGƯỜI) ---
+  {
+    path: '/',
+    element: <LandingPageLayout />, 
+    children: [
+      { path: 'home', element: <Home /> },
+      { path: 'about-us', element: <AboutUs /> },
+      { path: 'news', element: <News /> },
+      { index: true, element: <Navigate to="/home" replace /> },
     ],
   },
 
-  // --- NHÁNH 3: CÁC TRANG LỖI (Nằm ngoài các layout chính) ---
+  // --- NHÁNH 4: CÁC TRANG LỖI ---
   {
     path: '/403',
     element: <PermissionDenied />,

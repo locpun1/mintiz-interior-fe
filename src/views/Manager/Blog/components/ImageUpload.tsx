@@ -1,62 +1,92 @@
-// src/views/Manager/Blog/components/ImageUpload.tsx
-import { FC, useCallback, useState } from 'react';
-import { Box, Typography, styled } from '@mui/material';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { useDropzone } from 'react-dropzone';
-
-const DropzoneContainer = styled(Box)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius * 2,
-  padding: theme.spacing(4),
-  textAlign: 'center',
-  cursor: 'pointer',
-  border: '1px dashed #1C1A1B',
-  transition: theme.transitions.create('border-color'),
-  '&:hover': {
-    borderColor: theme.palette.primary.main,
-  },
-}));
+import React, { useState, useRef, useEffect } from 'react';
+import { Box, Typography, Button, IconButton } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface ImageUploadProps {
   onFileSelect: (file: File) => void;
+  initialImage?: string;
 }
 
-const ImageUpload: FC<ImageUploadProps> = ({ onFileSelect }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, initialImage }) => {
   const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
+  useEffect(() => {
+    if (initialImage) {
+      setPreview(initialImage);
+    }
+  }, [initialImage]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       onFileSelect(file);
-      setPreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }, [onFileSelect]);
+  };
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: { 'image/*': ['.jpeg', '.png', '.jpg', '.gif'] },
-    maxFiles: 1,
-  });
+  const handleRemoveImage = () => {
+    setPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleBoxClick = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
-    <DropzoneContainer {...getRootProps()}>
-      <input {...getInputProps()} />
+    <Box>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
+      
       {preview ? (
-        <Box
-          component="img"
-          src={preview}
-          alt="Preview"
-          sx={{ maxHeight: 200, maxWidth: '100%', borderRadius: 2 }}
-        />
+        <Box sx={{ position: 'relative', width: '100%', height: '250px', border: '1px dashed grey', borderRadius: 2, overflow: 'hidden' }}>
+          <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <IconButton
+            onClick={handleRemoveImage}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              '&:hover': { backgroundColor: 'rgba(255, 255, 255, 1)' }
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Box>
       ) : (
-        <>
-          <AddPhotoAlternateIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-          <Typography variant="h6">Thêm hình ảnh</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Kéo và thả hoặc nhấn để chọn file
-          </Typography>
-        </>
+        <Box
+          onClick={handleBoxClick}
+          sx={{
+            border: '2px dashed #ccc',
+            borderRadius: 2,
+            p: 3,
+            textAlign: 'center',
+            cursor: 'pointer',
+            '&:hover': { borderColor: 'primary.main' }
+          }}
+        >
+          <CloudUploadIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
+          <Typography>Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</Typography>
+          <Button variant="contained" component="span" sx={{ mt: 2 }}>
+            Tải ảnh lên
+          </Button>
+        </Box>
       )}
-    </DropzoneContainer>
+    </Box>
   );
 };
 

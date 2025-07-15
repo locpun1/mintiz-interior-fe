@@ -11,6 +11,7 @@ import AddDesignAndBuilds from "./AddDesignAndBuilds";
 import { Delete, Edit } from "@mui/icons-material";
 import ModalDetailDesignAndBuild from "./ModalDetailDesignAndBuild";
 import useNotification from "@/hooks/useNotification";
+import CustomPagination from "@/components/Pagination/CustomPagination";
 
 interface DesignAndBuildProps{
     searchTerm: string
@@ -19,7 +20,7 @@ interface DesignAndBuildProps{
 const DesignAndBuild: React.FC<DesignAndBuildProps> = ({ searchTerm }) => {
     const notify = useNotification();
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(6);
+    const [rowsPerPage, setRowsPerPage] = useState(4);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -92,6 +93,11 @@ const DesignAndBuild: React.FC<DesignAndBuildProps> = ({ searchTerm }) => {
             notify({ message: error.message, severity: 'error'})
         }
     }
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage)
+    }
+
     return(
         <Box
             mt={3}
@@ -199,7 +205,16 @@ const DesignAndBuild: React.FC<DesignAndBuildProps> = ({ searchTerm }) => {
                             </>
                         )}
                     </Grid>
-                )}                             
+                )}
+                        <Box display='flex' justifyContent='center'>
+                            <CustomPagination
+                                count={total}
+                                rowsPerPage={rowsPerPage}
+                                onPageChange={handlePageChange}
+                                page={page}
+                                sx={{ mt: 2}}
+                            />
+                        </Box>                       
             </Grid>
             {openModal && designAndBuild && (
                 <ModalDetailDesignAndBuild
