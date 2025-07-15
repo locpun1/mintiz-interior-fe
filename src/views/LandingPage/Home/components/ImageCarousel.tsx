@@ -4,8 +4,7 @@ import { FiberManualRecord } from "@mui/icons-material";
 import { IImageSlide } from "@/types/settings";
 import { getSlides } from "@/services/settings-service";
 import { getPathImage } from "@/utils/url";
-import image_slide from '@/assets/images/users/image-slide.jpeg';
-import image_slide_1 from '@/assets/images/users/image-slide -1.jpeg';
+import image_slide from '@/assets/images/users/Background-xam-1.jpg';
 
 interface SrcSetWidth extends IImageSlide{
     srcSet1200: string,
@@ -13,8 +12,7 @@ interface SrcSetWidth extends IImageSlide{
 }
 
 const fixedImages: SrcSetWidth[] = [
-    {id: 1, name: 'image_slide', url: `${image_slide}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide_1}` },
-    {id: 2, name: 'image_slide_1', url: `${image_slide_1}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide_1}`},
+    {id: 1, name: 'image_slide', url: `${image_slide}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide}` },
 
 ]
 
@@ -51,11 +49,10 @@ const ImageCarousel: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nextIndex = (currentIndex + 1) % totalSlides;
-      setPrevIndex(currentIndex);
-      setCurrentIndex(nextIndex);
+      const index = (currentIndex + 1) % totalSlides;
+      setCurrentIndex(index);
       setFade(true);
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [currentIndex, totalSlides]);
@@ -77,37 +74,12 @@ const ImageCarousel: React.FC = () => {
     >
       {displayImages.length > 0 && (
         <>
-          {/* Layer chứa ảnh trước */}
-          <Box
-            sx={{
-              position: "absolute",
-              inset: 0,
-              opacity: fade ? 0 : 1,
-              transition: "opacity 0.5s ease-in-out",
-              zIndex: 1,
-            }}
-          >
-            <picture>
-              <source media="(min-width: 1200px)" srcSet={displayImages[prevIndex]?.srcSet1200} />
-              <source media="(min-width: 768px)" srcSet={displayImages[prevIndex]?.srcSet768} />
-              <img
-                src={displayImages[prevIndex].url}
-                alt={`Slide ${prevIndex}`}
-                style={{ 
-                  width: "100%", 
-                  height: "100%", 
-                  objectFit: "fill" 
-                }}
-              />
-            </picture>
-          </Box>
-
           {/* Layer chứa ảnh mới */}
           <Box
             sx={{
               position: "absolute",
               inset: 0,
-              opacity: fade ? 1 : 0,
+              // opacity: fade ? 1 : 0,
               transition: "opacity 0.5s ease-in-out",
               zIndex: 2,
             }}
@@ -121,7 +93,7 @@ const ImageCarousel: React.FC = () => {
                 style={{ 
                   width: "100%", 
                   height: "100%", 
-                  objectFit: "cover" 
+                  objectFit: "fill" 
                 }}
               />
             </picture>

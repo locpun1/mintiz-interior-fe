@@ -16,3 +16,12 @@ export interface IServices{
     order?: string | number,
     isReverse?: boolean
 }
+
+export interface IDesignAndBuild{
+    id: string | number,
+    title: string,
+    image_url: string,
+    content: string,
+    createdAt?: string,
+    updatedAt?: string,
+}
