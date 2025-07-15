@@ -7,9 +7,9 @@ import image_service_2 from "@/assets/images/users/image-slide -1.jpeg";
 import image_service_3 from "@/assets/images/users/image_service_3.png";
 import image_service_4 from "@/assets/images/users/image_service_4.png";
 import image_service_5 from "@/assets/images/users/image_service_5.png";
-import plan_1 from "@/assets/images/users/plan_1.png";
-import plan_2 from "@/assets/images/users/plan_2.png";
-import plan_3 from "@/assets/images/users/plan_3.png";
+import plan_1 from "@/assets/images/users/Background-xam-1.jpg";
+import plan_2 from "@/assets/images/users/Background-xam-1.jpg";
+import plan_3 from "@/assets/images/users/Background-xam-1.jpg";
 
 
 

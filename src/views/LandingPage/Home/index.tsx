@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import homeImage from "@/assets/images/users/home-image.png";
+import homeImage from "@/assets/images/users/Background-xam-1.jpg";
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ContactConsultativeInfo from './components/ContactConsultativeInfo';
@@ -31,7 +31,7 @@ const Home = () => {
           sx={{
             position: 'absolute',
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
+            backgroundColor: 'rgba(88, 87, 87, 0.5)',
             zIndex: 1,
           }}
         >
