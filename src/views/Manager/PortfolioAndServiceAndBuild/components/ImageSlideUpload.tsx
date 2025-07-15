@@ -22,28 +22,42 @@ interface ImageUploadProps {
   handleAddImage: () => void;
 }
 
+const MIN_WIDTH = 1920;
+const MIN_HEIGHT = 1080;
+const MAX_SIZE_MB = 10;
+
 const ImageSlideUpload: FC<ImageUploadProps> = ({ onFileSelect, handleAddImage }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const notify = useNotification();
   const [error, setError] = useState<string>('');
+  const [isChecking, setIsChecking] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if(!file) return;
 
-    //Kiểm tra dung lượng file < 10MB
-    if(file.size > 10 * 1024 * 1024){
-      setError(`Ảnh quá lớn (${(file.size/ (1024 * 1024)).toFixed(2)} MB). Vui lòng chọn lại ảnh`);
+    // Kiểm tra loại file
+    if (!file.type.startsWith("image/")) {
+      setError("File phải là hình ảnh.");
+      setIsChecking(false);
       return;
     }
 
+    //Kiểm tra dung lượng file < 10MB
+    const fileSizeMB = file.size / (1024 * 1024);
+    if(file.size > MAX_SIZE_MB * 1024 * 1024){
+      setError(`Ảnh quá lớn (${fileSizeMB.toFixed(2)} MB). Vui lòng chọn lại ảnh`);
+      return;
+    }
+    setIsChecking(true);
     //Kiểm tra kích thước ảnh
     const image = new Image();
     image.src = URL.createObjectURL(file);
     image.onload = () => {
-      if(image.width < 4920 || image.height < 3260){
+      if(image.width < MIN_WIDTH || image.height < MIN_HEIGHT){
         setError(`Ảnh bạn chọn có kích thước ${image.width}x${image.height}. 
-                    Phải ít nhất 4920x3260 để không bị vỡ khi hiển thị slide.`);
+                    Phải ít nhất ${MIN_WIDTH}x${MIN_HEIGHT} để không bị vỡ khi hiển thị slide.`);
+        setIsChecking(false);
         URL.revokeObjectURL(image.src);
         setPreview(null)
         return;
@@ -51,15 +65,26 @@ const ImageSlideUpload: FC<ImageUploadProps> = ({ onFileSelect, handleAddImage }
 
       // Nếu pass
       onFileSelect(file);
-      setPreview(image.src)
-    }
+      const previewUrl = URL.createObjectURL(file);
+      setPreview(previewUrl);
+      setError('');
+      setIsChecking(false);
+      URL.revokeObjectURL(image.src);
+    };
+
+    image.onerror = () => {
+      setError("Không đọc được file hình ảnh.");
+      setIsChecking(false);
+      URL.revokeObjectURL(image.src);
+    };
   }, [onFileSelect]);
 
   // Cleanup URL khi component bị hủy hoặc preview thay đổi
   useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
+      if (!preview) return;
+      return () => {
+        URL.revokeObjectURL(preview);
+      };
   }, [preview]);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -78,6 +103,10 @@ const ImageSlideUpload: FC<ImageUploadProps> = ({ onFileSelect, handleAddImage }
                 Kéo và thả hoặc nhấn để chọn file
             </Typography>
         </DropzoneContainer>
+
+        {isChecking && (
+          <Typography mt={2} fontWeight={500} variant='body2' color="primary">Đang kiểm tra ảnh...</Typography>
+        )}
         {error && (
           <Box mt={2}>
             <Typography fontWeight={500} variant='body2'>{error}</Typography>

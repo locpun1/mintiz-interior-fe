@@ -8,6 +8,7 @@ import FilterTabs from '../Account/components/FilterTabs';
 import InputSearch from '@/components/SearchBar';
 import ImageSlide from './components/ImageSlide';
 import Services from './components/Services';
+import DesignAndBuild from './components/DesignAndBuild';
 
 export interface DataProps{
     id: number | string;
@@ -28,6 +29,12 @@ const Data: DataProps[] = [
         value: 2,
         label: 'Dịch vụ',
         icon: <TrackChangesIcon sx={{ color: '#64b5f6'}} fontSize='small'/>
+    },
+    {
+        id: 3,
+        value: 3,
+        label: 'Thiết kế & thi công',
+        icon: <DesignServicesIcon  sx={{ color: '#81c784'}} fontSize='small'/>
     }
 ]
 
@@ -50,6 +57,7 @@ const ManagementPortfolioServiceBuild: React.FC = () => {
                 </Box>
                 {viewMode === 1 && <ImageSlide searchTerm={searchTerm} />}
                 {viewMode === 2 && <Services searchTerm={searchTerm} />}
+                {viewMode === 3 && <DesignAndBuild searchTerm={searchTerm} />}
             </Page>
         </Box>
     )
