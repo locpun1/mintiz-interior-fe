@@ -91,7 +91,7 @@ const ManagementBlog: FC = () => {
   const handlePublish = (postId: number, currentState: boolean) => {
     publishMutation.mutate({ postId, publish: !currentState });
   };
-  const handleEdit = (postId: number) => navigate(`/manager/blog/edit/${postId}`);
+  const handleEdit = (postId: number) => navigate(`/manage/blog/edit/${postId}`);
 
   const handleCloseDialog = () => {
     setDialog({ open: false, type: null, postId: null });
@@ -133,7 +133,7 @@ const ManagementBlog: FC = () => {
           {posts.map((post) => {
             const canAdminReview = isAdmin && post.status === 'pending';
             const canEmployeePublish = isEmployee && post.status === 'approved';
-            const canEmployeeEdit = isEmployee && (post.status === 'approved' || post.status === 'rejected');
+            const canEmployeeEdit = isEmployee && (post.status === 'pending' || post.status === 'rejected'); 
 
             return (
               <Grid item xs={12} sm={6} md={4} key={post.id}>

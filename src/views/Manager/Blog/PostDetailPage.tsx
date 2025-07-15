@@ -6,11 +6,12 @@ import { Box, Typography, Paper, CircularProgress, Button as MuiButton, Chip, St
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import Page from '@/components/Page';
-import { getPostById, reviewPost } from '@/services/post-service';
+import { getPostById, publishPost, reviewPost } from '@/services/post-service';
 import useNotification from '@/hooks/useNotification';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { useState } from 'react';
 import Button from '@/components/Button/Button';
+import useAuth from '@/hooks/useAuth';
 
 const formatDate = (dateString: string) => {
   return new Intl.DateTimeFormat('vi-VN', {
@@ -20,26 +21,51 @@ const formatDate = (dateString: string) => {
   }).format(new Date(dateString));
 };
 
+const getStatusInfo = (status: 'pending' | 'approved' | 'rejected') => {
+  switch (status) {
+    case 'approved': return { label: 'Đã duyệt', color: 'success' as const };
+    case 'rejected': return { label: 'Bị từ chối', color: 'error' as const };
+    case 'pending': default: return { label: 'Chờ duyệt', color: 'warning' as const };
+  }
+};
+
 const PostDetailPage: FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
   const notify = useNotification();
   const queryClient = useQueryClient();
+  const { profile } = useAuth();
 
-  const [dialog, setDialog] = useState<{ open: boolean; type: 'approve' | 'reject' | null }>({ open: false, type: null });
+  const [dialog, setDialog] = useState<{ open: boolean; type: 'approve' | 'reject' | 'publish' | null }>({ open: false, type: null }); 
   const [rejectionReason, setRejectionReason] = useState('');
 
-  const { data: post, isLoading, isError } = useQuery({
+  const { data: postResponse, isLoading, isError } = useQuery({
     queryKey: ['post', postId],
     queryFn: () => getPostById(Number(postId)),
     enabled: !!postId,
   });
+
+  const post = postResponse?.data;
 
   const reviewMutation = useMutation({
     mutationFn: (variables: { status: 'approved' | 'rejected'; reason?: string }) =>
       reviewPost(Number(postId), { status: variables.status, rejectionReason: variables.reason }),
     onSuccess: (data, variables) => {
       const successMessage = variables.status === 'approved' ? `Đã chấp nhận bài viết` : `Đã từ chối bài viết`;
+      notify({ severity: 'success', message: successMessage });
+      queryClient.invalidateQueries({ queryKey: ['post', postId] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      setDialog({ open: false, type: null });
+    },
+    onError: (error: any) => {
+      notify({ severity: 'error', message: error.message || 'Thao tác thất bại' });
+    }
+  });
+
+  const publishMutation = useMutation({
+    mutationFn: (variables: { isPublished: boolean }) => publishPost(Number(postId), { publish: variables.isPublished }),
+    onSuccess: (data, variables) => {
+      const successMessage = variables.isPublished ? 'Đã đăng tải bài viết' : 'Đã hủy đăng bài viết';
       notify({ severity: 'success', message: successMessage });
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
@@ -59,10 +85,22 @@ const PostDetailPage: FC = () => {
     return <Typography>Không thể tải bài viết hoặc bài viết không tồn tại.</Typography>;
   }
 
-  // Xử lý dialog
-  const handleOpenDialog = (type: 'approve' | 'reject') => {
+  const isAdmin = profile?.role === 'admin';
+  const isEmployee = profile?.role === 'employee';
+
+  const canAdminReview = isAdmin && post.status === 'pending';
+  const canEmployeePublish = isEmployee && post.status === 'approved';
+  const canEmployeeEdit = isEmployee && (post.status === 'pending' || post.status === 'rejected');
+
+  const statusInfo = getStatusInfo(post.status);
+
+  const handleOpenDialog = (type: 'approve' | 'reject' | 'publish') => {
     setRejectionReason('');
     setDialog({ open: true, type });
+  };
+
+  const handleEdit = () => {
+    navigate(`/manage/blog/edit/${postId}`);
   };
 
   const handleConfirmAction = () => {
@@ -74,11 +112,13 @@ const PostDetailPage: FC = () => {
         return;
       }
       reviewMutation.mutate({ status: 'rejected', reason: rejectionReason });
+    } else if (dialog.type === 'publish') {
+      publishMutation.mutate({ isPublished: !post.isPublished });
     }
   };
 
   return (
-    <Page title={`Chi tiết: ${post?.data?.title}`}>
+    <Page title={`Chi tiết: ${post?.title}`}>
       <MuiButton
         startIcon={<ArrowBackIcon />}
         onClick={() => navigate(-1)}
@@ -94,21 +134,21 @@ const PostDetailPage: FC = () => {
 
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Chip label={post?.data?.category || ''} sx={{ color: "#171717", fontSize: '16px', fontWeight: '700' }} size="small" />
+          <Chip label={post?.category || ''} sx={{ color: "#171717", fontSize: '16px', fontWeight: '700' }} size="small" />
           <Typography variant="body2" color="text.secondary">
-            {formatDate(post?.data?.createdAt)}
+            {formatDate(post?.createdAt)}
           </Typography>
         </Stack>
 
         <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          {post?.data?.title}
+          {post?.title}
         </Typography>
 
-        {post?.data?.imageUrl && (
+        {post?.imageUrl && (
           <Box
             component="img"
-            src={`${import.meta.env.VITE_API_BASE_URL}${post.data.imageUrl}`}
-            alt={post.data.title}
+            src={`${import.meta.env.VITE_API_BASE_URL}${post.imageUrl}`}
+            alt={post.title}
             sx={{
               width: '100%',
               maxHeight: '500px',
@@ -126,42 +166,36 @@ const PostDetailPage: FC = () => {
             '& ul, & ol': { pl: 3 },
             '& p': { mb: 2 },
           }}
-          dangerouslySetInnerHTML={{ __html: post?.data?.content }}
+          dangerouslySetInnerHTML={{ __html: post?.content }}
         />
+        <Stack direction="row" spacing={2} justifyContent="center" mt={4}>
+          {/* Nút chỉ dành cho ADMIN */}
+          {canAdminReview && (
+            <>
+              <Button handleFunt={() => handleOpenDialog('approve')}>Chấp nhận</Button>
+              <Button handleFunt={() => handleOpenDialog('reject')}>Từ chối</Button>
+            </>
+          )}
 
-        {/* Chỉ hiển thị nút khi bài viết đang chờ duyệt */}
-        {post?.data?.status === 'pending' && (
-          <Stack direction="row" spacing={2} justifyContent="center" mt={4}>
+          {/* Nút chỉ dành cho EMPLOYEE */}
+          {canEmployeePublish && (
+            <Button
+              customVariant="primary"
+              handleFunt={() => handleOpenDialog('publish')}
+            >
+              {post.isPublished ? 'Hủy Đăng' : 'Đăng Tải'}
+            </Button>
+          )}
+
+          {canEmployeeEdit && (
             <Button
               customVariant="secondary"
-              width={135}
-              padding='8px 20px'
-              borderRadius='16px'
-              backgroundColor='#FFFFFF'
-              border='2px solid #1C1A1B'
-              fontColor='#1C1A1B'
-              fontSize='16px'
-              fontWeight='500'
-              handleFunt={() => handleOpenDialog('approve')}
+              handleFunt={handleEdit}
             >
-              Chấp nhận
+              Chỉnh Sửa
             </Button>
-            <Button
-              customVariant="secondary"
-              width={135}
-              padding='8px 20px'
-              borderRadius='16px'
-              backgroundColor='#FFFFFF'
-              border='2px solid #1C1A1B'
-              fontColor='#1C1A1B'
-              fontSize='16px'
-              fontWeight='500'
-              handleFunt={() => handleOpenDialog('reject')}
-            >
-              Từ chối
-            </Button>
-          </Stack>
-        )}
+          )}
+        </Stack>
       </Paper>
 
       <ConfirmDialog

@@ -18,6 +18,7 @@ export const ROUTE_PATH = {
  MANAGE_BLOG: 'blog', 
  BLOG_CREATE: 'create', 
  BLOG_DETAIL: ':postId',
+ BLOG_EDIT:'edit/:postId',
 
   //Staff
   STAFF:"staff",

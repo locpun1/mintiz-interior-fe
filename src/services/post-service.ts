@@ -85,3 +85,18 @@ export const publishPost = (postId: number, payload: { publish: boolean }) => {
     payload
   );
 };
+
+interface UpdatePostPayload {
+  title: string;
+  content: string;
+  category: string;
+  imageUrl?: string | null;
+  time?: string;
+}
+
+export const updatePost = (postId: number, payload: UpdatePostPayload) => {
+  return HttpClient.patch<UpdatePostPayload, HttpResponse<IPost>>(
+    `${prefix}/${postId}`,
+    payload
+  );
+};
