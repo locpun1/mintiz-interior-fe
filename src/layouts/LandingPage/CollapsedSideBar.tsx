@@ -24,7 +24,7 @@ const CollapsedSideBar = (props: CollapsedSideBarProps) => {
 
     const menuItems = [
         { label: 'Trang chủ', icon: <Home/>, path: '/home' },
-        { label: 'About us', icon: <AccountCircle/>, path: '/about-us' },
+        { label: 'Giới thiệu', icon: <AccountCircle/>, path: '/about-us' },
         { label: 'Tin tức', icon: <Newspaper/>, path: '/news' },
     ];
 
