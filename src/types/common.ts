@@ -105,10 +105,12 @@ export interface PaginatedResponse<T> {
   posts?: T[];
   slides?: T[];
   services?: T[];
+  designAndBuilds?: T[];
   totalPages: number;
   currentPage: number;
   totalUsers?: number;
   totalPosts?: number;
   totalSlides?: number;
   totalServices?: number;
+  totalDesignAndBuilds?: number;
 }

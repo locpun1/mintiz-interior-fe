@@ -1,12 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid2"
-import { CONTENT_PLAN } from "@/constants/contentAbout";
 import { Box, Stack, Typography } from "@mui/material";
+import { IDesignAndBuild } from "@/types/settings";
+import { getDesignAndBuilds } from "@/services/settings-service";
+import { getPathImage } from "@/utils/url";
 
 const PlanDrawing: React.FC = () => {
+    const page = 0;
+    const rowsPerPage = 4;
+    const [designAndBuilds, setDesignAndBuilds] = useState<IDesignAndBuild[]>([]);
+    
+    useEffect(() => {
+        const fetchDesignAndBuilds = async() => {
+            const res = await getDesignAndBuilds({ page: page, size: rowsPerPage});
+            const data = res.data?.designAndBuilds as any as IDesignAndBuild[];
+            setDesignAndBuilds(data);
+        }
+        fetchDesignAndBuilds()
+    }, [page, rowsPerPage])
+
     return(
         <Grid container>
-            {CONTENT_PLAN.map((content, index) => {
+            {designAndBuilds.slice(0,3).map((data, index) => {
                 return(
                     <Grid key={index} size={{ xs: 12, md:4}}>
                         <Box
@@ -14,7 +29,7 @@ const PlanDrawing: React.FC = () => {
                                 position: 'relative',
                                 height: {xs: 300, md: 400}, // Chiều cao thu gọn lại
                                 width: '100%',
-                                backgroundImage: `url(${content.image})`,
+                                backgroundImage: `url(${getPathImage(data.image_url)})`,
                                 backgroundSize: '100% 100%',
                                 backgroundPosition: 'center',
                                 display: 'flex',
@@ -44,9 +59,10 @@ const PlanDrawing: React.FC = () => {
                                         alignItems: 'center'
                                     }}
                                 >
-                                    <Typography fontWeight={500} sx={{ whiteSpace: 'normal', wordBreak: 'break-word', my: 1.5, fontSize: {xs: '20px', md: '25px'}}}>{content.title}</Typography>
+                                    <Typography fontWeight={500} sx={{ whiteSpace: 'normal', wordBreak: 'break-word', my: 1.5, fontSize: {xs: '20px', md: '25px'}}}>{data.title}</Typography>
                                     <Stack direction='column'>
-                                        {content.content.map((item, idx) => {
+                                        {data.content.split('\n').map((line, idx) => {
+                                            const newLine = line.replace('/^\s*[-*~>]/', '•');
                                             return (
                                                 <Typography 
                                                     key={idx}
@@ -55,7 +71,7 @@ const PlanDrawing: React.FC = () => {
                                                         whiteSpace: 'normal', wordBreak: 'break-word',fontSize: {xs: '13px', md: '15px'},
                                                     }}
                                                 >
-                                                    {`• ${item}`}
+                                                    {`${newLine.trim()}`}
                                                 </Typography>
                                             )
                                         })}
