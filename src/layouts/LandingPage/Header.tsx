@@ -73,7 +73,7 @@ const Header = (props: Props) => {
               }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 15, }}>
                 <Typography sx={styleMenu('/home')} onClick={() =>  handleMenuClick('home','/home')}>Trang chủ</Typography>
-                <Typography sx={styleMenu('/about-us')} onClick={() =>  handleMenuClick('about-us','/about-us')}>About us</Typography>
+                <Typography sx={styleMenu('/about-us')} onClick={() =>  handleMenuClick('about-us','/about-us')}>Giới thiệu</Typography>
 
                 <CommonImage
                   src={mintz_logo}
