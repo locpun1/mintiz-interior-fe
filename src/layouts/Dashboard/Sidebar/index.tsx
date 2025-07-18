@@ -37,6 +37,7 @@ import ProfileSection from './ProfileSection';
 import { signOut } from '@/services/auth-service';
 import { setIsAuth, setProfile } from '@/slices/auth';
 import { removeAccessToken } from '@/utils/AuthHelper';
+import { GroupPermission } from '@/types/permission';
 
 export const CollapseContext = createContext<boolean | null>(null);
 export const SidebarContext = createContext<boolean | null>(null);
@@ -46,16 +47,18 @@ interface Props {
   collapsed: boolean;
   onCloseSidebar: () => void;
   onToggleCollapsed: () => void;
+  menuData:GroupPermission | null
 }
 const Sidebar = (props: Props) => {
-  const { openSidebar, collapsed, onCloseSidebar, onToggleCollapsed } = props;
+  const { openSidebar, collapsed, onCloseSidebar, onToggleCollapsed, menuData } = props;
   const { pathname } = useLocation();
   const dispatch = useAppDispatch();
   const { profile } = useAppSelector((state) => state.auth);
-  const sections = useMemo(() => Sections(profile), [profile]);
   const theme = useTheme();
   const prevPathName = usePrevious(pathname);
 
+  const sections = useMemo(() => Sections(profile, menuData), [profile, menuData]);
+  
   const lgUp = useMediaQuery(theme.breakpoints.up('lg'));
 
   useEffect(() => {
