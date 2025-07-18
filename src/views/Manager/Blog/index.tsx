@@ -128,7 +128,7 @@ const ManagementBlog: FC = () => {
       {isLoading && posts.length === 0 ? (
         <BlogSkeleton />
       ) : (
-        <Grid container spacing={3}>
+        <Grid sx={{ mx: 0.5}} container spacing={3}>
           {profile?.role === 'employee' && <Grid item xs={12} sm={6} md={4}><CreatePostCard /></Grid>}
           {posts.map((post) => {
             const canAdminReview = isAdmin && post.status === 'pending';
