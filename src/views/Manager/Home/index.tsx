@@ -49,6 +49,10 @@ const HomeDashboardManager: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [userId, setUserId] = useState<string | number>('');
 
+  const menuCodes: string[] = JSON.parse(localStorage.getItem('menuCodes') || '[]');
+  console.log("menuCodes: ", menuCodes);
+  
+
   const handleSearch = (value: string) => {
     setSearchTerm(value.trim())
   }
@@ -218,7 +222,7 @@ const HomeDashboardManager: React.FC = () => {
               </SummaryCard>
             </Box>
           )}
-          {profile?.role === ROLE.EMPLOYEE && (
+          {profile?.role === ROLE.EMPLOYEE && menuCodes.includes('002') && (
             <Box my={1.5}>
               <SummaryCard
                 title="Quản lý thông tin"
@@ -228,15 +232,20 @@ const HomeDashboardManager: React.FC = () => {
               </SummaryCard>
             </Box>
           )}
-          <SummaryCard
-            title="Quản lý bài viết"
-            seeMoreLink="/manager/blog"
-          >
-            <PostSummary pendingPosts={pendingPosts}
-              onApprove={canReview ? handleApprove : undefined}
-              onReject={canReview ? handleReject : undefined}
-            />
-          </SummaryCard>
+          {profile?.role === ROLE.ADMIN || (profile?.role === ROLE.EMPLOYEE && menuCodes.includes('003')) && (
+            <Box mt={1.5}>
+              <SummaryCard
+                title="Quản lý bài viết"
+                seeMoreLink="/manage/blog"
+              >
+                <PostSummary pendingPosts={pendingPosts}
+                  onApprove={canReview ? handleApprove : undefined}
+                  onReject={canReview ? handleReject : undefined}
+                />
+              </SummaryCard> 
+            </Box>
+          )}
+
         </Box>
       </Page>
       <ConfirmDialog

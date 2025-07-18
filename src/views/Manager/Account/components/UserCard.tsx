@@ -12,9 +12,10 @@ interface UserCardProps {
     handleEdit: (id: string | number) => void,
     handleReset: (id: string | number) => void,
     handleActive: (id: string | number) => void,
+    handleAttach: (userProfile: UserProfile) => void,
 }
 
-const UserCard: React.FC<UserCardProps> = ({ userProfile,  handleClick, handleDelete, handleEdit, handleReset, handleActive }) => {
+const UserCard: React.FC<UserCardProps> = ({ userProfile,  handleClick, handleDelete, handleEdit, handleReset, handleActive, handleAttach }) => {
     return (
         <Card onClick={() =>  userProfile.id && handleClick(userProfile.id)} sx={{ position: 'relative', borderRadius: '15px', cursor: 'pointer' }}>
             <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
@@ -36,6 +37,15 @@ const UserCard: React.FC<UserCardProps> = ({ userProfile,  handleClick, handleDe
                 <Typography sx={{ wordBreak: 'break-all' }} variant="body2">Username: {userProfile.username || '-'}</Typography>
                 <Typography variant="body2">Số điện thoại: {userProfile.phone_number || '-'}</Typography>
                 <Box sx={{ display: 'flex', mt: 1, gap: 1, justifyContent:'center' }}>
+                    <Button 
+                        onClick={(e) => {
+                            e.stopPropagation(); 
+                            userProfile && handleAttach(userProfile);
+                        }} 
+                        disabled={userProfile.is_deleted === 1} variant="outlined" sx={{ color: '#1C1A1B', border: '1px solid #1C1A1B'}} size="small"
+                    >
+                        Gán
+                    </Button>
                     <Button 
                         onClick={(e) => {
                             e.stopPropagation(); 
