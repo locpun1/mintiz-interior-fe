@@ -37,7 +37,7 @@ const AccountCard = ({ user, handleOpenEdit, handleOpenDelete, handleOpenView }:
         </Stack>
       </Box>
       <Typography variant="body2" color="text.secondary">Username: {user.username}</Typography>
-      <Typography variant="body2" color="text.secondary">Pass: ********</Typography>
+      <Typography variant="body2" color="text.secondary">Số điện thoại: {user.phone_number || " - "}</Typography>
     </Box>
 
   </Card>

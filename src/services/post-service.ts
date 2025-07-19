@@ -102,7 +102,7 @@ export const updatePost = (postId: number, payload: UpdatePostPayload) => {
   );
 };
 
-interface AdminAndTotalPost{
+interface TotalPost{
   admin: UserProfile;
   totalPostApproved: number,
   totalPostPending: number
@@ -110,7 +110,7 @@ interface AdminAndTotalPost{
 
 
 
-export const getAdminAndTotalPost = (params: GetPostsParams) => {
-  let url = `${prefix}/admin-total-post`;
-  return HttpClient.get<HttpResponse<AdminAndTotalPost>>(url, {params})
+export const getTotalPost = (params: GetPostsParams) => {
+  let url = `${prefix}/total-post`;
+  return HttpClient.get<HttpResponse<TotalPost>>(url, {params})
 };

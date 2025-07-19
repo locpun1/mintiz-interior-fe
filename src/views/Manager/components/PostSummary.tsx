@@ -3,8 +3,8 @@ import Button from '@/components/Button/Button';
 import { IPost } from '@/types/post';
 import { Box, Card, Grid, Skeleton, Stack, Typography, useTheme } from '@mui/material';
 import BlogPostCard from '../Blog/components/BlogPostCard';
-import { UserProfile } from '@/types/user-types';
 import { getRoleLabel } from '@/utils/labelEnToVi';
+import { IUser } from '@/types/user';
 
 const stripHtml = (html: string) => {
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -12,12 +12,12 @@ const stripHtml = (html: string) => {
 }
 
 interface StatsCardProps{
-  userAdmin: UserProfile | null;
+  user: IUser | null;
   totalPostApproved: number;
   totalPostPending: number
 }
 
-const StatsCard = ({ userAdmin, totalPostApproved, totalPostPending } : StatsCardProps) => {
+const StatsCard = ({ user, totalPostApproved, totalPostPending } : StatsCardProps) => {
   const theme = useTheme();
   return (
     <Card variant="outlined" sx={{
@@ -30,21 +30,23 @@ const StatsCard = ({ userAdmin, totalPostApproved, totalPostPending } : StatsCar
       border: 'none',
       boxShadow: '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3)',
     }}>
-      <Box>
-        <Typography variant="body1" fontWeight={500}>{`Họ tên: ${userAdmin?.fullName}`}</Typography>
-        <Typography variant="body2" color="text.secondary">{`Chức vụ: ${getRoleLabel(userAdmin?.role)}`}</Typography>
+      <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column'>
+        <Typography variant="body1" fontWeight={500}>{`Họ tên: ${user?.fullName}`}</Typography>
+        <Typography variant="body2" color="text.secondary">{`Chức vụ: ${getRoleLabel(user?.role)}`}</Typography>
       </Box>
 
-      <Stack spacing={2} my={2} textAlign="center" sx={{ flexDirection: 'column' }}>
+      <Stack textAlign="center" sx={{ flexDirection: 'column' }}>
         <Box>
           <Typography variant="h2" fontWeight={700} color={theme.palette.warning.main}>{totalPostPending}</Typography>
           <Typography variant="subtitle1">Bài viết chưa được phê duyệt</Typography>
         </Box>
+      </Stack>
+      <Stack textAlign="center" sx={{ flexDirection: 'column' }}>
         <Box>
           <Typography variant="h2" fontWeight={700} color={theme.palette.success.main}>{totalPostApproved}</Typography>
           <Typography variant="subtitle1">Bài viết đã duyệt thành công</Typography>
         </Box>
-      </Stack>
+      </Stack>  
     </Card>
   );
 };
@@ -54,12 +56,12 @@ interface PostSummaryProps {
   isLoading?: boolean;
   onApprove?: (postId: number) => void;
   onReject?: (postId: number) => void;
-  userAdmin: UserProfile | null;
+  user: IUser | null;
   totalPostApproved: number;
   totalPostPending: number
 }
 
-const PostSummary = ({ pendingPosts, isLoading, onApprove, onReject, userAdmin, totalPostApproved, totalPostPending }: PostSummaryProps) => {
+const PostSummary = ({ pendingPosts, isLoading, onApprove, onReject, user, totalPostApproved, totalPostPending }: PostSummaryProps) => {
 
   if (isLoading) {
     return (
@@ -84,7 +86,7 @@ const PostSummary = ({ pendingPosts, isLoading, onApprove, onReject, userAdmin, 
   return (
     <Grid sx={{ display: 'flex', gap: '20px' }}>
       <Grid item xs={12} md={4} lg={3}>
-        <StatsCard userAdmin={userAdmin} totalPostApproved={totalPostApproved} totalPostPending={totalPostPending} />
+        <StatsCard user={user} totalPostApproved={totalPostApproved} totalPostPending={totalPostPending} />
       </Grid>
       <Box sx={{ display: 'flex', gap: '20px' }}>
         {pendingPosts.map((post) => (

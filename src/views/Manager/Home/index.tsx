@@ -7,7 +7,7 @@ import AccountSummary from "../components/AccountSummary";
 import PostSummary from "../components/PostSummary";
 import { IPost } from "@/types/post";
 import { deleteUser, UserPayload, getUser, getUsers } from "@/services/user-service";
-import { getAdminAndTotalPost, getPosts, reviewPost } from "@/services/post-service";
+import { getPosts, getTotalPost, reviewPost } from "@/services/post-service";
 import { IUser } from "@/types/user";
 import useNotification from "@/hooks/useNotification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -47,7 +47,6 @@ const HomeDashboardManager: React.FC = () => {
 
   const [contactId, setIdContact] = useState<string | number>('');
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [userAdmin, setUserAdmin] = useState<UserProfile | null>(null);
   const [totalPostApproved, setTotalPostApproved] = useState<number>(0);
   const [totalPostPending, setTotalPostPending] = useState<number>(0);
   const [userId, setUserId] = useState<string | number>('');
@@ -101,9 +100,7 @@ const HomeDashboardManager: React.FC = () => {
 
   const getAdminAndTotal = async() => {
     const authorId = profile?.role === 'employee' ? profile.id : undefined;
-    const data = await getAdminAndTotalPost({authorId: authorId});
-    const admin = data.data?.admin as any as UserProfile;
-    setUserAdmin(admin)
+    const data = await getTotalPost({authorId: authorId});
     data.data?.totalPostApproved && setTotalPostApproved(data.data?.totalPostApproved)
     data.data?.totalPostPending && setTotalPostPending(data.data?.totalPostPending)
   }
@@ -259,7 +256,7 @@ const HomeDashboardManager: React.FC = () => {
                 <PostSummary pendingPosts={pendingPosts}
                   onApprove={canReview ? handleApprove : undefined}
                   onReject={canReview ? handleReject : undefined}
-                  userAdmin={userAdmin ? userAdmin : null}
+                  user={profile ? profile : null}
                   totalPostApproved={totalPostApproved}
                   totalPostPending={totalPostPending}
                 />
