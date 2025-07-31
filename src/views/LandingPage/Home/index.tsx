@@ -4,19 +4,25 @@ import homeImage from "@/assets/images/users/Background-xam-1.jpg";
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ContactConsultativeInfo from './components/ContactConsultativeInfo';
-import ImageCarousel from './components/ImageCarousel';
+import ImageCarousel, { SrcSetWidth } from './components/ImageCarousel';
+import image_slide from '@/assets/images/users/12.png';
 
 const Home = () => {
+  const fixedImages: SrcSetWidth[] = [
+    {id: 1, name: 'image_slide', url: `${image_slide}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide}` },
+
+  ]
   const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <Box>
       <Box
         sx={{
+          bgcolor: 'black',
           position:'relative',
-          height: {xs: 450, md: 600}, // Chiều cao thu gọn lại
+          height: {xs: 450, md: 500}, // Chiều cao thu gọn lại
           width: '100%',
-          backgroundImage: `url(${homeImage})`,
+          // backgroundImage: `url(${homeImage})`,
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           display: 'flex',
@@ -77,11 +83,11 @@ const Home = () => {
         </Box>
       </Box>
       <Box
-        sx={{ backgroundColor: '#1C1A1B', p: 5}}
+        sx={{ backgroundColor: '#06372D', p: 5}}
       >
         <ContactConsultativeInfo/>
       </Box>
-      <ImageCarousel/>
+      <ImageCarousel fixedImages={fixedImages}/>
     </Box>
   );
 };

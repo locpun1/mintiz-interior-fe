@@ -1,14 +1,17 @@
 import { Box, Stack, Typography } from '@mui/material';
 import VisionIntroduction from './components/VisionIntroduction';
-import ImageCarousel from '../Home/components/ImageCarousel';
+import ImageCarousel, { SrcSetWidth } from '../Home/components/ImageCarousel';
 import MissionDevelopment from './components/MissionDevelopment';
 import PlanDrawing from './components/PlanDrawing';
 import { CONTENT_ITEM_REASON, CONTENT_REASON } from '@/constants/contentAbout';
+import image_slide from '@/assets/images/users/10.png';
 
 const AboutUs = () => {
-
+  const fixedImages: SrcSetWidth[] = [
+    {id: 1, name: 'image_slide', url: `${image_slide}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide}` },
+  ]
   return (
-    <Box sx={{ bgcolor: '#1C1A1B', color: 'white',}}>
+    <Box sx={{ bgcolor: '#06372D', color: 'white',}}>
       <Box
         sx={{
           px: { xs: 2, sm: 8, md: 10 },
@@ -28,7 +31,7 @@ const AboutUs = () => {
         <Typography variant='body1' textAlign='center' mb={5}>Trang chủ/Giới thiệu</Typography>
         <VisionIntroduction/>
       </Box>
-      <ImageCarousel/>
+      <ImageCarousel fixedImages={fixedImages}/>
       <Box
         sx={{
           px: { xs: 2, sm: 8, md: 10},

@@ -30,7 +30,7 @@ const PlanDrawing: React.FC = () => {
                                 height: {xs: 300, md: 400}, // Chiều cao thu gọn lại
                                 width: '100%',
                                 backgroundImage: `url(${getPathImage(data.image_url)})`,
-                                backgroundSize: '100% 100%',
+                                backgroundSize: 'fill',
                                 backgroundPosition: 'center',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -38,6 +38,7 @@ const PlanDrawing: React.FC = () => {
                                 color: '#fff',
                                 textAlign: 'center',
                                 px: 2,
+                                zIndex:1 
                             }}
                         >
                             <Box
