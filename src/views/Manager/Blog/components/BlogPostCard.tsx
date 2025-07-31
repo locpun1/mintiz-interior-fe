@@ -23,12 +23,12 @@ interface BlogPostCardProps {
 const getStatusInfo = (status: 'pending' | 'approved' | 'rejected') => {
   switch (status) {
     case 'approved':
-      return { label: 'Đã duyệt', color: 'success' as const };
+      return { label: 'Phê duyệt thành công', color: 'success' as const };
     case 'rejected':
-      return { label: 'Bị từ chối', color: 'error' as const };
+      return { label: 'Phê duyệt thất bại', color: 'error' as const };
     case 'pending':
     default:
-      return { label: 'Chờ duyệt', color: 'warning' as const };
+      return { label: 'Đang chờ phê duyệt', color: 'warning' as const };
   }
 };
 
@@ -81,6 +81,7 @@ const BlogPostCard: FC<BlogPostCardProps> = ({ post, onApprove, onReject, onPubl
           right: 16,
           zIndex: 1,
           fontWeight: 600,
+          width: '50%'
         }}
       />
       <Box onClick={handleNavigate}>
@@ -89,6 +90,7 @@ const BlogPostCard: FC<BlogPostCardProps> = ({ post, onApprove, onReject, onPubl
           sx={{
             objectFit: 'cover',
             height: "169px",
+            mt: 5
           }}
           image={`${import.meta.env.VITE_API_BASE_URL}${post.imageUrl}` || `https://source.unsplash.com/random/400x250?interior,${post.id}`}
           alt={post.title}
@@ -118,15 +120,14 @@ const BlogPostCard: FC<BlogPostCardProps> = ({ post, onApprove, onReject, onPubl
       </Box>
       <CardActions sx={{ justifyContent: 'space-around', p: 1.5, pt: 0 }}>
         {onApprove && post.status === 'pending' && (
-          <Button handleFunt={(e) => handleActionClick(e, 'approve')}>Chấp nhận</Button>
+          <Button customVariant='outline' fontColor='#1C1A1B' backgroundColor='white' border='solid 1px #1C1A1B' borderRadius='20px' width='120px' height='35px' handleFunt={(e) => handleActionClick(e, 'approve')}>Chấp nhận</Button>
         )}
         {onReject && post.status === 'pending' && (
-          <Button handleFunt={(e) => handleActionClick(e, 'reject')}>Từ chối</Button>
+          <Button customVariant='outline' fontColor='#1C1A1B' backgroundColor='white' border='solid 1px #1C1A1B' borderRadius='20px' width='120px' height='35px' handleFunt={(e) => handleActionClick(e, 'reject')}>Từ chối</Button>
         )}
         {onPublish && post.status === 'approved' && (
           <Button
-            customVariant="primary"
-            width="48%"
+            customVariant='outline' fontColor='#1C1A1B' backgroundColor='white' border='solid 1px #1C1A1B' borderRadius='20px' width='100%' height='35px'
             handleFunt={(e) => handleActionClick(e, 'publish')}
           >
             {post.isPublished ? 'Hủy Đăng' : 'Đăng Tải'}
@@ -134,8 +135,7 @@ const BlogPostCard: FC<BlogPostCardProps> = ({ post, onApprove, onReject, onPubl
         )}
         {onEdit && (post.status === 'rejected' || post.status === 'pending') && (
           <Button
-            customVariant="secondary"
-            width="48%"
+            customVariant='outline' fontColor='#1C1A1B' backgroundColor='white' border='solid 1px #1C1A1B' borderRadius='20px' width='100%' height='35px'
             handleFunt={(e) => handleActionClick(e, 'edit')}
           >
             Chỉnh Sửa

@@ -1,3 +1,5 @@
+import { GroupPermission } from "./permission";
+
 // src/types/user.ts
 export interface IUser {
     id: number;
@@ -13,5 +15,6 @@ export interface IUser {
     avatar_url?:string,
     is_deleted?: number;
     is_default?: number;
+    permission?: GroupPermission
 }
 

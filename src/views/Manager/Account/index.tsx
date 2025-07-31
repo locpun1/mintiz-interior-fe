@@ -20,6 +20,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import FilterTabs from "./components/FilterTabs";
 import DialogConfirmResetSuccess from "./components/DialogConfirmResetSuccess";
 import Page from "@/components/Page";
+import DialogAttachPermission from "./components/DialogAttachPermission";
 
 export interface DataStatusUserProps {
     id: number | string;
@@ -72,6 +73,8 @@ const ManagementAccount: React.FC = () => {
     const [openDialogDetail, setOpenDialogDetail] = useState(false);
     const [openActiveAccount, setOpenActiveAccount] = useState(false);
     const [openConfirmActiveSuccess, setOpenConfirmActiveSuccess] = useState(false);
+    const [openAttachPermission, setOpenAttachPermission] = useState(false);
+
     
 
     const getUsers = useCallback(async(currentPage: number, currentSize: number, status?: string | number, currentSearchTerm?: string) => {
@@ -196,6 +199,12 @@ const ManagementAccount: React.FC = () => {
         }
     }
 
+
+    const handleOpenAttachPermission = (user: UserProfile) => {
+        setOpenAttachPermission(true)
+        setUser(user)
+    }
+
     return(
         <Box p={2}>
             <Page title="Quản lý tài khoản">
@@ -235,6 +244,7 @@ const ManagementAccount: React.FC = () => {
                                             handleEdit={handleOpenEdit}
                                             handleReset={handleOpenReset}
                                             handleActive={handleOpenActive}
+                                            handleAttach={handleOpenAttachPermission}
                                         />
                                     </Grid>
                                 )))}
@@ -260,6 +270,15 @@ const ManagementAccount: React.FC = () => {
                         setOpenAddAccount(false)
                         getUsers(page, rowsPerPage, viewMode)
                     }}
+                />
+            )}
+            {openAttachPermission && user && (
+                <DialogAttachPermission
+                    open={openAttachPermission}
+                    onClose={() => {
+                        setOpenAttachPermission(false)
+                    }}
+                    user={user}
                 />
             )}
             {openEditAccount &&  (

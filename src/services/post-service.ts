@@ -3,6 +3,7 @@
 import HttpClient from '@/utils/HttpClient';
 import type { HttpResponse, PaginatedResponse } from '@/types/common';
 import type { IPost } from '@/types/post';
+import { UserProfile } from '@/types/user-types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'; 
 const prefix = `${API_BASE_URL}/api/posts`;
@@ -99,4 +100,17 @@ export const updatePost = (postId: number, payload: UpdatePostPayload) => {
     `${prefix}/${postId}`,
     payload
   );
+};
+
+interface TotalPost{
+  admin: UserProfile;
+  totalPostApproved: number,
+  totalPostPending: number
+}
+
+
+
+export const getTotalPost = (params: GetPostsParams) => {
+  let url = `${prefix}/total-post`;
+  return HttpClient.get<HttpResponse<TotalPost>>(url, {params})
 };

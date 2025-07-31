@@ -21,6 +21,6 @@ export const RoleUser = {
 
 export type RoleUser = typeof RoleUser[keyof typeof RoleUser];
 export const ROLE_LABELS: { [key in RoleUser]: string} = {
-    [RoleUser.ADMIN]: 'Quản trị viên',
+    [RoleUser.ADMIN]: 'Quản lý cấp cao',
     [RoleUser.EMPLOYEE]: 'Nhân viên kiểm soát'
 }

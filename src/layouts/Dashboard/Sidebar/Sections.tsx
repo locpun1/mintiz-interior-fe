@@ -12,7 +12,8 @@ import {
 
 import { ROUTE_PATH } from '@/constants/routes';
 import type { IUser } from '@/types/user';
-import { ROLE } from '@/constants/roles';
+import { GroupPermission } from '@/types/permission';
+import { mapPermissionsToSectionItems } from '@/utils/data';
 
 export interface SectionItem {
   title: string;
@@ -26,60 +27,45 @@ interface Section {
   items: SectionItem[];
 }
 
-const Sections = (profile: IUser | null): Section[] => {
-  if (!profile) {
+
+const Sections = (profile: IUser | null, menuData: GroupPermission | null): Section[] => {
+  if (!profile || (profile.role?.toLowerCase().trim() !== 'admin' && !menuData)) {
     return [];
   }
 
+  const sectionItems = menuData ? mapPermissionsToSectionItems(menuData) : [];
+
+
   const menuItems: SectionItem[] = [
-    {
-      title: 'Trang chủ',
-      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}`,
-      icon: HomeOutlined,
-    },
-    {
-      title: 'Quản lý Bài viết',
-      path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}`,
-      icon: PostAdd,
-    },
-    // {
-    //     title: 'Đăng xuất',
-    //     path: `/${ROUTE_PATH.AUTH}/${ROUTE_PATH.LOGOUT}`,
-    //     icon: ContactsOutlined,
-    // }
-  ];
-
-  let accountItem: SectionItem[];
-
-  if (profile.role === 'admin') {
-    accountItem = [
+      {
+        title: 'Trang chủ',
+        path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_HOME}`,
+        icon: HomeOutlined,
+      },
       {
         title: 'Quản lý Tài khoản',
         path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_ACCOUNT}`,
         icon: ManageAccountsOutlined,
       },
       {
-        title: 'Quản lý Hình ảnh, Dịch vụ',
+        title: 'Quản lý Bài viết',
+        path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_BLOG}`,
+        icon: PostAdd,
+      },
+      {
+        title: 'Quản lý Hình ảnh, Dịch vụ...',
         path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MANAGE_SETTINGS}`,
         icon: Settings
-      }
+      },    
     ];
-  } else { 
-    accountItem = [
-      {
-        title: 'Quản lý thông tin',
-        path: `/${ROUTE_PATH.MANAGE}/${ROUTE_PATH.MY_PROFILE}`,
-        icon: AccountCircleOutlined,
-      }
-    ];
-  }
-  
-  menuItems.splice(1, 0, ...accountItem);
+
+  const isAdmin = profile.role?.toLowerCase().trim() === 'admin';
+  let accountItem: SectionItem[] = isAdmin ? menuItems : sectionItems;
 
   return [
     {
       section: null, 
-      items: menuItems,
+      items: accountItem,
     }
   ];
 };

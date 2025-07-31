@@ -7,7 +7,7 @@ import AccountSummary from "../components/AccountSummary";
 import PostSummary from "../components/PostSummary";
 import { IPost } from "@/types/post";
 import { deleteUser, UserPayload, getUser, getUsers } from "@/services/user-service";
-import { getPosts, reviewPost } from "@/services/post-service";
+import { getPosts, getTotalPost, reviewPost } from "@/services/post-service";
 import { IUser } from "@/types/user";
 import useNotification from "@/hooks/useNotification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -47,7 +47,11 @@ const HomeDashboardManager: React.FC = () => {
 
   const [contactId, setIdContact] = useState<string | number>('');
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [totalPostApproved, setTotalPostApproved] = useState<number>(0);
+  const [totalPostPending, setTotalPostPending] = useState<number>(0);
   const [userId, setUserId] = useState<string | number>('');
+
+  const menuCodes: string[] = JSON.parse(localStorage.getItem('menuCodes') || '[]');
 
   const handleSearch = (value: string) => {
     setSearchTerm(value.trim())
@@ -76,9 +80,15 @@ const HomeDashboardManager: React.FC = () => {
 
   const fetchDashboardDataEmployee = useCallback(async () => {
     try {
+      const postParams = {
+        status: 'pending' as const,
+        limit: 2,
+        page: 1,
+        authorId: profile?.role === 'employee' ? profile.id : undefined,
+      };
       const [contactsResponse, postsResponse] = await Promise.all([
         getContacts({ limit: 6, page: 0, searchTerm: searchTerm }),
-        getPosts({ status: 'pending', limit: 2, page: 1 })
+        getPosts(postParams)
       ]);
       setContacts(contactsResponse?.data?.contacts || []);
       setPendingPosts(postsResponse?.data?.posts || []);
@@ -87,14 +97,22 @@ const HomeDashboardManager: React.FC = () => {
       notify({ severity: 'error', message: 'Tải dữ liệu dashboard thất bại' });
     }
   }, [notify]);
-  
+
+  const getAdminAndTotal = async() => {
+    const authorId = profile?.role === 'employee' ? profile.id : undefined;
+    const data = await getTotalPost({authorId: authorId});
+    data.data?.totalPostApproved && setTotalPostApproved(data.data?.totalPostApproved)
+    data.data?.totalPostPending && setTotalPostPending(data.data?.totalPostPending)
+  }
+
+
   const renderApiList = (role: string) => {
     switch (role) {
       case ROLE.EMPLOYEE:
-        fetchDashboardDataEmployee()
+        fetchDashboardDataEmployee();
         break;
       default:
-        fetchDashboardData()
+        fetchDashboardData();
         break;
     }
   }
@@ -102,6 +120,7 @@ const HomeDashboardManager: React.FC = () => {
   useEffect(() => {
     if(profile){
       renderApiList(profile.role)
+      getAdminAndTotal()
     }
   }, [profile]);
 
@@ -218,7 +237,7 @@ const HomeDashboardManager: React.FC = () => {
               </SummaryCard>
             </Box>
           )}
-          {profile?.role === ROLE.EMPLOYEE && (
+          {profile?.role === ROLE.EMPLOYEE && menuCodes.includes('002') && (
             <Box my={1.5}>
               <SummaryCard
                 title="Quản lý thông tin"
@@ -228,15 +247,23 @@ const HomeDashboardManager: React.FC = () => {
               </SummaryCard>
             </Box>
           )}
-          <SummaryCard
-            title="Quản lý bài viết"
-            seeMoreLink="/manager/blog"
-          >
-            <PostSummary pendingPosts={pendingPosts}
-              onApprove={canReview ? handleApprove : undefined}
-              onReject={canReview ? handleReject : undefined}
-            />
-          </SummaryCard>
+          {((profile?.role === ROLE.ADMIN) || (profile?.role === ROLE.EMPLOYEE && menuCodes.includes('003'))) && (
+            <Box mt={1.5}>
+              <SummaryCard
+                title="Quản lý bài viết"
+                seeMoreLink="/manage/blog"
+              >
+                <PostSummary pendingPosts={pendingPosts}
+                  onApprove={canReview ? handleApprove : undefined}
+                  onReject={canReview ? handleReject : undefined}
+                  user={profile ? profile : null}
+                  totalPostApproved={totalPostApproved}
+                  totalPostPending={totalPostPending}
+                />
+              </SummaryCard> 
+            </Box>
+          )}
+
         </Box>
       </Page>
       <ConfirmDialog

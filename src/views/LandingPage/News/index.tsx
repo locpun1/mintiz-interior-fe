@@ -88,7 +88,6 @@ const News = () => {
 
   useEffect(() => {
       if(activeCategory){
-        
         getNews(page, rowsPerPage, activeCategory)
       }else{
         getNews(page, rowsPerPage)

@@ -4,19 +4,19 @@ import { FiberManualRecord } from "@mui/icons-material";
 import { IImageSlide } from "@/types/settings";
 import { getSlides } from "@/services/settings-service";
 import { getPathImage } from "@/utils/url";
-import image_slide from '@/assets/images/users/Background-xam-1.jpg';
 
-interface SrcSetWidth extends IImageSlide{
+
+export interface SrcSetWidth extends IImageSlide{
     srcSet1200: string,
     srcSet768: string
 }
 
-const fixedImages: SrcSetWidth[] = [
-    {id: 1, name: 'image_slide', url: `${image_slide}`, srcSet1200: `${image_slide}`, srcSet768: `${image_slide}` },
 
-]
+interface ImageCarouselProps{
+  fixedImages: SrcSetWidth[]
+}
 
-const ImageCarousel: React.FC = () => {
+const ImageCarousel: React.FC<ImageCarouselProps> = ({ fixedImages }) => {
   const [images, setImages] = useState<SrcSetWidth[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
