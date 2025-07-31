@@ -14,7 +14,7 @@ export const prepareRealPath = (
 };
 
 //Get url image
-const apiBaseUrl = 'http://localhost:3002/api'
+const apiBaseUrl = 'http://localhost:3002'
 export function getPathImage(path: string) : string {
   if(!path){
     return "";
