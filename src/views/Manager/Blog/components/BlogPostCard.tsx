@@ -5,6 +5,9 @@ import type { IPost } from '@/types/post';
 import Button from '@/components/Button/Button';
 import { useNavigate } from 'react-router-dom';
 import type { IUser } from '@/types/user';
+import cardfuni_11 from '@/assets/images/users/11.png';
+
+
 
 const stripHtml = (html: string) => {
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -92,7 +95,7 @@ const BlogPostCard: FC<BlogPostCardProps> = ({ post, onApprove, onReject, onPubl
             height: "169px",
             mt: 5
           }}
-          image={`${import.meta.env.VITE_API_BASE_URL}${post.imageUrl}` || `https://source.unsplash.com/random/400x250?interior,${post.id}`}
+          image={`${import.meta.env.VITE_API_BASE_URL}${post.imageUrl}` || cardfuni_11}
           alt={post.title}
         />
         <CardContent sx={{

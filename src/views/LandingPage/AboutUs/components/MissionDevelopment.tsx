@@ -6,6 +6,9 @@ import CommonImage from "@/components/Image/index";
 import { IServices } from "@/types/settings";
 import { getServices } from "@/services/settings-service";
 import { getPathImage } from "@/utils/url";
+import image_slide_12 from '@/assets/images/users/12.png';
+import image_slide_10 from '@/assets/images/users/10.png';
+
 
 interface ServicesData extends IServices{
     order: number | string,
@@ -25,7 +28,12 @@ const MissionDevelopment: React.FC = () => {
                 (service, index) => {
                     const numericId = Number(service.id);
                     return {
-                        ...service,
+                        id: service.id,
+                        content: service.content,
+                        title: service.title,
+                        image_url: !isNaN(numericId) && numericId % 2 !== 0 ? getPathImage(service.image_url) || image_slide_12 : getPathImage(service.image_url) || image_slide_10,
+                        createdAt: service.createdAt,
+                        updatedAt: service.updatedAt,
                         order: String(index + 1).padStart(2, '0'),
                         isReverse: !isNaN(numericId) && numericId % 2 !== 0 //true nếu là số lẻ
                     }
@@ -81,7 +89,7 @@ const MissionDevelopment: React.FC = () => {
                     <Grid key={index} sx={{ mt: 3}} container spacing={4} direction={ content.isReverse === true ? 'row-reverse' : 'row'}>
                         <Grid size={{ xs: 12, md: 6}}>
                             <CommonImage
-                                src={getPathImage(content.image_url)}
+                                src={content.image_url}
                                 sx={{
                                     width: '100%',
                                     height: { xs: 200, md: 300 },
