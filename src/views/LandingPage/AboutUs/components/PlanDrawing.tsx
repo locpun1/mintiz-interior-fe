@@ -4,6 +4,8 @@ import { Box, Stack, Typography } from "@mui/material";
 import { IDesignAndBuild } from "@/types/settings";
 import { getDesignAndBuilds } from "@/services/settings-service";
 import { getPathImage } from "@/utils/url";
+import cardfuni from '@/assets/images/users/cardfuni 2.png';
+
 
 const PlanDrawing: React.FC = () => {
     const page = 0;
@@ -29,7 +31,7 @@ const PlanDrawing: React.FC = () => {
                                 position: 'relative',
                                 height: {xs: 300, md: 400}, // Chiều cao thu gọn lại
                                 width: '100%',
-                                backgroundImage: `url(${getPathImage(data.image_url)})`,
+                                backgroundImage: `url(${getPathImage(data.image_url) || cardfuni})`,
                                 backgroundSize: 'fill',
                                 backgroundPosition: 'center',
                                 display: 'flex',
